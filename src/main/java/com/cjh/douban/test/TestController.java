@@ -12,6 +12,7 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 @RestController
 @RefreshScope
@@ -41,6 +42,14 @@ public class TestController {
         for (NowPlayingPO item : nowPlaying) {
             System.out.println(item);
         }
+    }
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+    @GetMapping("/testApp")
+    public String testApp() {
+        return restTemplate.getForObject("http://wechat/nacos", String.class);
     }
 
 }
