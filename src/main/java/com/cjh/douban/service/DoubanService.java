@@ -37,6 +37,20 @@ public class DoubanService {
     private final String url_nowplaying = "https://movie.douban.com/cinema/nowplaying/guangzhou";
 
     /**
+     * @name 电影详情
+     * @method GET
+     * @result html
+     */
+    private final String url_playing_poster = "https://movie.douban.com/subject/ID/?from=playing_poster";
+
+    /**
+     * @name 影评
+     * @method GET
+     * @result html
+     */
+    private final String url_get_comments = "https://movie.douban.com/subject/ID/comments?start=pageNum&limit=pageSize";
+
+    /**
      * 登录
      */
     public boolean login() {
@@ -84,6 +98,7 @@ public class DoubanService {
         Element domById = document.getElementById("nowplaying");
         Elements domByClass = domById.getElementsByClass("list-item");
         for (Element element : domByClass) {
+            String id = element.attr("id");
             String title = element.attr("data-title");
             String score = element.attr("data-score");
             String actors = element.attr("data-actors");
@@ -92,6 +107,7 @@ public class DoubanService {
             String imgSrc = img.get(0).attr("src");
             String urlHref = url.get(0).attr("href");
             NowPlayingPO nowPlayingPO = new NowPlayingPO();
+            nowPlayingPO.setId(id);
             nowPlayingPO.setName(title);
             nowPlayingPO.setImg(imgSrc);
             nowPlayingPO.setActors(actors);
@@ -102,6 +118,33 @@ public class DoubanService {
         return list;
     }
 
+    /**
+     * 获取简述
+     */
+    public String getMovieDesc(String id) {
+        String resp = HttpUtil.doGet(url_playing_poster.replace("ID", id));
+        Document document = Jsoup.parse(resp);
+        Elements desc = document.getElementsByAttributeValue("property", "v:summary");
+        Element element = desc.get(0);
+        return element.html();
+    }
+
+    /**
+     * 获取影评
+     */
+    public List<String> getComments(String id, int pageNum, int pageSize) {
+        List<String> comments = new ArrayList<>();
+        String url = url_get_comments.replace("ID", id)
+            .replace("pageNum", String.valueOf((pageNum - 1) * pageSize))
+            .replace("pageSize", String.valueOf(pageSize));
+        String resp = HttpUtil.doGet(url);
+        Document document = Jsoup.parse(resp);
+        Elements shortComments = document.getElementsByClass("short");
+        for (Element comment : shortComments) {
+            comments.add(comment.html());
+        }
+        return comments;
+    }
 
 
 }
