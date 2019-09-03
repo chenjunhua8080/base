@@ -52,4 +52,9 @@ public class TestController {
         return restTemplate.getForObject("http://wechat/nacos", String.class);
     }
 
+
+    public static void main(String[] args) {
+        //测试IDEA git
+    }
+
 }
