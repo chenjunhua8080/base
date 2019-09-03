@@ -54,7 +54,7 @@ public class TestController2 {
 
 
     public static void main(String[] args) {
-        //测试IDEA git v1.0 文件2
+        //测试IDEA git v4 文件2
     }
 
 }
