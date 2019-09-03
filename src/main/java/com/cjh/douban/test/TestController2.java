@@ -18,7 +18,7 @@ import org.springframework.web.client.RestTemplate;
 @RefreshScope
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
-public class TestController {
+public class TestController2 {
 
     @Value("${name:null}")
     private String username;
@@ -54,7 +54,7 @@ public class TestController {
 
 
     public static void main(String[] args) {
-        //测试IDEA git v3.0
+        //测试IDEA git v1.0 文件2
     }
 
 }
