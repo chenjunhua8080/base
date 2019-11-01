@@ -59,18 +59,31 @@
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
 
-    <!-- 1. nacos-配置管理功能依赖 -->
+    <!-- 不支持指定命名空间 -->
+    <!-- 1. nacos-配置管理功能依赖
     <dependency>
       <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
       <version>0.2.1.RELEASE</version>
-    </dependency>
+    </dependency> -->
 
-    <!-- 2. nacos-服务发现功能依赖 -->
+    <!-- 2. nacos-服务发现功能依赖
     <dependency>
       <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
       <version>0.2.1.RELEASE</version>
+    </dependency>-->
+
+    <!-- nacos -->
+    <dependency>
+      <groupId>com.alibaba.cloud</groupId>
+      <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+      <version>2.1.0.RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>com.alibaba.cloud</groupId>
+      <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+      <version>2.1.0.RELEASE</version>
     </dependency>
 
     <!-- jsonp -->

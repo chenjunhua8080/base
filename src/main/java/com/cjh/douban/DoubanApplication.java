@@ -5,7 +5,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 @SpringBootApplication
-@EnableDiscoveryClient
+//加了第一次无法注册进去
+//@EnableDiscoveryClient
 public class DoubanApplication {
 
     public static void main(String[] args) {
