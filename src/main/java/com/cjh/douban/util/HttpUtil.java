@@ -1,5 +1,6 @@
 package com.cjh.douban.util;
 
+import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
@@ -15,6 +16,12 @@ public class HttpUtil {
 
     public static String doGet(String url) {
         return doGet(url, null, null);
+    }
+
+    public static String doGet(String url, String cookie) {
+        HashMap<String, Object> headers = new HashMap<>();
+        headers.put("cookie", cookie);
+        return doGet(url, headers, null);
     }
 
     public static String doGet(String url, Map<String, Object> headers) {
