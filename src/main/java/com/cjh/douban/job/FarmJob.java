@@ -20,33 +20,33 @@ public class FarmJob {
     @Value("${farm.enable}")
     private Boolean enable;
 
-    @Scheduled(cron = "0 0/30 * * * ?")
+    @Scheduled(cron = "${farm.job.test}")
     public void test() {
-        System.out.println(new Date());
+        System.out.println("test job: " + new Date());
     }
 
-    @Scheduled(cron = "0 5 9,11,17 * * ?")
+    @Scheduled(cron = "${farm.job.gotThreeMealForFarm}")
     public void gotThreeMealForFarm() {
         if (enable) {
             farmService.gotThreeMealForFarm();
         }
     }
 
-    @Scheduled(cron = "0 0 9 * * ?")
+    @Scheduled(cron = "${farm.job.signForFarm}")
     public void signForFarm() {
         if (enable) {
             farmService.signForFarm();
         }
     }
 
-    @Scheduled(cron = "0 1 9 * * ?")
+    @Scheduled(cron = "${farm.job.waterGoodForFarm}")
     public void waterGoodForFarm() {
         if (enable) {
             farmService.waterGoodForFarm();
         }
     }
 
-    @Scheduled(cron = "0 2 9 * * ?")
+    @Scheduled(cron = "${farm.job.firstWaterTaskForFarm}")
     public void firstWaterTaskForFarm() {
         if (enable) {
             farmService.firstWaterTaskForFarm();
