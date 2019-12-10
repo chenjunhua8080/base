@@ -3,7 +3,10 @@ package com.cjh.douban.service;
 import com.alibaba.fastjson.JSONObject;
 import com.cjh.douban.resp.FarmResp;
 import com.cjh.douban.util.HttpUtil;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
@@ -12,6 +15,9 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class FarmService {
+
+    @Autowired
+    private FarmLogService farmLogService;
 
     @Value("${farm.cookie}")
     private String cookie;
@@ -56,6 +62,7 @@ public class FarmService {
             result = String.format("#### 签到失败: %s ####", farmResp.getMessage());
             log.error(result);
         }
+        farmLogService.addLog(getOpenId(cookie), result, resp);
         return result;
     }
 
@@ -73,6 +80,7 @@ public class FarmService {
             result = String.format("#### 浇水失败: %s ####", farmResp.getMessage());
             log.error(result);
         }
+        farmLogService.addLog(getOpenId(cookie), result, resp);
         return result;
     }
 
@@ -90,6 +98,7 @@ public class FarmService {
             result = String.format("#### 领取首浇失败: %s ####", farmResp.getMessage());
             log.error(result);
         }
+        farmLogService.addLog(getOpenId(cookie), result, resp);
         return result;
     }
 
@@ -107,7 +116,22 @@ public class FarmService {
             result = String.format("#### 定时领取失败: %s ####", farmResp.getMessage());
             log.error(result);
         }
+        farmLogService.addLog(getOpenId(cookie), result, resp);
         return result;
+    }
+
+    /**
+     * cookie匹配openId
+     */
+    private String getOpenId(String cookie) {
+        Pattern pattern = Pattern.compile("wxapp_openid=(.*?);");
+        Matcher matcher = pattern.matcher(cookie);
+        if (matcher.find()) {
+            return matcher.group(1);
+        } else {
+            log.error("cookie中为匹配到wxapp_openid...");
+        }
+        return null;
     }
 
 }

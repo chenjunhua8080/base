@@ -92,17 +92,31 @@
       <artifactId>jsoup</artifactId>
       <version>1.8.3</version>
     </dependency>
+
     <dependency>
       <groupId>org.jetbrains</groupId>
       <artifactId>annotations</artifactId>
       <version>13.0</version>
       <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-test</artifactId>
     </dependency>
 
+    <!-- mybatis -->
+    <dependency>
+      <groupId>com.baomidou</groupId>
+      <artifactId>mybatis-plus-boot-starter</artifactId>
+      <version>3.2.0</version>
+    </dependency>
+    <!-- mysql -->
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <scope>runtime</scope>
+    </dependency>
 
   </dependencies>
 
