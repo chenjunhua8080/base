@@ -3,4 +3,8 @@
 
 <mapper namespace="com.cjh.douban.dao.FarmLogDao">
 
+    <select id="selectFarmLogOnDay" resultType="com.cjh.douban.po.FarmLogPO">
+        select t.* from farm_log t
+        where to_days(t.crete_time) = to_days(#{date})
+    </select>
 </mapper>

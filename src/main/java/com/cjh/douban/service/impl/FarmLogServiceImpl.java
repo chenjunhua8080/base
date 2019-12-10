@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cjh.douban.dao.FarmLogDao;
 import com.cjh.douban.po.FarmLogPO;
 import com.cjh.douban.service.FarmLogService;
+import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,5 +28,10 @@ public class FarmLogServiceImpl extends ServiceImpl<FarmLogDao, FarmLogPO> imple
         entity.setMessage(message);
         entity.setResp(resp);
         baseMapper.insert(entity);
+    }
+
+    @Override
+    public FarmLogPO getTodayFarmLog() {
+        return baseMapper.selectFarmLogOnDay(new Date());
     }
 }

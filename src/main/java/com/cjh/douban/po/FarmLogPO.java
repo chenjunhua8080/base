@@ -9,7 +9,7 @@ import java.util.Date;
 
 /**
  * 农场log
- * 
+ *
  * @author chenjunhua
  * @email 1109551489@qq.com
  * @date 2019-12-10 16:13:23
@@ -20,7 +20,7 @@ public class FarmLogPO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * 
+	 *
 	 */
 	@TableId
 	private Integer id;
@@ -36,5 +36,9 @@ public class FarmLogPO implements Serializable {
 	 * 响应
 	 */
 	private String resp;
+	/**
+	 * 创建时间
+	 */
+	private Date createTime;
 
 }
