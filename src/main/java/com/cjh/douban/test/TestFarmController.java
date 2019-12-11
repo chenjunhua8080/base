@@ -66,7 +66,7 @@ public class TestFarmController {
 
     @Test
     public void getTodayFarmLog() {
-        System.out.println(farmLogService.getTodayFarmLog());
+        System.out.println(farmLogService.getTodayFarmLog("oA1P50NL6OdsFy2lrwp0tN1tw7Ow"));
     }
 
 }

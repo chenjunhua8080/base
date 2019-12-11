@@ -2,7 +2,6 @@ package com.cjh.douban.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjh.douban.po.FarmLogPO;
-import java.util.Date;
 
 /**
  * 农场log
@@ -21,7 +20,7 @@ public interface FarmLogService extends IService<FarmLogPO> {
     /**
      * 查询今天日志
      */
-    FarmLogPO getTodayFarmLog();
+    String getTodayFarmLog(String openId);
 
 }
 

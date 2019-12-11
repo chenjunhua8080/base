@@ -5,6 +5,7 @@
 
     <select id="selectFarmLogOnDay" resultType="com.cjh.douban.po.FarmLogPO">
         select t.* from farm_log t
-        where to_days(t.crete_time) = to_days(#{date})
+        where t.open_id = #{openId}
+        and to_days(t.crete_time) = to_days(#{date})
     </select>
 </mapper>

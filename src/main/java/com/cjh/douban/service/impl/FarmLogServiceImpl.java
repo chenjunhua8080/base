@@ -5,6 +5,7 @@ import com.cjh.douban.dao.FarmLogDao;
 import com.cjh.douban.po.FarmLogPO;
 import com.cjh.douban.service.FarmLogService;
 import java.util.Date;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,12 @@ public class FarmLogServiceImpl extends ServiceImpl<FarmLogDao, FarmLogPO> imple
     }
 
     @Override
-    public FarmLogPO getTodayFarmLog() {
-        return baseMapper.selectFarmLogOnDay(new Date());
+    public String getTodayFarmLog(String openId) {
+        StringBuilder sb = new StringBuilder();
+        List<FarmLogPO> logs = baseMapper.selectFarmLogOnDay(openId, new Date());
+        for (FarmLogPO farmLogPO : logs) {
+            sb.append(farmLogPO.getMessage()).append("\t");
+        }
+        return sb.toString();
     }
 }

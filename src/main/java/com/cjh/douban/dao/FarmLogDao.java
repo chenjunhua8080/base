@@ -3,6 +3,7 @@ package com.cjh.douban.dao;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cjh.douban.po.FarmLogPO;
 import java.util.Date;
+import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -19,5 +20,5 @@ public interface FarmLogDao extends BaseMapper<FarmLogPO> {
     /**
      * 查询日志，根据天
      */
-    FarmLogPO selectFarmLogOnDay(@Param("date") Date date);
+    List<FarmLogPO> selectFarmLogOnDay(@Param("openId") String openId, @Param("date") Date date);
 }

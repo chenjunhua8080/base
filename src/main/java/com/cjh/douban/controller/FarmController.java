@@ -1,9 +1,7 @@
 package com.cjh.douban.controller;
 
-import com.cjh.douban.po.FarmLogPO;
 import com.cjh.douban.service.FarmLogService;
 import com.cjh.douban.service.FarmService;
-import java.util.Date;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,8 +35,8 @@ public class FarmController {
 
 
     @GetMapping("/getTodayFarmLog")
-    public FarmLogPO getTodayFarmLog() {
-        return farmLogService.getTodayFarmLog();
+    public String getTodayFarmLog(String openId) {
+        return farmLogService.getTodayFarmLog(openId);
     }
 
 }
