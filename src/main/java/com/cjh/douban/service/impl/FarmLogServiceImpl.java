@@ -32,12 +32,7 @@ public class FarmLogServiceImpl extends ServiceImpl<FarmLogDao, FarmLogPO> imple
     }
 
     @Override
-    public String getTodayFarmLog(String openId) {
-        StringBuilder sb = new StringBuilder();
-        List<FarmLogPO> logs = baseMapper.selectFarmLogOnDay(openId, new Date());
-        for (FarmLogPO farmLogPO : logs) {
-            sb.append(farmLogPO.getMessage()).append("\t");
-        }
-        return sb.toString();
+    public List<FarmLogPO> getTodayFarmLog(String openId) {
+        return baseMapper.selectFarmLogOnDay(openId, new Date());
     }
 }

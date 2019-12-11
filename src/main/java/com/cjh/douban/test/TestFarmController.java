@@ -1,5 +1,6 @@
 package com.cjh.douban.test;
 
+import com.alibaba.fastjson.JSONObject;
 import com.cjh.douban.service.FarmLogService;
 import com.cjh.douban.service.FarmService;
 import java.util.regex.Matcher;
@@ -67,6 +68,14 @@ public class TestFarmController {
     @Test
     public void getTodayFarmLog() {
         System.out.println(farmLogService.getTodayFarmLog("oA1P50NL6OdsFy2lrwp0tN1tw7Ow"));
+    }
+
+    @Test
+    public void testjson(){
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("orderCode","12321321321");
+        String s = JSONObject.toJSONString(jsonObject);
+        System.out.println(s);
     }
 
 }
