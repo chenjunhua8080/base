@@ -59,7 +59,7 @@ public class FarmService {
             result = String.format("#### 签到成功, 获得水滴: %s ####", farmResp.getAmount());
             log.info(result);
         } else {
-            result = String.format("#### 签到失败: %s ####", farmResp.getMessage());
+            result = String.format("#### 签到失败, code: %s ####", farmResp.getCode());
             log.error(result);
         }
         farmLogService.addLog(getOpenId(cookie), result, resp);
@@ -77,7 +77,7 @@ public class FarmService {
             result = String.format("#### 浇水成功, 可用水滴: %s ####", farmResp.getTotalEnergy());
             log.info(result);
         } else {
-            result = String.format("#### 浇水失败: %s ####", farmResp.getMessage());
+            result = String.format("#### 浇水失败, code: %s ####", farmResp.getCode());
             log.error(result);
         }
         farmLogService.addLog(getOpenId(cookie), result, resp);
@@ -95,7 +95,7 @@ public class FarmService {
             result = String.format("#### 领取首浇, 获得水滴: %s ####", farmResp.getAmount());
             log.info(result);
         } else {
-            result = String.format("#### 领取首浇失败: %s ####", farmResp.getMessage());
+            result = String.format("#### 领取首浇失败, code: %s ####", farmResp.getCode());
             log.error(result);
         }
         farmLogService.addLog(getOpenId(cookie), result, resp);
@@ -113,7 +113,7 @@ public class FarmService {
             result = String.format("#### 定时领取, 获得水滴: %s ####", farmResp.getAmount());
             log.info(result);
         } else {
-            result = String.format("#### 定时领取失败: %s ####", farmResp.getMessage());
+            result = String.format("#### 定时领取失败, code: %s ####", farmResp.getCode());
             log.error(result);
         }
         farmLogService.addLog(getOpenId(cookie), result, resp);
