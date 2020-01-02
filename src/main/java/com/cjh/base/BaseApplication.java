@@ -6,10 +6,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 //加了第一次无法注册进去
 //@EnableDiscoveryClient
-public class DoubanApplication {
+public class BaseApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(DoubanApplication.class, args);
+        SpringApplication.run(BaseApplication.class, args);
     }
 
 }
