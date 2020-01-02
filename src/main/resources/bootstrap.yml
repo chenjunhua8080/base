@@ -2,7 +2,7 @@ server:
   port: 8056
 spring:
   application:
-    name: base
+    name: common
   #默认环境dev
   profiles:
     active: dev
