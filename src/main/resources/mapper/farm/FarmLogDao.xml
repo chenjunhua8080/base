@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.cjh.base.dao.FarmLogDao">
+<mapper namespace="com.cjh.common.dao.FarmLogDao">
 
-    <select id="selectFarmLogOnDay" resultType="com.cjh.base.po.FarmLogPO">
+    <select id="selectFarmLogOnDay" resultType="com.cjh.common.po.FarmLogPO">
         select t.* from farm_log t
         where t.open_id = #{openId}
         and to_days(t.crete_time) = to_days(#{date})

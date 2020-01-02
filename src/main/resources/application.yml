@@ -17,6 +17,6 @@ mybatis-plus:
   #xml位置
   mapper-locations: classpath*:mapper/**/*.xml
   #po位置
-  type-aliases-package: com.cjh.base.po
+  type-aliases-package: com.cjh.common.po
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
