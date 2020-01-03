@@ -2,8 +2,6 @@ package com.cjh.common.api;
 
 import com.cjh.common.po.AvatarPO;
 import com.cjh.common.util.HttpUtil;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,9 +30,13 @@ public class AvatarApi {
     /**
      * 最新头像 - 列表
      */
-    public List<AvatarPO> getAvatarByNew() {
+    public List<AvatarPO> getAvatarByNew(Integer pageNum) {
         List<AvatarPO> list = new ArrayList<>();
-        String resp = HttpUtil.doGet(url_avatar_new);
+        String url = this.url_avatar_new;
+        if (pageNum != null && pageNum > 1) {
+            url += String.format("index_%s.html", pageNum);
+        }
+        String resp = HttpUtil.doGet(url);
         Document document = Jsoup.parse(resp);
         Elements domByClass = document.getElementsByClass("m-pic-list");
         Element imgTag;
@@ -72,17 +74,11 @@ public class AvatarApi {
      * 最新头像 - 单个
      */
     public AvatarPO getAvatar() {
-        List<AvatarPO> list = getAvatarByNew();
+        List<AvatarPO> list = getAvatarByNew(null);
         if (list.isEmpty()) {
             return null;
         }
         return list.get((int) (Math.random() * list.size()));
     }
 
-    public static void main(String[] args) throws UnsupportedEncodingException {
-        String href = "ç¨æ·æå¡åè®®";
-        String decode = URLDecoder.decode(href, "iso8859-1");
-        String decode1 = URLDecoder.decode(decode, "utf-8");
-        log.info("{} - {} - {}", href, decode, decode1);
-    }
 }

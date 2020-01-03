@@ -17,7 +17,7 @@ class AvatarApiTest {
 
     @Test
     void getAvatarByNew() {
-        log.info(String.valueOf(avatarApi.getAvatarByNew()));
+        log.info(String.valueOf(avatarApi.getAvatarByNew(2)));
     }
 
     @Test
