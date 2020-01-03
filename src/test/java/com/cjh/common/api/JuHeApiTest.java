@@ -1,6 +1,5 @@
-package com.cjh.common.test;
+package com.cjh.common.api;
 
-import com.cjh.common.api.JuHeApi;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
