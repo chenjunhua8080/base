@@ -1,8 +1,8 @@
 package com.cjh.common.controller;
 
 import com.cjh.common.api.FarmApi;
-import com.cjh.common.po.FarmLogPO;
-import com.cjh.common.service.FarmLogService;
+import com.cjh.common.entity.ReqLog;
+import com.cjh.common.service.ReqLogService;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class FarmController {
 
     private FarmApi farmApi;
-    private FarmLogService farmLogService;
+    private ReqLogService reqLogService;
 
     @GetMapping("/signForFarm")
     public String signForFarm() {
@@ -37,8 +37,8 @@ public class FarmController {
 
 
     @GetMapping("/getTodayFarmLog")
-    public List<FarmLogPO> getTodayFarmLog(String openId) {
-        return farmLogService.getTodayFarmLog(openId);
+    public List<ReqLog> getTodayFarmLog(String userId) {
+        return reqLogService.getTodayReqLog(userId);
     }
 
 }

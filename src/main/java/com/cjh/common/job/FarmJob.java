@@ -1,7 +1,6 @@
 package com.cjh.common.job;
 
 import com.cjh.common.api.FarmApi;
-import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -9,6 +8,12 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+/**
+ * 农场定时任务
+ *
+ * @author cjh
+ * @date 2020/4/3
+ */
 @RefreshScope
 @Component
 @EnableScheduling
@@ -19,11 +24,6 @@ public class FarmJob {
 
     @Value("${farm.enable}")
     private Boolean enable;
-
-    @Scheduled(cron = "${farm.job.test}")
-    public void test() {
-        System.out.println("test job: " + new Date());
-    }
 
     @Scheduled(cron = "${farm.job.gotThreeMealForFarm}")
     public void gotThreeMealForFarm() {
