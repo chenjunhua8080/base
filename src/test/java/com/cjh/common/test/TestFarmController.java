@@ -1,8 +1,8 @@
 package com.cjh.common.test;
 
 import com.alibaba.fastjson.JSONObject;
-import com.cjh.common.service.FarmLogService;
 import com.cjh.common.api.FarmApi;
+import com.cjh.common.service.ReqLogService;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.junit.Test;
@@ -31,7 +31,7 @@ public class TestFarmController {
     @Autowired
     private FarmApi farmApi;
     @Autowired
-    private FarmLogService farmLogService;
+    private ReqLogService farmLogService;
 
     @Test
     public void gotThreeMealForFarm() {
@@ -67,7 +67,7 @@ public class TestFarmController {
 
     @Test
     public void getTodayFarmLog() {
-        System.out.println(farmLogService.getTodayFarmLog("oA1P50NL6OdsFy2lrwp0tN1tw7Ow"));
+        System.out.println(farmLogService.getTodayReqLog("oA1P50NL6OdsFy2lrwp0tN1tw7Ow"));
     }
 
     @Test

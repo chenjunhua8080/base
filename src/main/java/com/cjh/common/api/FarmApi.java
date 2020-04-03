@@ -2,26 +2,21 @@ package com.cjh.common.api;
 
 import com.alibaba.fastjson.JSONObject;
 import com.cjh.common.resp.FarmResp;
-import com.cjh.common.service.FarmLogService;
+import com.cjh.common.service.ReqLogService;
 import com.cjh.common.util.HttpUtil;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 
-@RefreshScope
+@AllArgsConstructor
 @Component
 @Slf4j
 public class FarmApi {
 
-    @Autowired
-    private FarmLogService farmLogService;
-
-    @Value("${farm.cookie}")
-    private String cookie;
+    private ReqLogService reqLogService;
+    private ApiConfig apiConfig;
 
     /**
      * @name 签到
@@ -53,6 +48,7 @@ public class FarmApi {
      * 签到
      */
     public String signForFarm() {
+        String cookie = apiConfig.getFarmConfig().getCookie();
         String resp = HttpUtil.doGet(url_signForFarm, cookie);
         FarmResp farmResp = JSONObject.parseObject(resp, FarmResp.class);
         String result;
@@ -63,7 +59,7 @@ public class FarmApi {
             result = String.format("#### 签到失败, code: %s ####", farmResp.getCode());
             log.error(result);
         }
-        farmLogService.addLog(getOpenId(cookie), result, resp);
+        reqLogService.addLog(getOpenId(cookie), result, resp);
         return result;
     }
 
@@ -71,6 +67,7 @@ public class FarmApi {
      * 浇水
      */
     public String waterGoodForFarm() {
+        String cookie = apiConfig.getFarmConfig().getCookie();
         String resp = HttpUtil.doGet(url_waterGoodForFarm, cookie);
         FarmResp farmResp = JSONObject.parseObject(resp, FarmResp.class);
         String result;
@@ -81,7 +78,7 @@ public class FarmApi {
             result = String.format("#### 浇水失败, code: %s ####", farmResp.getCode());
             log.error(result);
         }
-        farmLogService.addLog(getOpenId(cookie), result, resp);
+        reqLogService.addLog(getOpenId(cookie), result, resp);
         return result;
     }
 
@@ -89,6 +86,7 @@ public class FarmApi {
      * 领取首浇
      */
     public String firstWaterTaskForFarm() {
+        String cookie = apiConfig.getFarmConfig().getCookie();
         String resp = HttpUtil.doGet(url_firstWaterTaskForFarm, cookie);
         FarmResp farmResp = JSONObject.parseObject(resp, FarmResp.class);
         String result;
@@ -99,7 +97,7 @@ public class FarmApi {
             result = String.format("#### 领取首浇失败, code: %s ####", farmResp.getCode());
             log.error(result);
         }
-        farmLogService.addLog(getOpenId(cookie), result, resp);
+        reqLogService.addLog(getOpenId(cookie), result, resp);
         return result;
     }
 
@@ -107,6 +105,7 @@ public class FarmApi {
      * 定时领取
      */
     public String gotThreeMealForFarm() {
+        String cookie = apiConfig.getFarmConfig().getCookie();
         String resp = HttpUtil.doGet(url_gotThreeMealForFarm, cookie);
         FarmResp farmResp = JSONObject.parseObject(resp, FarmResp.class);
         String result;
@@ -117,7 +116,7 @@ public class FarmApi {
             result = String.format("#### 定时领取失败, code: %s ####", farmResp.getCode());
             log.error(result);
         }
-        farmLogService.addLog(getOpenId(cookie), result, resp);
+        reqLogService.addLog(getOpenId(cookie), result, resp);
         return result;
     }
 
