@@ -37,8 +37,8 @@ public class FarmController {
 
 
     @GetMapping("/getTodayFarmLog")
-    public List<ReqLog> getTodayFarmLog(String userId) {
-        return reqLogService.getTodayReqLog(userId);
+    public List<ReqLog> getTodayFarmLog(String openId) {
+        return reqLogService.getTodayReqLog(openId);
     }
 
 }
