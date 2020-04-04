@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class TestJob {
 
-    @Scheduled(cron = "${test.job.test}")
+    @Scheduled(cron = "${job.test.test}")
     public void test() {
         log.info("[----- test job ----]");
     }
