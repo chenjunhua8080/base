@@ -78,16 +78,20 @@ public class HttpUtil {
         if (httpEntity == null) {
             httpEntity = new HttpEntity(null);
         }
-        log.info("url - {}", url);
-        log.info("headers - {}", httpEntity.getHeaders());
-        log.info("params - {}", httpEntity.getBody());
-        log.info("method - {}", method);
+        log.debug("url - {}", url);
+        log.debug("headers - {}", httpEntity.getHeaders());
+        log.debug("params - {}", httpEntity.getBody());
+        log.debug("method - {}", method);
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> responseEntity = restTemplate.exchange(url, method, httpEntity, String.class);
-        log.info("respCode - {}", responseEntity.getStatusCode());
-        log.info("respHeaders - {}", responseEntity.getHeaders());
-        log.info("respBody - {}", responseEntity.getBody());
-        T t = null;
+        log.debug("respCode - {}", responseEntity.getStatusCode());
+        log.debug("respHeaders - {}", responseEntity.getHeaders());
+        String body = responseEntity.getBody();
+        if (body == null) {
+            return null;
+        }
+        log.debug("respBody - {}", body.length() >= 200 ? body.substring(200) : body);
+        T t;
         if (clazz == String.class) {
             t = clazz.cast(responseEntity.getBody());
         } else {
