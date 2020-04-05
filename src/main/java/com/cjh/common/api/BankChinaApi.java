@@ -60,7 +60,7 @@ public class BankChinaApi {
             result = "#### 豆豆数获取失败 ####";
             log.error(result);
         }
-        reqLogService.addLog(bankChinaConfig.getUserId(), result, resp);
+        reqLogService.addLog(bankChinaConfig.getUserId(), result, null);
     }
 
     /**
