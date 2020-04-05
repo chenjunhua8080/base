@@ -90,12 +90,12 @@ public class HttpUtil {
         if (body == null) {
             return null;
         }
-        log.debug("respBody - {}", body.length() >= 200 ? body.substring(200) : body);
+        log.debug("respBody - {}", body.contains("<html>") || body.contains("<dev>") ? body.length() : body);
         T t;
         if (clazz == String.class) {
-            t = clazz.cast(responseEntity.getBody());
+            t = clazz.cast(body);
         } else {
-            t = clazz.cast(responseEntity);
+            t = JsonUtil.json2java(body, clazz);
         }
         return t;
     }
