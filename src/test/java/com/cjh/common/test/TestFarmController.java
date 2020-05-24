@@ -22,35 +22,42 @@ public class TestFarmController {
 
     @Value("${douban.user.name}")
     private String username;
-
-    @Test
-    public void getUser() {
-        System.out.println(username);
-    }
-
     @Autowired
     private FarmApi farmApi;
     @Autowired
     private ReqLogService farmLogService;
 
     @Test
+    public void getUser() {
+        System.out.println(username);
+    }
+
+    @Test
     public void gotThreeMealForFarm() {
-        farmApi.gotThreeMealForFarm();
+        String openId = "";
+        String cookie = "";
+        farmApi.gotThreeMealForFarm(openId, cookie);
     }
 
     @Test
     public void signForFarm() {
-        farmApi.signForFarm();
+        String openId = "";
+        String cookie = "";
+        farmApi.signForFarm(openId, cookie);
     }
 
     @Test
     public void waterGoodForFarm() {
-        farmApi.waterGoodForFarm();
+        String openId = "";
+        String cookie = "";
+        farmApi.waterGoodForFarm(openId, cookie);
     }
 
     @Test
     public void firstWaterTaskForFarm() {
-        farmApi.firstWaterTaskForFarm();
+        String openId = "";
+        String cookie = "";
+        farmApi.firstWaterTaskForFarm(openId, cookie);
     }
 
     @Test
@@ -71,9 +78,9 @@ public class TestFarmController {
     }
 
     @Test
-    public void testjson(){
+    public void testjson() {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("orderCode","12321321321");
+        jsonObject.put("orderCode", "12321321321");
         String s = JSONObject.toJSONString(jsonObject);
         System.out.println(s);
     }

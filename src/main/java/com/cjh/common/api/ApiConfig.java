@@ -17,22 +17,33 @@ import org.springframework.stereotype.Component;
 @Data
 public class ApiConfig {
 
+    private TestConfig testConfig;
     private FarmConfig farmConfig;
+    private CakeConfig cakeConfig;
     private BankChinaConfig bankChinaConfig;
+
+    @Data
+    public static class TestConfig {
+
+        private Boolean working;
+    }
 
     @Data
     public static class FarmConfig {
 
-        private String cookie;
+        private Boolean working;
+    }
+
+    @Data
+    public static class CakeConfig {
+
+        private Boolean working;
     }
 
     @Data
     public static class BankChinaConfig {
 
-        private String cookie;
-        private String userId;
-        private String token;
-        private String taskId;
+        private Boolean working;
     }
 
 

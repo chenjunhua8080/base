@@ -28,4 +28,7 @@ public interface ReqLogDao extends BaseMapper<ReqLog> {
      * 查询日志，根据天
      */
     List<ReqLog> selectOnDay(@Param("userId") String userId, @Param("date") Date date);
+
+    List<ReqLog> getByPlatformTypeAndUser(
+        @Param("platformType") int platformType, @Param("openId") String openId, @Param("date") Date date);
 }

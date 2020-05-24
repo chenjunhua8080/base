@@ -2,6 +2,7 @@ package com.cjh.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cjh.common.entity.ReqLog;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -23,11 +24,19 @@ public interface ReqLogService extends IService<ReqLog> {
     /**
      * 添加日志
      */
-    void addLog(String userId, String message, String resp);
+    void addLog(Integer platformType, String userId, String message, String resp);
 
     /**
      * 查询今天日志
      */
     List<ReqLog> getTodayReqLog(String userId);
 
+    /**
+     * 查询一个
+     *
+     * @param platformType 平台类型
+     * @param openId       用户id
+     * @param date         时间
+     */
+    List<ReqLog> getByPlatformTypeAndUser(int platformType, String openId, Date date);
 }

@@ -1,11 +1,10 @@
 package com.cjh.common.api;
 
 import com.alibaba.fastjson.JSONObject;
+import com.cjh.common.enums.PlatformEnum;
 import com.cjh.common.resp.FarmResp;
 import com.cjh.common.service.ReqLogService;
 import com.cjh.common.util.HttpUtil;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -14,9 +13,6 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class FarmApi {
-
-    private ReqLogService reqLogService;
-    private ApiConfig apiConfig;
 
     /**
      * @name 签到
@@ -43,12 +39,12 @@ public class FarmApi {
      * @result {"amount":10,"code":"0","todayGotWaterGoalTask":{"canPop":false},"statisticsTimes":null,"sysTime":1575624600601,"message":null}
      */
     private final String url_firstWaterTaskForFarm = "https://api.m.jd.com/client.action?functionId=firstWaterTaskForFarm&body=%7B%22version%22%3A2%2C%22channel%22%3A1%7D&appid=wh5&loginType=1&loginWQBiz=ddnc";
+    private ReqLogService reqLogService;
 
     /**
      * 签到
      */
-    public String signForFarm() {
-        String cookie = apiConfig.getFarmConfig().getCookie();
+    public String signForFarm(String openId, String cookie) {
         String resp = HttpUtil.doGet(url_signForFarm, cookie);
         FarmResp farmResp = JSONObject.parseObject(resp, FarmResp.class);
         String result;
@@ -59,15 +55,14 @@ public class FarmApi {
             result = String.format("#### 签到失败, code: %s ####", farmResp.getCode());
             log.error(result);
         }
-        reqLogService.addLog(getOpenId(cookie), result, resp);
+        reqLogService.addLog(PlatformEnum.JD_FARM.getCode(), openId, result, resp);
         return result;
     }
 
     /**
      * 浇水
      */
-    public String waterGoodForFarm() {
-        String cookie = apiConfig.getFarmConfig().getCookie();
+    public String waterGoodForFarm(String openId, String cookie) {
         String resp = HttpUtil.doGet(url_waterGoodForFarm, cookie);
         FarmResp farmResp = JSONObject.parseObject(resp, FarmResp.class);
         String result;
@@ -78,15 +73,14 @@ public class FarmApi {
             result = String.format("#### 浇水失败, code: %s ####", farmResp.getCode());
             log.error(result);
         }
-        reqLogService.addLog(getOpenId(cookie), result, resp);
+        reqLogService.addLog(PlatformEnum.JD_FARM.getCode(), openId, result, resp);
         return result;
     }
 
     /**
      * 领取首浇
      */
-    public String firstWaterTaskForFarm() {
-        String cookie = apiConfig.getFarmConfig().getCookie();
+    public String firstWaterTaskForFarm(String openId, String cookie) {
         String resp = HttpUtil.doGet(url_firstWaterTaskForFarm, cookie);
         FarmResp farmResp = JSONObject.parseObject(resp, FarmResp.class);
         String result;
@@ -97,15 +91,14 @@ public class FarmApi {
             result = String.format("#### 领取首浇失败, code: %s ####", farmResp.getCode());
             log.error(result);
         }
-        reqLogService.addLog(getOpenId(cookie), result, resp);
+        reqLogService.addLog(PlatformEnum.JD_FARM.getCode(), openId, result, resp);
         return result;
     }
 
     /**
      * 定时领取
      */
-    public String gotThreeMealForFarm() {
-        String cookie = apiConfig.getFarmConfig().getCookie();
+    public String gotThreeMealForFarm(String openId, String cookie) {
         String resp = HttpUtil.doGet(url_gotThreeMealForFarm, cookie);
         FarmResp farmResp = JSONObject.parseObject(resp, FarmResp.class);
         String result;
@@ -116,21 +109,7 @@ public class FarmApi {
             result = String.format("#### 定时领取失败, code: %s ####", farmResp.getCode());
             log.error(result);
         }
-        reqLogService.addLog(getOpenId(cookie), result, resp);
+        reqLogService.addLog(PlatformEnum.JD_FARM.getCode(), openId, result, resp);
         return result;
-    }
-
-    /**
-     * cookie匹配openId
-     */
-    private String getOpenId(String cookie) {
-        Pattern pattern = Pattern.compile("wxapp_openid=(.*?);");
-        Matcher matcher = pattern.matcher(cookie);
-        if (matcher.find()) {
-            return matcher.group(1);
-        } else {
-            log.error("cookie中为匹配到wxapp_openid...");
-        }
-        return null;
     }
 }
