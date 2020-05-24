@@ -33,7 +33,7 @@ public class ReqLogServiceImpl extends ServiceImpl<ReqLogDao, ReqLog> implements
     }
 
     @Override
-    public void addLog(String userId, String message, String resp) {
+    public void addLog(Integer platformType, String userId, String message, String resp) {
         ReqLog entity = new ReqLog();
         entity.setUserId(userId);
         entity.setMessage(message);
@@ -44,5 +44,10 @@ public class ReqLogServiceImpl extends ServiceImpl<ReqLogDao, ReqLog> implements
     @Override
     public List<ReqLog> getTodayReqLog(String userId) {
         return baseMapper.selectOnDay(userId, new Date());
+    }
+
+    @Override
+    public List<ReqLog> getByPlatformTypeAndUser(int platformType, String openId, Date date) {
+        return baseMapper.getByPlatformTypeAndUser(platformType, openId, date);
     }
 }

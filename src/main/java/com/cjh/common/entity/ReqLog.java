@@ -32,4 +32,9 @@ public class ReqLog implements Serializable {
     private String resp;
     private Date creteTime;
 
+    /**
+     * 绑定平台类型
+     */
+    private Integer platformType;
+
 }

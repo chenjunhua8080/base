@@ -16,4 +16,14 @@
       and t.user_id = #{userId}
   </select>
 
+  <select id="getByPlatformTypeAndUser" resultType="com.cjh.common.entity.ReqLog">
+    select t.*
+    from req_log t
+    where t.user_id = #{userId}
+      and t.platform_type = #{platformType}
+      <if test="date!=null">
+        timestampdiff(day, t.crete_time, #{date}) = 0
+      </if>
+  </select>
+
 </mapper>
