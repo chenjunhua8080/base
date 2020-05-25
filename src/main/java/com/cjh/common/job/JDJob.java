@@ -37,16 +37,20 @@ public class JDJob {
     public void collectScore() {
         if (apiConfig.getCakeConfig().getWorking()) {
             List<UserPO> users = userDao.selectList(null);
-            log.info("#### 定时任务[京东 - 叠蛋糕 - 收集金币] 开始: {} ####", DateUtil.format(new Date()));
-            log.info("#### 统计: {} ####", users.size());
+//            log.info("#### 定时任务[京东 - 叠蛋糕 - 收集金币] 开始: {} ####", DateUtil.format(new Date()));
+//            log.info("#### 统计: {} ####", users.size());
             BindFarmPO bindFarmPO;
             for (UserPO user : users) {
                 bindFarmPO = bindFarmDao.selectByOpenId(user.getOpenId(), PlatformEnum.JD_CAKE.getCode());
                 if (bindFarmPO != null) {
-                    jdApi.collectScore(user.getOpenId(), bindFarmPO.getCookie());
+                    try {
+                        jdApi.collectScore(user.getOpenId(), bindFarmPO.getCookie());
+                    } catch (Exception e) {
+                        log.info("#### 定时任务[京东 - 叠蛋糕 - 收集金币] 异常:  ####", e);
+                    }
                 }
             }
-            log.info("#### 定时任务[京东 - 叠蛋糕 - 收集金币] 结束: {} ####", DateUtil.format(new Date()));
+//            log.info("#### 定时任务[京东 - 叠蛋糕 - 收集金币] 结束: {} ####", DateUtil.format(new Date()));
         }
     }
 
