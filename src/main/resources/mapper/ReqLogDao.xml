@@ -19,7 +19,7 @@
   <select id="getByPlatformTypeAndUser" resultType="com.cjh.common.entity.ReqLog">
     select t.*
     from req_log t
-    where t.user_id = #{userId}
+    where t.user_id = #{openId}
       and t.platform_type = #{platformType}
       <if test="date!=null">
         timestampdiff(day, t.crete_time, #{date}) = 0
