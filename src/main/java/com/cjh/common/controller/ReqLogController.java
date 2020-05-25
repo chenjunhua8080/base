@@ -8,6 +8,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cjh.common.entity.ReqLog;
 import com.cjh.common.service.ReqLogService;
 import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,10 +34,18 @@ public class ReqLogController {
 
     private ReqLogService reqLogService;
 
+    @GetMapping("/list")
+    public List<ReqLog> getReqLog(
+        @RequestParam("openId") String openId,
+        @RequestParam("platformType") Integer platformType,
+        @RequestParam("date") Date date) {
+        return reqLogService.getByPlatformTypeAndUser(platformType, openId, date);
+    }
+
     /**
      * 分页查询所有数据
      *
-     * @param page 分页对象
+     * @param page   分页对象
      * @param reqLog 查询实体
      * @return 所有数据
      */
