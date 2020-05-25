@@ -38,7 +38,7 @@ public class ReqLogController {
     public List<ReqLog> getReqLog(
         @RequestParam("openId") String openId,
         @RequestParam("platformType") Integer platformType,
-        @RequestParam("date") Date date) {
+        @RequestParam(name = "date", required = false) Date date) {
         return reqLogService.getByPlatformTypeAndUser(platformType, openId, date);
     }
 

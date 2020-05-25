@@ -27,7 +27,8 @@ public class JDController {
     }
 
     @GetMapping("/countCollectScore")
-    public String countCollectScore(@RequestParam("openId") String openId, @RequestParam("date") Date date) {
+    public String countCollectScore(@RequestParam("openId") String openId,
+        @RequestParam(name = "date", required = false) Date date) {
         BindFarmPO bindFarmPO = bindFarmDao.selectByOpenId(openId, PlatformEnum.JD_CAKE.getCode());
         if (bindFarmPO == null) {
             return "未绑定";
