@@ -1,5 +1,6 @@
 package com.cjh.common.api;
 
+import com.cjh.common.enums.PlatformEnum;
 import com.cjh.common.resp.BankChinaResp;
 import com.cjh.common.resp.BankChinaResp.MsgBean;
 import com.cjh.common.service.ReqLogService;
@@ -90,7 +91,7 @@ public class BankChinaApi {
             log.error(result);
         }
         if (addLog) {
-            reqLogService.addLog(2, openId, result, null);
+            reqLogService.addLog(PlatformEnum.BANK_CHINA.getCode(), openId, result, null);
         }
         return result;
     }
@@ -116,7 +117,7 @@ public class BankChinaApi {
             result = String.format("#### 签到失败, code: %s, msg: %S ####", resp.getStatus(), resp.getMsg());
             log.error(result);
         }
-        reqLogService.addLog(2, openId, result, resp.toString());
+        reqLogService.addLog(PlatformEnum.BANK_CHINA.getCode(), openId, result, resp.toString());
     }
 
 
