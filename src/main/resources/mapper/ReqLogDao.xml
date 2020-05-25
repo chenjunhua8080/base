@@ -22,7 +22,7 @@
     where t.user_id = #{openId}
       and t.platform_type = #{platformType}
       <if test="date!=null">
-        timestampdiff(day, t.crete_time, #{date}) = 0
+        and timestampdiff(day, t.crete_time, #{date}) = 0
       </if>
   </select>
 
