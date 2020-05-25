@@ -36,6 +36,7 @@ public class ReqLogServiceImpl extends ServiceImpl<ReqLogDao, ReqLog> implements
     public void addLog(Integer platformType, String userId, String message, String resp) {
         ReqLog entity = new ReqLog();
         entity.setUserId(userId);
+        entity.setPlatformType(platformType);
         entity.setMessage(message);
         entity.setResp(resp);
         baseMapper.insert(entity);
