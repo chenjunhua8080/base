@@ -20,7 +20,7 @@
 
   <select id="selectByOpenId" resultType="com.cjh.common.po.BindFarmPO">
     select t.* from bind_farm t
-    left join user u on o.id =t.user_id
+    left join user u on u.id =t.user_id
         where u.open_id = #{openId}
         and t.platform_type = #{platformType}
   </select>
