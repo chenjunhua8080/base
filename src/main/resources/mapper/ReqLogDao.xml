@@ -12,7 +12,7 @@
   <select id="selectOnDay" resultType="com.cjh.common.entity.ReqLog">
     select t.*
     from req_log t
-    where timestampdiff(day, t.crete_time, #{date}) = 0
+    where to_days(t.crete_time) = to_days(#{date})
       and t.user_id = #{userId}
   </select>
 
@@ -22,7 +22,7 @@
     where t.user_id = #{openId}
       and t.platform_type = #{platformType}
       <if test="date!=null">
-        and timestampdiff(day, t.crete_time, #{date}) = 0
+        and to_days(t.crete_time) = to_days(#{date})
       </if>
   </select>
 
