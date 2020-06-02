@@ -21,6 +21,7 @@ public class ApiConfig {
     private FarmConfig farmConfig;
     private CakeConfig cakeConfig;
     private BankChinaConfig bankChinaConfig;
+    private PetsConfig petsConfig;
 
     @Data
     public static class TestConfig {
@@ -46,5 +47,10 @@ public class ApiConfig {
         private Boolean working;
     }
 
+    @Data
+    public static class PetsConfig {
+
+        private Boolean working;
+    }
 
 }

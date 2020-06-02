@@ -5,10 +5,17 @@ import com.cjh.common.entity.ReqLog;
 import com.cjh.common.enums.PlatformEnum;
 import com.cjh.common.feign.CloudFeignClient;
 import com.cjh.common.resp.CollectCakeResp;
+import com.cjh.common.resp.DogEnergyCollectResp;
+import com.cjh.common.resp.DogFeedPetsResp;
+import com.cjh.common.resp.DogFeedPetsResp.ResultBean.PetPlaceInfoListBean;
+import com.cjh.common.resp.DogSignResp;
+import com.cjh.common.resp.DogSingleShopResp;
+import com.cjh.common.resp.DogThreeMealResp;
 import com.cjh.common.resp.HomeDataResp;
 import com.cjh.common.resp.HomeDataResp.DataBean.ResultBean.CakeBakerInfoBean.RaiseInfoBean;
 import com.cjh.common.service.ReqLogService;
 import com.cjh.common.util.HttpUtil;
+import com.cjh.common.util.JsonUtil;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -131,36 +138,9 @@ public class JDApi {
     }
 
     /**
-     * 收集金币
-     *
-     * @param cookie 拼接cookie
+     * 签到
      */
-    public String collectScore(String openId, String cookie) {
-//        String cookie = apiConfig.getCakeConfig().getCookie();
-        HashMap<String, Object> headers = new HashMap<>();
-        String[] parseCookie = parseCookie(cookie);
-        headers.put("cookie", parseCookie[0]);
-        headers.put("User-Agent",
-            "jdapp;android;8.5.12;10;867092042012392-5885e9fcd3c1;network/wifi;model/RMX1991;addressid/2082865096;aid/637bd8ae1589f566;oaid/;osVer/29;appBuild/73078;psn/867092042012392-5885e9fcd3c1|66;psq/6;uid/867092042012392-5885e9fcd3c1;adk/;ads/;pap/JA2015_311210|8.5.12|ANDROID 10;osv/10;pv/68.7;jdv/0|kong|t_35460321_|tuiguang|72fc343003794a5d81c8fd5927c51d4e|1587882752;ref/com.jingdong.app.mall.home.JDHomeFragment;partner/oppo;apprpd/Home_Main;Mozilla/5.0 (Linux; Android 10; RMX1991 Build/QKQ1.191201.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/66.0.3359.126 MQQBrowser/6.2 TBS/045136 Mobile Safari/537.36");
-        HashMap<String, Object> params = new HashMap<>();
-        params.put("functionId", "cakebaker_ckCollectScore");
-        params.put("body", parseCookie[1]);
-        params.put("client", "wh5");
-        params.put("clientVersion", "1.0.0");
-        String resp = HttpUtil.doPost(url_cakebaker_ckCollectScore, headers, params, String.class);
-        CollectCakeResp respObj = JSONObject.parseObject(resp, CollectCakeResp.class);
-        String result;
-        if (respObj.getCode() == 0 && respObj.getData().getBizCode() == 0) {
-            result = String.format("#### 收集金币成功, 数量: [%s] ####", respObj.getData().getResult().getScore());
-            log.info(result);
-        } else {
-            result = String.format("#### 收集金币失败, code: %s ####", respObj.getCode());
-            log.error(result);
-            cloudFeignClient.pushErrorMsg(openId, resp);
-        }
-        reqLogService.addLog(PlatformEnum.JD_CAKE.getCode(), openId, result, resp);
-        return result;
-    }
+    private final String dog_url_getSignReward = "https://api.m.jd.com/client.action?functionId=getSignReward&appid=wh5&loginType=1&loginWQBiz=pet-town";
 
     /**
      * 我的金币
@@ -217,5 +197,205 @@ public class JDApi {
         result += "\n";
         result += String.format("#### 总计领取  : %s ####", count);
         return result;
+    }
+
+    //################################### 宠物 ###########################################
+    /**
+     * 喂食
+     */
+    private final String dog_url_feedPets = "https://api.m.jd.com/client.action?functionId=feedPets&appid=wh5&loginType=1&loginWQBiz=pet-town";
+    /**
+     * 收集
+     */
+    private final String dog_url_energyCollect = "https://api.m.jd.com/client.action?functionId=energyCollect&appid=wh5&loginType=1&loginWQBiz=pet-town&body=%7B%22place%22%3AINDEX%7D";
+    /**
+     * 三餐
+     */
+    private final String dog_url_getThreeMealReward = "https://api.m.jd.com/client.action?functionId=getThreeMealReward&appid=wh5&loginType=1&loginWQBiz=pet-town";
+    /**
+     * 浏览
+     */
+    private final String dog_url_getSingleShopReward = "https://api.m.jd.com/client.action?functionId=getSingleShopReward&appid=wh5&loginType=1&loginWQBiz=pet-town";
+
+    /**
+     * 收集金币
+     *
+     * @param cookie 拼接cookie
+     */
+    public void collectScore(String openId, String cookie) {
+//        String cookie = apiConfig.getCakeConfig().getCookie();
+        HashMap<String, Object> headers = new HashMap<>();
+        String[] parseCookie = parseCookie(cookie);
+        headers.put("cookie", parseCookie[0]);
+        headers.put("User-Agent",
+            "jdapp;android;8.5.12;10;867092042012392-5885e9fcd3c1;network/wifi;model/RMX1991;addressid/2082865096;aid/637bd8ae1589f566;oaid/;osVer/29;appBuild/73078;psn/867092042012392-5885e9fcd3c1|66;psq/6;uid/867092042012392-5885e9fcd3c1;adk/;ads/;pap/JA2015_311210|8.5.12|ANDROID 10;osv/10;pv/68.7;jdv/0|kong|t_35460321_|tuiguang|72fc343003794a5d81c8fd5927c51d4e|1587882752;ref/com.jingdong.app.mall.home.JDHomeFragment;partner/oppo;apprpd/Home_Main;Mozilla/5.0 (Linux; Android 10; RMX1991 Build/QKQ1.191201.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/66.0.3359.126 MQQBrowser/6.2 TBS/045136 Mobile Safari/537.36");
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("functionId", "cakebaker_ckCollectScore");
+        params.put("body", parseCookie[1]);
+        params.put("client", "wh5");
+        params.put("clientVersion", "1.0.0");
+        String resp = HttpUtil.doPost(url_cakebaker_ckCollectScore, headers, params, String.class);
+        CollectCakeResp respObj = JSONObject.parseObject(resp, CollectCakeResp.class);
+        String result;
+        if (respObj.getCode() == 0 && respObj.getData().getBizCode() == 0) {
+            result = String.format("#### 收集金币成功, 数量: [%s] ####", respObj.getData().getResult().getScore());
+            log.info(result);
+        } else {
+            result = String.format("#### 收集金币失败, code: %s ####", respObj.getCode());
+            log.error(result);
+            cloudFeignClient.pushErrorMsg(openId, resp);
+        }
+        reqLogService.addLog(PlatformEnum.JD_CAKE.getCode(), openId, result, resp);
+    }
+
+    /**
+     * 宠物签到
+     *
+     * @param openId 公众号openId
+     * @param cookie 用户绑定cookie
+     */
+    public void getSignReward(String openId, String cookie) {
+        HashMap<String, Object> headers = new HashMap<>();
+        headers.put("cookie", cookie);
+        headers.put("User-Agent",
+            "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36");
+        String json = HttpUtil.doPost(dog_url_getSignReward, headers, null, String.class);
+        DogSignResp resp = JsonUtil.json2java(json, DogSignResp.class);
+        String result = "";
+        if (resp.isSuccess()) {
+            result += String.format("#### 签到成功, 狗粮 +[%s]    \n", resp.getResult().getSignReward());
+            result += String.format("     签到天数: [%s]          \n", resp.getResult().getSignDay());
+            result += String.format("     当前狗粮: [%s]      ####", resp.getResult().getFoodAmount());
+            log.info(result);
+        } else {
+            result = String.format("#### 签到失败, %s ####", resp.getErrorMsg());
+            log.error(result);
+            cloudFeignClient.pushErrorMsg(openId, result);
+        }
+        reqLogService.addLog(PlatformEnum.JD_PETS.getCode(), openId, result, json);
+    }
+
+    /**
+     * 喂食宠物
+     *
+     * @param openId 公众号openId
+     * @param cookie 用户绑定cookie
+     */
+    public void feedPets(String openId, String cookie) {
+        HashMap<String, Object> headers = new HashMap<>();
+        headers.put("cookie", cookie);
+        headers.put("User-Agent",
+            "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36");
+        String json = HttpUtil.doPost(dog_url_feedPets, headers, null, String.class);
+        DogFeedPetsResp resp = JsonUtil.json2java(json, DogFeedPetsResp.class);
+        String result = "";
+        String[] energyResult = {""};
+        List<PetPlaceInfoListBean> energyList = null;
+        if (resp.isSuccess()) {
+            result += String.format("#### 喂食成功, 狗粮 -[%s]    \n", resp.getResult().getFeedAmount());
+            energyList = resp.getResult().getPetPlaceInfoList();
+            energyList.removeIf(item -> {
+                if (item.getEnergy() != 0) {
+                    energyResult[0] += String.format("     能量 +[%s], 卡槽: [%s]  \n", item.getEnergy(), item.getPlace());
+                    return false;
+                } else {
+                    return true;
+                }
+            });
+            result += energyResult[0];
+            result += String.format("     当前狗粮: [%s]      ####", resp.getResult().getFoodAmount());
+            log.info(result);
+        } else {
+            result = String.format("#### 喂食失败, %s ####", resp.getErrorMsg());
+            log.error(result);
+            cloudFeignClient.pushErrorMsg(openId, result);
+        }
+        reqLogService.addLog(PlatformEnum.JD_PETS.getCode(), openId, result, json);
+
+        //调用收集
+        if (energyList != null) {
+            energyList.forEach(item -> energyCollect(openId, cookie, item));
+        }
+    }
+
+    /**
+     * 收集能量
+     *
+     * @param openId 公众号openId
+     * @param cookie 用户绑定cookie
+     * @param energy 能量
+     */
+    public void energyCollect(String openId, String cookie, PetPlaceInfoListBean energy) {
+        HashMap<String, Object> headers = new HashMap<>();
+        headers.put("cookie", cookie);
+        headers.put("User-Agent",
+            "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36");
+        String url = dog_url_energyCollect.replace("INDEX", String.valueOf(energy.getPlace()));
+        String json = HttpUtil.doPost(url, headers, null, String.class);
+        DogEnergyCollectResp resp = JsonUtil.json2java(json, DogEnergyCollectResp.class);
+        String result = "";
+        if (resp.isSuccess()) {
+            result += String.format("#### 收集能量成功, 能量 +[%s] \n", energy.getEnergy());
+            result += String.format("     当前进度: [%s]          \n", resp.getResult().getMedalPercent());
+            result += String.format("     升级还需: [%s]      ####", resp.getResult().getNeedCollectEnergy());
+            log.info(result);
+        } else {
+            result = String.format("#### 收集能量失败, %s ####", resp.getErrorMsg());
+            log.error(result);
+            cloudFeignClient.pushErrorMsg(openId, result);
+        }
+        reqLogService.addLog(PlatformEnum.JD_PETS.getCode(), openId, result, json);
+    }
+
+    /**
+     * 三餐
+     *
+     * @param openId 公众号openId
+     * @param cookie 用户绑定cookie
+     */
+    public void getThreeMeal(String openId, String cookie) {
+        HashMap<String, Object> headers = new HashMap<>();
+        headers.put("cookie", cookie);
+        headers.put("User-Agent",
+            "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36");
+        String json = HttpUtil.doPost(dog_url_getThreeMealReward, headers, null, String.class);
+        DogThreeMealResp resp = JsonUtil.json2java(json, DogThreeMealResp.class);
+        String result = "";
+        if (resp.isSuccess()) {
+            result += String.format("#### 三餐领取成功, 狗粮 +[%s]   \n", resp.getResult().getThreeMealReward());
+            result += String.format("     当前狗粮: [%s]         ####", resp.getResult().getFoodAmount());
+            log.info(result);
+        } else {
+            result = String.format("#### 三餐领取失败, %s ####", resp.getErrorMsg());
+            log.error(result);
+            cloudFeignClient.pushErrorMsg(openId, result);
+        }
+        reqLogService.addLog(PlatformEnum.JD_PETS.getCode(), openId, result, json);
+    }
+
+    /**
+     * 浏览单个商店任务
+     *
+     * @param openId 公众号openId
+     * @param cookie 用户绑定cookie
+     */
+    public void getSingleShop(String openId, String cookie) {
+        HashMap<String, Object> headers = new HashMap<>();
+        headers.put("cookie", cookie);
+        headers.put("User-Agent",
+            "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36");
+        String json = HttpUtil.doPost(dog_url_getSingleShopReward, headers, null, String.class);
+        DogSingleShopResp resp = JsonUtil.json2java(json, DogSingleShopResp.class);
+        String result = "";
+        if (resp.isSuccess()) {
+            result += String.format("#### 浏览任务成功, 狗粮 +[%s]     \n", resp.getResult().getReward());
+            result += String.format("     当前狗粮: [%s]           ####", resp.getResult().getFoodAmount());
+            log.info(result);
+        } else {
+            result = String.format("#### 浏览任务失败, %s ####", resp.getErrorMsg());
+            log.error(result);
+            cloudFeignClient.pushErrorMsg(openId, result);
+        }
+        reqLogService.addLog(PlatformEnum.JD_PETS.getCode(), openId, result, json);
     }
 }
