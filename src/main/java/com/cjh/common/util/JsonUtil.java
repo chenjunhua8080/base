@@ -1,6 +1,8 @@
 package com.cjh.common.util;
 
 import com.alibaba.fastjson.JSONObject;
+import com.cjh.common.resp.DogSignResp;
+import com.cjh.common.resp.DogSignResp.ResultBean;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -27,4 +29,14 @@ public class JsonUtil {
         return JSONObject.parseObject(object);
     }
 
+
+    public static void main(String[] args) {
+        DogSignResp dogSignResp = new DogSignResp();
+        dogSignResp.setCode("0");
+        dogSignResp.setResultCode("0");
+        ResultBean result = new ResultBean();
+        result.setSignDay(1);
+        dogSignResp.setResult(result);
+        System.out.println(java2Json(dogSignResp));
+    }
 }

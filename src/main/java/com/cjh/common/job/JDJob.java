@@ -71,4 +71,75 @@ public class JDJob {
         }
     }
 
+    //################################# 京东宠物 ####################################
+
+    @Scheduled(cron = "${job.pets.getSignReward}")
+    public void getSignReward() {
+        if (apiConfig.getPetsConfig().getWorking()) {
+            List<UserPO> users = userDao.selectList(null);
+            log.info("#### 定时任务[京东 - 宠物 - 签到] 开始: {} ####", DateUtil.format(new Date()));
+            BindFarmPO bindFarmPO;
+            for (UserPO user : users) {
+                bindFarmPO = bindFarmDao.selectByOpenId(user.getOpenId(), PlatformEnum.JD_PETS.getCode());
+                if (bindFarmPO != null) {
+                    log.info("#### 用户: {} ####", user.getOpenId());
+                    jdApi.getSignReward(user.getOpenId(), bindFarmPO.getCookie());
+                }
+            }
+            log.info("#### 定时任务[京东 - 宠物 - 签到] 结束: {} ####", DateUtil.format(new Date()));
+        }
+    }
+
+    @Scheduled(cron = "${job.pets.feedPets}")
+    public void feedPets() {
+        if (apiConfig.getPetsConfig().getWorking()) {
+            List<UserPO> users = userDao.selectList(null);
+            log.info("#### 定时任务[京东 - 宠物 - 喂食] 开始: {} ####", DateUtil.format(new Date()));
+            BindFarmPO bindFarmPO;
+            for (UserPO user : users) {
+                bindFarmPO = bindFarmDao.selectByOpenId(user.getOpenId(), PlatformEnum.JD_PETS.getCode());
+                if (bindFarmPO != null) {
+                    log.info("#### 用户: {} ####", user.getOpenId());
+                    jdApi.feedPets(user.getOpenId(), bindFarmPO.getCookie());
+                }
+            }
+            log.info("#### 定时任务[京东 - 宠物 - 喂食] 结束: {} ####", DateUtil.format(new Date()));
+        }
+    }
+
+    @Scheduled(cron = "${job.pets.getSingleShop}")
+    public void getSingleShop() {
+        if (apiConfig.getPetsConfig().getWorking()) {
+            List<UserPO> users = userDao.selectList(null);
+            log.info("#### 定时任务[京东 - 宠物 - 浏览商店] 开始: {} ####", DateUtil.format(new Date()));
+            BindFarmPO bindFarmPO;
+            for (UserPO user : users) {
+                bindFarmPO = bindFarmDao.selectByOpenId(user.getOpenId(), PlatformEnum.JD_PETS.getCode());
+                if (bindFarmPO != null) {
+                    log.info("#### 用户: {} ####", user.getOpenId());
+                    jdApi.getSingleShop(user.getOpenId(), bindFarmPO.getCookie());
+                }
+            }
+            log.info("#### 定时任务[京东 - 宠物 - 浏览商店] 结束: {} ####", DateUtil.format(new Date()));
+        }
+    }
+
+
+    @Scheduled(cron = "${job.pets.getThreeMeal}")
+    public void getThreeMeal() {
+        if (apiConfig.getPetsConfig().getWorking()) {
+            List<UserPO> users = userDao.selectList(null);
+            log.info("#### 定时任务[京东 - 宠物 - 三餐领取] 开始: {} ####", DateUtil.format(new Date()));
+            BindFarmPO bindFarmPO;
+            for (UserPO user : users) {
+                bindFarmPO = bindFarmDao.selectByOpenId(user.getOpenId(), PlatformEnum.JD_PETS.getCode());
+                if (bindFarmPO != null) {
+                    log.info("#### 用户: {} ####", user.getOpenId());
+                    jdApi.getThreeMeal(user.getOpenId(), bindFarmPO.getCookie());
+                }
+            }
+            log.info("#### 定时任务[京东 - 宠物 - 三餐领取] 结束: {} ####", DateUtil.format(new Date()));
+        }
+    }
+
 }
