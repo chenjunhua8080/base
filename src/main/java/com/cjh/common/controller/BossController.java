@@ -36,6 +36,9 @@ public class BossController {
         try {
             String[] cookie = bindFarm.getCookie().split(";");
             map = EmailService.getResumeZip(cookie[0], cookie[1]);
+            if (Integer.parseInt(map.get("count").toString()) == 0) {
+                msg = "暂无简历，请稍后再试";
+            }
         } catch (Exception e) {
             e.printStackTrace();
             //参数有http导致请求错误

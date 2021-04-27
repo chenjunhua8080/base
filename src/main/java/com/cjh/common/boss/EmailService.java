@@ -28,6 +28,7 @@ import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
+import javax.mail.Part;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.internet.MimeUtility;
@@ -102,11 +103,12 @@ public class EmailService {
             if (!subject.replaceAll(apiConfig.getBossConfig().getSubjectMatch(), "666~").contains("666~")) {
                 log.warn("邮件内容不是简历: {}", subject);
                 message.setFlag(Flags.Flag.SEEN, false);     //imap读取后邮件状态会变为已读,设为未读
+                countDownLatch.countDown();
                 continue;
             }
-            log.info("邮件的主题为: {}", subject);
-            log.info("发件人地址为: {}", decodeText(from.toString()));
-            log.info("日期: {}", message.getSentDate());
+            log.debug("邮件的主题为: {}", subject);
+            log.debug("发件人地址为: {}", decodeText(from.toString()));
+            log.debug("日期: {}", message.getSentDate());
 //            Enumeration headers = message.getAllHeaders();
 //              log.info("----------------------allHeaders-----------------------------");
 //              while (headers.hasMoreElements()) {
@@ -162,23 +164,23 @@ public class EmailService {
      */
     private static boolean parseMultipart(Multipart multipart, String filePath) throws MessagingException, IOException {
         int count = multipart.getCount();
-        log.info("count =  {}", count);
+        log.debug("count =  {}", count);
         for (int idx = 0; idx < count; idx++) {
             BodyPart bodyPart = multipart.getBodyPart(idx);
-            log.info(bodyPart.getContentType());
+            log.debug(bodyPart.getContentType());
             if (bodyPart.isMimeType("text/plain")) {
-                log.info("plain.................\n{}", bodyPart.getContent());
+                log.debug("plain.................\n{}", bodyPart.getContent());
             } else if (bodyPart.isMimeType("text/html")) {
-                log.info("html...................\n{}", bodyPart.getContent());
+                log.debug("html...................\n{}", bodyPart.getContent());
             } else if (bodyPart.isMimeType("multipart/*")) {
                 Multipart mpart = (Multipart) bodyPart.getContent();
                 parseMultipart(mpart, filePath);
 
             } else if (bodyPart.isMimeType("application/octet-stream")) {
                 String disposition = bodyPart.getDisposition();
-                if (disposition.equalsIgnoreCase(BodyPart.ATTACHMENT)) {
+                if (disposition.equalsIgnoreCase(Part.ATTACHMENT)) {
                     String fileName = bodyPart.getFileName();
-                    log.info(BodyPart.ATTACHMENT + "...................\n{}", fileName);
+                    log.info(Part.ATTACHMENT + "...................\n{}", fileName);
                     InputStream is = bodyPart.getInputStream();
                     String fileFullPath = filePath + File.separator + fileName;
                     log.info(fileFullPath);
