@@ -38,8 +38,9 @@ public class BossController {
             map = EmailService.getResumeZip(cookie[0], cookie[1]);
         } catch (Exception e) {
             e.printStackTrace();
-            msg = "下载简历失败：" + e.getMessage();
-            cloudFeignClient.pushErrorMsg(openId, msg);
+            //参数有http导致请求错误
+//            msg = "下载简历失败：" + e.getMessage();
+            cloudFeignClient.pushErrorMsg(openId, "下载简历失败了ToT...");
         }
         map.put("msg", msg);
 
