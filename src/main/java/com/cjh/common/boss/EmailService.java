@@ -139,6 +139,7 @@ public class EmailService {
             File zip = ZipUtil.zip(filePath, filePath + "_共" + resumeCount + "份.zip");
             log.info(zip.getAbsolutePath());
             map.put("link", "http://resume.springeasy.cn/"
+                + emailAccount + "/"
                 + URLEncoder.createDefault().encode(zip.getName(), StandardCharsets.UTF_8));
         }
         map.put("count", resumeCount.get());
