@@ -47,7 +47,16 @@ public class BossController {
         }
         map.put("msg", msg);
 
-        reqLogService.addLog(PlatformEnum.JD_CAKE.getCode(), openId, String.valueOf(map), null);
+        reqLogService.addLog(PlatformEnum.BOSS_EMAIL.getCode(), openId,
+            map.get("msg") == null ? map.get("link").toString() : map.get("msg").toString(), null);
+
+        if (map.get("msg") == null) {
+            Map<String, Object> req = new HashMap<>();
+            req.put("openId", openId);
+            req.put("body", "本次共下载" + map.get("count") + "份简历哦！");
+            req.put("link", map.get("link"));
+            cloudFeignClient.pushResumeMsg(req);
+        }
 
         return map;
     }
