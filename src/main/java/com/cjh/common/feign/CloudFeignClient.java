@@ -21,6 +21,6 @@ public interface CloudFeignClient {
     /**
      * 推送下载简历消息
      */
-    @PostMapping("/pushResumeMsg")
+    @PostMapping("/message/pushResumeMsg")
     String pushResumeMsg(@RequestBody Map<String, Object> map);
 }
