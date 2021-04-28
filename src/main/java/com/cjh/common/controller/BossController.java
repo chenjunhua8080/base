@@ -43,20 +43,22 @@ public class BossController {
             e.printStackTrace();
             //参数有http导致请求错误
 //            msg = "下载简历失败：" + e.getMessage();
-            cloudFeignClient.pushErrorMsg(openId, "下载简历失败了ToT...");
+            msg = "下载简历失败了ToT...\n" + e.getMessage();
         }
         map.put("msg", msg);
 
+        Map<String, Object> req = new HashMap<>();
+        req.put("openId", openId);
+        if (map.get("msg") == null) {
+            req.put("link", map.get("link"));
+            req.put("body", "本次共下载" + map.get("count") + "份简历哦！");
+        } else {
+            req.put("body", map.get("msg"));
+        }
+        cloudFeignClient.pushResumeMsg(req);
+
         reqLogService.addLog(PlatformEnum.BOSS_EMAIL.getCode(), openId,
             map.get("msg") == null ? map.get("link").toString() : map.get("msg").toString(), null);
-
-        if (map.get("msg") == null) {
-            Map<String, Object> req = new HashMap<>();
-            req.put("openId", openId);
-            req.put("body", "本次共下载" + map.get("count") + "份简历哦！");
-            req.put("link", map.get("link"));
-            cloudFeignClient.pushResumeMsg(req);
-        }
 
         return map;
     }
