@@ -1,6 +1,9 @@
 package com.cjh.common.boss;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.IoUtil;
+import cn.hutool.core.io.NioUtil;
 import cn.hutool.core.net.URLEncoder;
 import cn.hutool.core.thread.ExecutorBuilder;
 import cn.hutool.core.thread.ThreadUtil;
@@ -8,10 +11,12 @@ import cn.hutool.core.util.ZipUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import com.cjh.common.api.ApiConfig;
 import com.google.common.collect.Maps;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.Security;
@@ -70,6 +75,10 @@ public class EmailService {
         props.setProperty("mail.transport.protocol", protocol); // 使用的协议
         props.setProperty("mail.imap.port", port);
         props.setProperty("mail.imap.socketFactory.port", port);
+        //断点续传，很慢的 https://www.jianshu.com/p/060b82ce19dd
+        //api https://javaee.github.io/javamail/docs/api/com/sun/mail/imap/package-summary.html
+        props.setProperty("mail.imap.partialfetch", "false");
+        props.setProperty("mail.imap.fetchsize", "2000000");
 
         // 获取连接
         Session session = Session.getDefaultInstance(props);
@@ -181,6 +190,7 @@ public class EmailService {
                 String disposition = bodyPart.getDisposition();
                 if (disposition.equalsIgnoreCase(Part.ATTACHMENT)) {
                     String fileName = bodyPart.getFileName();
+                    fileName = MimeUtility.decodeText(fileName);
                     log.info(Part.ATTACHMENT + "...................\n{}", fileName);
                     InputStream is = bodyPart.getInputStream();
                     String fileFullPath = filePath + File.separator + fileName;
@@ -229,17 +239,15 @@ public class EmailService {
     /**
      * 文件拷贝，在用户进行附件下载的时候，可以把附件的InputStream传给用户进行下载
      */
-    private static void copy(InputStream is, String fileFullPath) throws IOException {
-        try (FileOutputStream os = new FileOutputStream(fileFullPath)) {
-            byte[] bytes = new byte[1024];
-            int len;
-            while ((len = is.read(bytes)) != -1) {
-                os.write(bytes, 0, len);
-            }
-            is.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw e;
-        }
+    private static void copy(InputStream is, String fileFullPath) {
+        BufferedReader reader = IoUtil.getReader(is, StandardCharsets.ISO_8859_1);
+        BufferedOutputStream outputStream = FileUtil.getOutputStream(fileFullPath);
+        OutputStreamWriter writer = IoUtil.getWriter(outputStream, StandardCharsets.ISO_8859_1);
+        IoUtil.copy(reader, writer, NioUtil.DEFAULT_MIDDLE_BUFFER_SIZE);
+        IoUtil.close(writer);
+        IoUtil.close(outputStream);
+        IoUtil.close(reader);
+        IoUtil.close(is);
     }
+
 }
