@@ -26,7 +26,7 @@ public class BossController {
     private final ReqLogService reqLogService;
 
     @GetMapping("/getResumeZip")
-    public Map<String, Object> getHomeData(@RequestParam("openId") String openId) {
+    public Map<String, Object> getResumeZip(@RequestParam("openId") String openId) {
         Map<String, Object> map = new HashMap<>();
         String msg = null;
         BindFarmPO bindFarm = bindFarmDao.selectByOpenId(openId, PlatformEnum.BOSS_EMAIL.getCode());

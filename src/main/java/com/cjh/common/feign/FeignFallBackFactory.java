@@ -11,6 +11,7 @@ public class FeignFallBackFactory implements FallbackFactory<CloudFeignClient> {
 
     @Override
     public CloudFeignClient create(Throwable throwable) {
+        log.error("in FeignFallBackFactory...\n", throwable);
         return new CloudFeignClient() {
             @Override
             public String pushErrorMsg(String openId, String body) {
@@ -19,6 +20,7 @@ public class FeignFallBackFactory implements FallbackFactory<CloudFeignClient> {
 
             @Override
             public String pushResumeMsg(Map<String, Object> map) {
+                log.error("in pushResumeMsg...");
                 return null;
             }
         };
