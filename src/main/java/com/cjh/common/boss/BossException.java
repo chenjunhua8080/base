@@ -16,6 +16,7 @@ public class BossException extends RuntimeException {
     private final String msg;
 
     public BossException(String msg) {
+        super(msg);
         this.msg = msg;
         code = 500;
     }
