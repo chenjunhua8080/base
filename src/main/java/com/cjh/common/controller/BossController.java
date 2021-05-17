@@ -1,35 +1,44 @@
 package com.cjh.common.controller;
 
+import com.cjh.common.api.BossApi;
 import com.cjh.common.boss.BossService;
 import com.cjh.common.boss.EmailService;
+import com.cjh.common.boss.resp.Cookie;
 import com.cjh.common.dao.BindFarmDao;
+import com.cjh.common.dao.UserDao;
 import com.cjh.common.enums.PlatformEnum;
 import com.cjh.common.feign.CloudFeignClient;
 import com.cjh.common.po.BindFarmPO;
+import com.cjh.common.po.UserPO;
 import com.cjh.common.service.ReqLogService;
 import com.google.common.collect.Lists;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@AllArgsConstructor
+@Slf4j
 @RestController
 public class BossController {
 
     @Autowired
-    private final CloudFeignClient cloudFeignClient;
+    private CloudFeignClient cloudFeignClient;
     @Autowired
-    private final BindFarmDao bindFarmDao;
+    private BindFarmDao bindFarmDao;
     @Autowired
-    private final ReqLogService reqLogService;
+    private UserDao userDao;
     @Autowired
-    private final BossService bossService;
+    private ReqLogService reqLogService;
+    @Autowired
+    private BossService bossService;
+    @Autowired
+    private BossApi bossApi;
 
     @GetMapping("/getResumeZip")
     public Map<String, Object> getResumeZip(@RequestParam("openId") String openId) {
@@ -146,4 +155,78 @@ public class BossController {
 
         return map;
     }
+
+    @SneakyThrows
+    @GetMapping("/loginBoss")
+    public Map<String, Object> loginBoss(@RequestParam("openId") String openId) {
+        reqLogService.addLog(PlatformEnum.BOSS.getCode(), openId, "绑定BOSS", null);
+
+        String qrcodeKey = bossService.getQrcodeKey();
+        String qrcodeDownPath = bossService.getQrcodeDownPath(qrcodeKey);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("openId", openId);
+        map.put("body", "1、请点击此消息跳转到二维码页面进行扫码登录！");
+        map.put("link", qrcodeDownPath);
+        cloudFeignClient.pushResumeMsg(map);
+
+        Thread.sleep(2000);
+        for (int i = 0; i <= BossService.TIMEOUT_COUNT; i++) {
+            if (i == BossService.TIMEOUT_COUNT) {
+                log.error("扫码超时了...");
+                cloudFeignClient.pushErrorMsg(openId, "扫码超时了，请重新发起绑定");
+                return map;
+            }
+            boolean scanOk = bossApi.scanOk(qrcodeKey);
+            if (scanOk) {
+                log.info("扫码成功");
+                String headImg = bossApi.getHeadImg(qrcodeKey);
+                log.info("获取头像成功\n{}", headImg);
+                map.put("body", "2、扫码成功，请尽快确认登录！");
+                map.put("link", headImg);
+                cloudFeignClient.pushResumeMsg(map);
+                break;
+            }
+        }
+
+        Thread.sleep(2000);
+        for (int i = 0; i <= BossService.TIMEOUT_COUNT; i++) {
+            if (i == BossService.TIMEOUT_COUNT) {
+                cloudFeignClient.pushErrorMsg(openId, "登录超时了，请重新发起绑定");
+                return map;
+            }
+            Thread.sleep(2000);
+            boolean loginOk = bossApi.scanAndLoginOk(qrcodeKey);
+            if (loginOk) {
+                log.info("登录成功");
+                Cookie cookie = bossApi.getDispatcher(qrcodeKey);
+                log.info("获取cookie成功\n{}", cookie);
+                bossApi.addLog(cookie.toString(), BossApi.log_login);
+
+                Integer id = doBind(openId, cookie.toString(), PlatformEnum.BOSS.getCode());
+                map.put("body", "登录成功，完成绑定！id：" + id);
+                cloudFeignClient.pushResumeMsg(map);
+                break;
+            }
+        }
+
+        return map;
+    }
+
+    private Integer doBind(String openId, String cookie, Integer platformType) {
+        UserPO user = userDao.selectByOpenId(openId);
+        BindFarmPO old = bindFarmDao.getBindUser(user.getId(), platformType);
+        if (old != null) {
+            bindFarmDao.deleteById(old.getId());
+        }
+        BindFarmPO entity = new BindFarmPO();
+        entity.setUserId(user.getId());
+        entity.setPlatformType(platformType);
+        entity.setPlatformId(openId);
+        entity.setCookie(cookie);
+        bindFarmDao.insert(entity);
+        return entity.getId();
+    }
+
+
 }
