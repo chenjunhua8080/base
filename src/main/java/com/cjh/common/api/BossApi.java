@@ -3,6 +3,7 @@ package com.cjh.common.api;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import com.alibaba.fastjson.JSON;
+import com.cjh.common.boss.BossException;
 import com.cjh.common.boss.resp.Avatar;
 import com.cjh.common.boss.resp.BossResp;
 import com.cjh.common.boss.resp.CheckJob;
@@ -325,6 +326,7 @@ public class BossApi {
         BossResp<QrcodeKey> bossResp = JSON.parseObject(resp, BossResp.class);
         if (!bossResp.isDataOk()) {
             log.error(String.valueOf(bossResp));
+            throw new BossException(String.valueOf(bossResp));
         }
         return bossResp.getZpData(QrcodeKey.class).getQrId();
     }
@@ -392,6 +394,7 @@ public class BossApi {
         BossResp<Avatar> bossResp = JSON.parseObject(resp, BossResp.class);
         if (!bossResp.isDataOk()) {
             log.error(String.valueOf(bossResp));
+            throw new BossException(String.valueOf(bossResp));
         }
         return bossResp.getZpData(Avatar.class).getLarge();
     }
@@ -407,6 +410,7 @@ public class BossApi {
         BossResp<Dispatcher> bossResp = JSON.parseObject(resp.getBody(), BossResp.class);
         if (bossResp == null || !bossResp.isDataOk()) {
             log.error(String.valueOf(bossResp));
+            throw new BossException(String.valueOf(bossResp));
         }
 
         //get cookie
@@ -441,7 +445,7 @@ public class BossApi {
         BossResp<Token> bossResp = JSON.parseObject(resp, BossResp.class);
         if (!bossResp.isDataOk()) {
             log.error(String.valueOf(bossResp));
-            return null;
+            throw new BossException(String.valueOf(bossResp));
         }
         return bossResp.getZpData(Token.class).getToken();
     }
@@ -463,7 +467,7 @@ public class BossApi {
         BossResp<Friend1> bossResp = JSON.parseObject(resp, BossResp.class);
         if (!bossResp.isDataOk()) {
             log.error(String.valueOf(bossResp));
-            return Lists.newArrayList();
+            throw new BossException(String.valueOf(bossResp));
         }
         return bossResp.getZpData(Friend1.class).getResult();
     }
@@ -484,7 +488,7 @@ public class BossApi {
         BossResp<Friend2> bossResp = JSON.parseObject(resp, BossResp.class);
         if (!bossResp.isDataOk()) {
             log.error(String.valueOf(bossResp));
-            return Lists.newArrayList();
+            throw new BossException(String.valueOf(bossResp));
         }
         return bossResp.getZpData(Friend2.class).getFriendList();
     }
@@ -505,7 +509,7 @@ public class BossApi {
         BossResp<List> bossResp = JSON.parseObject(resp, BossResp.class);
         if (!bossResp.isDataOk()) {
             log.error(String.valueOf(bossResp));
-            return Lists.newArrayList();
+            throw new BossException(String.valueOf(bossResp));
         }
         return bossResp.getZpData(List.class);
     }
@@ -520,7 +524,7 @@ public class BossApi {
         BossResp<HistoryMsg> bossResp = JSON.parseObject(resp, BossResp.class);
         if (!bossResp.isDataOk()) {
             log.error(String.valueOf(bossResp));
-            return Lists.newArrayList();
+            throw new BossException(String.valueOf(bossResp));
         }
         return bossResp.getZpData(HistoryMsg.class).getMessages();
     }
@@ -563,7 +567,7 @@ public class BossApi {
         BossResp<Exchange> bossResp = JSON.parseObject(resp, BossResp.class);
         if (!bossResp.isDataOk()) {
             log.error(String.valueOf(bossResp));
-            return;
+            throw new BossException(String.valueOf(bossResp));
         }
 
         log.info("exchange accept ok... {}", bossResp.getZpData());
@@ -606,7 +610,7 @@ public class BossApi {
         BossResp<Exchange> bossResp = JSON.parseObject(resp, BossResp.class);
         if (!bossResp.isDataOk()) {
             log.error(String.valueOf(bossResp));
-            return;
+            throw new BossException(String.valueOf(bossResp));
         }
 
         log.info("exchange test ok... {}", bossResp.getZpData());
@@ -648,7 +652,7 @@ public class BossApi {
         BossResp<Exchange> bossResp = JSON.parseObject(resp, BossResp.class);
         if (!bossResp.isDataOk()) {
             log.error(String.valueOf(bossResp));
-            return;
+            throw new BossException(String.valueOf(bossResp));
         }
 
         log.info("exchange request ok... {}", bossResp.getZpData());
@@ -664,6 +668,7 @@ public class BossApi {
         BossResp<RecJobList> bossResp = JSON.parseObject(resp, BossResp.class);
         if (!bossResp.isDataOk()) {
             log.error(String.valueOf(bossResp));
+            throw new BossException(String.valueOf(bossResp));
         }
         return bossResp.getZpData(RecJobList.class);
     }
@@ -678,6 +683,7 @@ public class BossApi {
         BossResp<List<JobList>> bossResp = JSON.parseObject(resp, BossResp.class);
         if (!bossResp.isDataOk()) {
             log.error(String.valueOf(bossResp));
+            throw new BossException(String.valueOf(bossResp));
         }
         return bossResp.getZpDataArray(JobList.class);
     }
@@ -697,7 +703,7 @@ public class BossApi {
         BossResp<Geek1> bossResp = JSON.parseObject(resp, BossResp.class);
         if (!bossResp.isDataOk()) {
             log.error(String.valueOf(bossResp));
-            return Lists.newArrayList();
+            throw new BossException(String.valueOf(bossResp));
         }
 
         return bossResp.getZpData(Geek1.class).getGeekList();
@@ -719,7 +725,7 @@ public class BossApi {
         BossResp<NewGeek> bossResp = JSON.parseObject(resp, BossResp.class);
         if (!bossResp.isDataOk()) {
             log.error(String.valueOf(bossResp));
-            return Lists.newArrayList();
+            throw new BossException(String.valueOf(bossResp));
         }
 
         return bossResp.getZpData(NewGeek.class).getGeekList();
@@ -741,7 +747,7 @@ public class BossApi {
         BossResp<CheckJob> bossResp = JSON.parseObject(resp, BossResp.class);
         if (!bossResp.isDataOk()) {
             log.error(String.valueOf(bossResp));
-            return;
+            throw new BossException(String.valueOf(bossResp));
         }
 
         CheckJob zpData = bossResp.getZpData(CheckJob.class);
@@ -779,7 +785,7 @@ public class BossApi {
         BossResp<StartChat> bossResp = JSON.parseObject(resp, BossResp.class);
         if (!bossResp.isDataOk()) {
             log.error(String.valueOf(bossResp));
-            return;
+            throw new BossException(String.valueOf(bossResp));
         }
 
         StartChat zpData = bossResp.getZpData(StartChat.class);
@@ -798,6 +804,7 @@ public class BossApi {
         BossResp<SyncFriendStatus> bossResp = JSON.parseObject(resp, BossResp.class);
         if (!bossResp.isDataOk()) {
             log.error(String.valueOf(bossResp));
+            throw new BossException(String.valueOf(bossResp));
         }
 
         log.info("sync friend status ok... {}", bossResp.getZpData(SyncFriendStatus.class));
@@ -816,6 +823,7 @@ public class BossApi {
         BossResp<GeekInfo> bossResp = JSON.parseObject(resp, BossResp.class);
         if (!bossResp.isDataOk()) {
             log.error(String.valueOf(bossResp));
+            throw new BossException(String.valueOf(bossResp));
         }
 
         return bossResp.getZpData(GeekInfo.class);
@@ -845,7 +853,7 @@ public class BossApi {
         BossResp<StartChat> bossResp = JSON.parseObject(resp, BossResp.class);
         if (!bossResp.isDataOk()) {
             log.error(String.valueOf(bossResp));
-            return;
+            throw new BossException(String.valueOf(bossResp));
         }
 
         log.info("bossEnter ok...");
