@@ -1,5 +1,6 @@
 package com.cjh.common.api;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import com.alibaba.fastjson.JSON;
 import com.cjh.common.boss.resp.Avatar;
@@ -30,6 +31,7 @@ import com.cjh.common.boss.resp.Token;
 import com.cjh.common.util.HttpUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -284,6 +286,36 @@ public class BossApi {
      */
     private final String url_start_chat = "https://www.zhipin.com/wapi/zpboss/h5/chat/start?_=TIMESTAMP";
 
+    /**
+     * createDir
+     */
+    private static String createDir() {
+        String filePath = System.getProperty("user.home")
+            + File.separator + "resume"
+            + File.separator + "boss"
+            + File.separator + DateUtil.formatDate(DateUtil.date());
+        File dir = new File(filePath);
+        if (dir.exists()) {
+            int i = 2;
+            while (true) {
+                if (filePath.contains("_")) {
+                    filePath = filePath.replaceAll("_.*", "_" + i);
+                } else {
+                    filePath = filePath + "_" + i;
+                }
+                dir = new File(filePath);
+                if (dir.exists()) {
+                    i++;
+                } else {
+                    dir.mkdirs();
+                    return filePath;
+                }
+            }
+        } else {
+            dir.mkdirs();
+        }
+        return filePath;
+    }
 
     /**
      * 获取二维码key
@@ -305,7 +337,7 @@ public class BossApi {
         if (FileUtil.isWindows()) {
             dest = "D:\\" + qrId + ".jpeg";
         } else {
-            dest = "root/boss/qrcode/" + qrId + ".jpeg";
+            dest = createDir() + File.separator + qrId + ".jpeg";
         }
         long size = cn.hutool.http.HttpUtil.downloadFile(url_get_qrcode.replace("QRID", qrId), dest);
         if (size > 0) {

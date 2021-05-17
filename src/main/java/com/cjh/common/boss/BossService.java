@@ -31,10 +31,26 @@ import org.springframework.util.StringUtils;
 @Component
 public class BossService {
 
-    private static final int TIMEOUT_COUNT = 5;
+    public static final int TIMEOUT_COUNT = 5;
 
     @Autowired
     private BossApi bossApi;
+
+    /**
+     * getQrcodeKey
+     */
+    public String getQrcodeKey() {
+        return bossApi.getQrcodeKey();
+    }
+
+    /**
+     * getQrcodeDownPath
+     */
+    public String getQrcodeDownPath(String qrcodeKey) {
+        String qrcodePath = bossApi.getQrcodePath(qrcodeKey);
+//        /root/resume/boss/2021-5-17_1/xxx.jprg
+        return "http://resume.springeasy.cn/" + qrcodePath.replaceAll("^.*?boss", "boss");
+    }
 
     /**
      * 登录流程
