@@ -54,7 +54,7 @@ public class FarmApi {
      * 果树信息
      */
     public TreeInfo getTreeInfo(String openId, String cookie) {
-        String resp = HttpUtil.doGet(url_signForFarm, cookie);
+        String resp = HttpUtil.doGet(url_tree_info, cookie);
         TreeInfo treeInfo = JSONObject.parseObject(resp, TreeInfo.class);
         String result;
         if (treeInfo.getCode() == 0) {
