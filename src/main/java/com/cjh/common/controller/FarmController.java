@@ -39,6 +39,15 @@ public class FarmController {
         return farmApi.waterGoodForFarm(openId, bindFarmPO.getCookie());
     }
 
+    @GetMapping("/continuousWater")
+    public String continuousWater(String openId, Integer count) {
+        BindFarmPO bindFarmPO = bindFarmDao.selectByOpenId(openId, PlatformEnum.JD_FARM.getCode());
+        if (bindFarmPO == null) {
+            return "未绑定";
+        }
+        return farmApi.continuousWater(count, openId, bindFarmPO.getCookie());
+    }
+
     @GetMapping("/firstWaterTaskForFarm")
     public String firstWaterTaskForFarm(String openId) {
         BindFarmPO bindFarmPO = bindFarmDao.selectByOpenId(openId, PlatformEnum.JD_FARM.getCode());

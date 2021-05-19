@@ -1,11 +1,13 @@
 package com.cjh.common.api;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.cjh.common.enums.PlatformEnum;
 import com.cjh.common.resp.FarmResp;
 import com.cjh.common.service.ReqLogService;
 import com.cjh.common.util.HttpUtil;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -73,6 +75,38 @@ public class FarmApi {
             result = String.format("#### 浇水失败, code: %s ####", farmResp.getCode());
             log.error(result);
         }
+        reqLogService.addLog(PlatformEnum.JD_FARM.getCode(), openId, result, resp);
+        return result;
+    }
+
+    /**
+     * 连续浇水
+     */
+    @SneakyThrows
+    public String continuousWater(Integer count, String openId, String cookie) {
+        String resp = HttpUtil.doGet(url_waterGoodForFarm, cookie);
+        FarmResp farmResp = JSON.parseObject(resp, FarmResp.class);
+        String result = "";
+        if (farmResp.getCode() == 0) {
+            int pre = farmResp.getTotalEnergy() + 10;
+            result = String.format("#### 连续浇水开始, 可用水滴: %s ####%n", pre);
+            log.info(result);
+        }
+        count--;
+        int success = 0;
+        int lastCount = 0;
+        while (count > 0) {
+            Thread.sleep(1000);
+            resp = HttpUtil.doGet(url_waterGoodForFarm, cookie);
+            farmResp = JSON.parseObject(resp, FarmResp.class);
+            if (farmResp.getCode() != 0) {
+                success++;
+                lastCount = farmResp.getTotalEnergy();
+            }
+            count--;
+        }
+        result += String.format("#### 连续浇水结束, 成功%s次, 可用水滴: %s ####", success, lastCount);
+
         reqLogService.addLog(PlatformEnum.JD_FARM.getCode(), openId, result, resp);
         return result;
     }
