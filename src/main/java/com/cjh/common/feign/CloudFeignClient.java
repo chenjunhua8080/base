@@ -21,7 +21,7 @@ public interface CloudFeignClient {
     /**
      * 推送消息
      */
-    @GetMapping("/tempPush")
+    @GetMapping("/message/tempPush")
     String tempPush(@RequestParam String openId, @RequestParam String body);
 
     /**
