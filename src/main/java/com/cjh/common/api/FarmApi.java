@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.cjh.common.enums.PlatformEnum;
 import com.cjh.common.resp.FarmResp;
+import com.cjh.common.resp.TreeInfo;
+import com.cjh.common.resp.TreeInfo.FarmUserProBean;
 import com.cjh.common.service.ReqLogService;
 import com.cjh.common.util.HttpUtil;
 import lombok.AllArgsConstructor;
@@ -16,6 +18,11 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class FarmApi {
 
+    /**
+     * @name 果树信息
+     * @result {"code":"0","rightUpResouces":{"advertId":"8901471930","name":"右上角icon","appImage":"https://m.360buyimg.com/babel/jfs/t1/177415/27/975/9297/60854349Ed718f3ea/6c2c6f9eb5822d48.png","appLink":"https://pro.m.jd.com/mall/active/2YXNAz7Qo6TcFpEe8xmAAgLoP5uE/index.html","cxyImage":"https://m.360buyimg.com/babel/jfs/t1/177415/27/975/9297/60854349Ed718f3ea/6c2c6f9eb5822d48.png","cxyLink":"https://pro.m.jd.com/mall/active/2YXNAz7Qo6TcFpEe8xmAAgLoP5uE/index.html","type":"","openLink":false},"turntableInit":{"timeState":1},"showExchangeGuidance":false,"iosShieldConfig":null,"waterGiftSurpriseIconLink":null,"mengchongResouce":{"advertId":"9101430311","name":"左下角鸭子icon放萌宠","appImage":"https://m.360buyimg.com/babel/jfs/t1/145092/37/18785/14059/5fd9f2bcEd3d080f7/57784b97834ebcb8.gif","appLink":"openapp.jdmobile://virtual?params=%7B%22category%22:%22jump%22,%22des%22:%22jdreactcommon%22,%22modulename%22:%22JDReactJDBeansReward%22,%22appname%22:%22JDReactJDBeansReward%22,%22param%22:%7B%22page%22:%22JDReactJDBeansReward%22,%22source%22:%22nongchang%22,%22transparentenable%22:true%7D%7D","cxyImage":"https://m.360buyimg.com/babel/jfs/t1/131693/31/14707/19791/5fa26b24Ecca399c2/9af237b61179aebe.png","cxyLink":"https://pro.m.jd.com/mall/active/3Vk9JgtDckmYZGNXPFVBmJgK3D25/index.html","type":"","openLink":false},"clockInGotWater":true,"isOpenOldRemind":false,"guidPopupTask":{"guidPopupTask":"none"},"toFruitEnergy":50,"couponSurpriseIconLink":null,"statisticsTimes":null,"sysTime":1621407712659,"canHongbaoContineUse":false,"toFlowTimes":20,"iosConfigResouces":{"advertId":"2201386920","name":"天天红包","appImage":"https://m.360buyimg.com/babel/jfs/t1/151651/10/2228/274712/5f86c61fE9a0910e1/eb8c94fde6864768.gif","appLink":"https://carry.m.jd.com/babelDiy/Zeus/CvMVbdFGXPiWFFPCc934RiJfMPu/index.html?babelChannel=ttt1","cxyImage":"","cxyLink":"","type":"","openLink":false},"todayGotWaterGoalTask":{"canPop":false},"oldUserState":1,"leftUpResouces":{"advertId":"0501486949","name":"左上角icon","appImage":"https://m.360buyimg.com/babel/jfs/t1/180953/12/4823/17488/60a39cedE7a84dce5/ba0242f34ff25aa2.gif","appLink":"https://pro.m.jd.com/mall/active/3phLRPvjA2BuHqkPSMpwAURbzfW6/index.html","cxyImage":"https://m.360buyimg.com/babel/jfs/t1/180953/12/4823/17488/60a39cedE7a84dce5/ba0242f34ff25aa2.gif","cxyLink":"https://pro.m.jd.com/mall/active/3phLRPvjA2BuHqkPSMpwAURbzfW6/index.html","type":"","openLink":false},"minSupportAPPVersion":"8.5.4","lowFreqStatus":0,"funCollectionHasLimit":false,"message":null,"treeState":1,"rightDownResouces":{"advertId":"1601491737","name":"风车","appImage":"https://m.360buyimg.com/babel/jfs/t1/175738/30/9562/5879/609e4922Eec3f2492/d74a1c64e27afab7.gif","appLink":"https://pro.m.jd.com/mall/active/gkB3YtTdacWMdtiBJWothC6xPLw/index.html","cxyImage":"https://m.360buyimg.com/babel/jfs/t1/175738/30/9562/5879/609e4922Eec3f2492/d74a1c64e27afab7.gif","cxyLink":"https://pro.m.jd.com/mall/active/gkB3YtTdacWMdtiBJWothC6xPLw/index.html","type":"","openLink":false},"iconFirstPurchaseInit":false,"toFlowEnergy":40,"farmUserPro":{"totalEnergy":14610,"treeState":1,"groupSkuId":"10190616-53136309235","createTime":1566261803000,"treeEnergy":3510,"treeTotalEnergy":4000,"shareCode":"6048af3e3a72494d917371864fc72354","winTimes":1,"nickName":"俊华大哥","imageUrl":"http://storage.360buyimg.com/i.imageUpload/6a645f3535623336333438336635623131353534363131333935353139_mid.jpg","couponKey":"vender_BA#396a3ffd9ac840eb8c78d406bb779ca1","type":"usbfengshan","simpleName":"USB风扇","name":"USB电风扇","goodsImage":"https://m.360buyimg.com/babel/jfs/t1/190163/26/2460/128965/6098e9e8Eb26d2623/f7bd3b532a4ca269.jpg","skuId":"10030646612419","lastLoginDate":1621394781000,"newOldState":4,"oldMarkComplete":1,"commonState":31,"prizeLevel":2},"retainPopupLimit":1,"toBeginEnergy":30,"collectPopWindow":{"windowType":1,"type":0,"userLevel":-1},"leftDownResouces":null,"enableSign":false,"loadFriend":{"code":"0","statisticsTimes":null,"sysTime":1621407712653,"message":null,"firstAddUser":false},"hadCompleteXgTask":false,"groupGiftSurpriseIconLink":null,"oldUserIntervalTimes":[7,7,14,14,21],"toFruitTimes":59,"oldUserSendWater":["108","128","108","128","108","128","108","128","108","128"]}
+     */
+    private final String url_tree_info = "https://api.m.jd.com/client.action?functionId=initForFarm&body=%7B%22PATH%22%3A%221%22%2C%22ptag%22%3A%22138567.7.59%22%2C%22navStart%22%3A%222021-05-19T06%3A49%3A20.103Z%22%2C%22referer%22%3A%22http%3A%2F%2Fwq.jd.com%2Fwxapp%2Fpages%2Findex%2Findex%22%2C%22originUrl%22%3A%22%2Fpages%2Fgarden_new%2Fpages%2Findex%2Findex%3FPATH%3D1%22%2C%22originParams%22%3A%7B%22ptag%22%3A%22138567.7.59%22%7D%2C%22originOpts%22%3A%7B%7D%2C%22imageUrl%22%3A%22%22%2C%22nickName%22%3A%22%22%2C%22version%22%3A12%2C%22channel%22%3A2%7D&appid=wh5&loginType=1&loginWQBiz=ddnc";
     /**
      * @name 签到
      * @result {"amount":20,"code":"0","todayGotWaterGoalTask":{"canPop":false},"statisticsTimes":null,"signDay":1,"sysTime":1575614306624,"message":null}
@@ -44,6 +51,26 @@ public class FarmApi {
     private ReqLogService reqLogService;
 
     /**
+     * 果树信息
+     */
+    public TreeInfo getTreeInfo(String openId, String cookie) {
+        String resp = HttpUtil.doGet(url_signForFarm, cookie);
+        TreeInfo treeInfo = JSONObject.parseObject(resp, TreeInfo.class);
+        String result;
+        if (treeInfo.getCode() == 0) {
+            FarmUserProBean farmUserPro = treeInfo.getFarmUserPro();
+            result = String
+                .format("#### 获取果树信息成功, %s-%s ####", farmUserPro.getTreeTotalEnergy(), farmUserPro.getTreeEnergy());
+            log.info(result);
+        } else {
+            result = String.format("#### 获取果树信息失败, %s ####", treeInfo.getCode());
+            log.error(resp);
+        }
+//        reqLogService.addLog(PlatformEnum.JD_FARM.getCode(), openId, result, resp);
+        return treeInfo;
+    }
+
+    /**
      * 签到
      */
     public String signForFarm(String openId, String cookie) {
@@ -69,7 +96,10 @@ public class FarmApi {
         FarmResp farmResp = JSONObject.parseObject(resp, FarmResp.class);
         String result;
         if (farmResp.getCode() == 0) {
-            result = String.format("#### 浇水成功, 可用水滴: %s ####", farmResp.getTotalEnergy());
+            TreeInfo treeInfo = getTreeInfo(openId, cookie);
+            FarmUserProBean farmUserPro = treeInfo.getFarmUserPro();
+            result = String.format("#### 浇水成功, 还需%s, 可用水滴: %s ####",
+                farmResp.getTotalEnergy(), farmUserPro.getTreeTotalEnergy()-farmUserPro.getTreeEnergy());
             log.info(result);
         } else {
             result = String.format("#### 浇水失败, code: %s ####", farmResp.getCode());
@@ -84,30 +114,25 @@ public class FarmApi {
      */
     @SneakyThrows
     public String continuousWater(Integer count, String openId, String cookie) {
-        String resp = HttpUtil.doGet(url_waterGoodForFarm, cookie);
-        FarmResp farmResp = JSON.parseObject(resp, FarmResp.class);
-        String result = "";
-        if (farmResp.getCode() == 0) {
-            int pre = farmResp.getTotalEnergy() + 10;
-            result = String.format("#### 连续浇水开始, 可用水滴: %s ####%n", pre);
-            log.info(result);
-        }
-        count--;
+        TreeInfo treeInfo = getTreeInfo(openId, cookie);
+        FarmUserProBean farmUserPro = treeInfo.getFarmUserPro();
+        String result = String.format("#### 连续浇水开始, 可用水滴: %s ####%n", farmUserPro.getTotalEnergy());
         int success = 0;
-        int lastCount = 0;
         while (count > 0) {
             Thread.sleep(1000);
-            resp = HttpUtil.doGet(url_waterGoodForFarm, cookie);
-            farmResp = JSON.parseObject(resp, FarmResp.class);
-            if (farmResp.getCode() != 0) {
+            String resp = HttpUtil.doGet(url_waterGoodForFarm, cookie);
+            FarmResp farmResp = JSON.parseObject(resp, FarmResp.class);
+            if (farmResp.getCode() == 0) {
                 success++;
-                lastCount = farmResp.getTotalEnergy();
             }
             count--;
         }
-        result += String.format("#### 连续浇水结束, 成功%s次, 可用水滴: %s ####", success, lastCount);
+        treeInfo = getTreeInfo(openId, cookie);
+        farmUserPro = treeInfo.getFarmUserPro();
+        result += String.format("#### 连续浇水结束, 成功%s次, 还需%s, 可用水滴: %s ####",
+            success, farmUserPro.getTreeTotalEnergy() - farmUserPro.getTreeEnergy(), farmUserPro.getTotalEnergy());
 
-        reqLogService.addLog(PlatformEnum.JD_FARM.getCode(), openId, result, resp);
+        reqLogService.addLog(PlatformEnum.JD_FARM.getCode(), openId, result, null);
         return result;
     }
 
