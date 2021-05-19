@@ -19,6 +19,11 @@ public class FeignFallBackFactory implements FallbackFactory<CloudFeignClient> {
             }
 
             @Override
+            public String tempPush(String openId, String body) {
+                return null;
+            }
+
+            @Override
             public String pushResumeMsg(Map<String, Object> map) {
                 log.error("in pushResumeMsg...");
                 return null;
