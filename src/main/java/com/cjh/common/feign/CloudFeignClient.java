@@ -19,6 +19,12 @@ public interface CloudFeignClient {
     String pushErrorMsg(@RequestParam String openId, @RequestParam String body);
 
     /**
+     * 推送消息
+     */
+    @GetMapping("/tempPush")
+    String tempPush(@RequestParam String openId, @RequestParam String body);
+
+    /**
      * 推送下载简历消息
      */
     @PostMapping("/message/pushResumeMsg")

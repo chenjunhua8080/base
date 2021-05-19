@@ -4,6 +4,7 @@ import com.cjh.common.api.FarmApi;
 import com.cjh.common.dao.BindFarmDao;
 import com.cjh.common.entity.ReqLog;
 import com.cjh.common.enums.PlatformEnum;
+import com.cjh.common.feign.CloudFeignClient;
 import com.cjh.common.po.BindFarmPO;
 import com.cjh.common.service.ReqLogService;
 import java.util.Date;
@@ -20,6 +21,7 @@ public class FarmController {
     private FarmApi farmApi;
     private ReqLogService reqLogService;
     private BindFarmDao bindFarmDao;
+    private CloudFeignClient feignClient;
 
     @GetMapping("/signForFarm")
     public String signForFarm(String openId) {
@@ -45,7 +47,9 @@ public class FarmController {
         if (bindFarmPO == null) {
             return "未绑定";
         }
-        return farmApi.continuousWater(count, openId, bindFarmPO.getCookie());
+        String result = farmApi.continuousWater(count, openId, bindFarmPO.getCookie());
+        feignClient.tempPush(openId, result);
+        return result;
     }
 
     @GetMapping("/firstWaterTaskForFarm")
