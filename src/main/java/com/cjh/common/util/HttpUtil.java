@@ -1,5 +1,6 @@
 package com.cjh.common.util;
 
+import com.cjh.common.boss.BossException;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
@@ -132,7 +133,11 @@ public class HttpUtil {
         if (body == null) {
             return null;
         }
-        log.debug("respBody - {}", body.contains("<html>") || body.contains("<dev>") ? body.length() : body);
+        log.info("respBody - {}", body.contains("<html>") || body.contains("<dev>") ? body.length() : body);
+        if (body.contains("/wapi/zpAntispam/verify")) {
+            log.warn("respBody - \n{}", body);
+            throw new BossException("命中风控验证...");
+        }
         T t;
         if (clazz == String.class) {
             return (T) body;
