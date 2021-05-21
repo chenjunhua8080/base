@@ -17,6 +17,7 @@ public class CommonApplication {
         SpringApplication.run(CommonApplication.class, args);
 
         System.out.println(111);
+        System.out.println(222);
     }
 
 }
