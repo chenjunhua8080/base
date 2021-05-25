@@ -17,6 +17,15 @@ public class JDController {
     private JDApi jdApi;
     private BindFarmDao bindFarmDao;
 
+    @GetMapping("/continuousFeed")
+    public String continuousFeed(@RequestParam("openId") String openId, @RequestParam("count") Integer count) {
+        BindFarmPO bindFarmPO = bindFarmDao.selectByOpenId(openId, PlatformEnum.JD_PETS.getCode());
+        if (bindFarmPO == null) {
+            return "未绑定";
+        }
+        return jdApi.continuousFeed(count, openId, bindFarmPO.getCookie());
+    }
+
     @GetMapping("/getHomeData")
     public String getHomeData(@RequestParam("openId") String openId) {
         BindFarmPO bindFarmPO = bindFarmDao.selectByOpenId(openId, PlatformEnum.JD_CAKE.getCode());
