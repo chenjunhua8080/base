@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -103,8 +104,30 @@ public class JDApi {
      * {"code":0,"data":{"bizCode":0,"bizMsg":"success","result":{"activityInfo":{"activityEndTime":1592668799000,"activityStartTime":1589903999000,"mainAwardStartTime":1592481600000,"mainWaitLotteryStartTime":1592467200000,"nowTime":1590291850715},"cakeBakerInfo":{"jdCipher":0,"raiseInfo":{"brandFlag":true,"buttonStatus":1,"curLevelStartScore":"600","firstStatus":0,"fullFlag":false,"levelImageList":["https://m.360buyimg.com/babel/jfs/t1/123756/31/152/48661/5eb3b25aE9bd0a75a/c6a314732a2a1d84.png","https://m.360buyimg.com/babel/jfs/t1/111636/5/5442/45217/5eb3b2afEfb9ba929/15cf8a90ae00dd0c.png","https://m.360buyimg.com/babel/jfs/t1/121050/11/155/44829/5eb3b2c3Ebb2a7a8d/708e52f055ddc5f9.png"],"maxLevelScore":"156850","nextLevelScore":"1400","pkButtonStatus":1,"raiseButtonShow":2,"remainScore":"626","scoreLevel":3,"signPopStatus":0,"totalScore":"1226","usedScore":"600","wxPayStatus":0},"secretp":"Vl4IStM3QydXJKE38Wr7YB6e33c","shareMiniprogramSwitch":0,"userType":1}},"success":true},"msg":"调用成功"}
      */
     private final String url_cakebaker_getHomeData = "http://api.m.jd.com/client.action?functionId=cakebaker_getHomeData";
+    /**
+     * 签到
+     */
+    private final String dog_url_getSignReward = "https://api.m.jd.com/client.action?functionId=getSignReward&appid=wh5&loginType=1&loginWQBiz=pet-town";
+    /**
+     * 喂食
+     */
+    private final String dog_url_feedPets = "https://api.m.jd.com/client.action?functionId=feedPets&appid=wh5&loginType=1&loginWQBiz=pet-town";
+    /**
+     * 收集
+     */
+    private final String dog_url_energyCollect = "https://api.m.jd.com/client.action?functionId=energyCollect&appid=wh5&loginType=1&loginWQBiz=pet-town&body=%7B%22place%22%3AINDEX%7D";
+    /**
+     * 三餐
+     */
+    private final String dog_url_getThreeMealReward = "https://api.m.jd.com/client.action?functionId=getThreeMealReward&appid=wh5&loginType=1&loginWQBiz=pet-town";
+    /**
+     * 浏览
+     */
+    private final String dog_url_getSingleShopReward = "https://api.m.jd.com/client.action?functionId=getSingleShopReward&appid=wh5&loginType=1&loginWQBiz=pet-town";
     private ReqLogService reqLogService;
     private CloudFeignClient cloudFeignClient;
+
+    //################################### 宠物 ###########################################
 
     public static void main(String[] args) {
         String cookie =
@@ -117,6 +140,12 @@ public class JDApi {
 //        JDApi jdApi = new JDApi(null, null);
 //        jdApi.getHomeData("ccc", cookie, false);
 //        jdApi.collectScore("ccc", cookie);
+
+        int i = 13 / 5 + 1;
+        int j = 13 % 5;
+        System.out.println(i);
+        System.out.println(j);
+
     }
 
     /**
@@ -136,11 +165,6 @@ public class JDApi {
         }
         return strings;
     }
-
-    /**
-     * 签到
-     */
-    private final String dog_url_getSignReward = "https://api.m.jd.com/client.action?functionId=getSignReward&appid=wh5&loginType=1&loginWQBiz=pet-town";
 
     /**
      * 我的金币
@@ -198,24 +222,6 @@ public class JDApi {
         result += String.format("#### 总计领取  : %s ####", count);
         return result;
     }
-
-    //################################### 宠物 ###########################################
-    /**
-     * 喂食
-     */
-    private final String dog_url_feedPets = "https://api.m.jd.com/client.action?functionId=feedPets&appid=wh5&loginType=1&loginWQBiz=pet-town";
-    /**
-     * 收集
-     */
-    private final String dog_url_energyCollect = "https://api.m.jd.com/client.action?functionId=energyCollect&appid=wh5&loginType=1&loginWQBiz=pet-town&body=%7B%22place%22%3AINDEX%7D";
-    /**
-     * 三餐
-     */
-    private final String dog_url_getThreeMealReward = "https://api.m.jd.com/client.action?functionId=getThreeMealReward&appid=wh5&loginType=1&loginWQBiz=pet-town";
-    /**
-     * 浏览
-     */
-    private final String dog_url_getSingleShopReward = "https://api.m.jd.com/client.action?functionId=getSingleShopReward&appid=wh5&loginType=1&loginWQBiz=pet-town";
 
     /**
      * 收集金币
@@ -345,6 +351,97 @@ public class JDApi {
             cloudFeignClient.pushErrorMsg(openId, result);
         }
         reqLogService.addLog(PlatformEnum.JD_PETS.getCode(), openId, result, json);
+    }
+
+    /**
+     * 收集能量
+     *
+     * @param cookie 用户绑定cookie
+     * @param energy 能量
+     * @return NeedCollectEnergy
+     */
+    public int energyCollect2(String cookie, PetPlaceInfoListBean energy) {
+        HashMap<String, Object> headers = new HashMap<>();
+        headers.put("cookie", cookie);
+        headers.put("User-Agent",
+            "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36");
+        String url = dog_url_energyCollect.replace("INDEX", String.valueOf(energy.getPlace()));
+        String json = HttpUtil.doPost(url, headers, null, String.class);
+        DogEnergyCollectResp resp = JsonUtil.json2java(json, DogEnergyCollectResp.class);
+        if (resp.isSuccess()) {
+            return resp.getResult().getNeedCollectEnergy();
+        }
+        return -1;
+    }
+
+    /**
+     * 连续喂食
+     */
+    @SneakyThrows
+    public String continuousFeed(Integer count, String openId, String cookie) {
+        int success = 0;
+        int needFeed = 0;
+        HashMap<String, Object> headers = new HashMap<>();
+        headers.put("cookie", cookie);
+        headers.put("User-Agent",
+            "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36");
+        DogFeedPetsResp resp = null;
+        List<PetPlaceInfoListBean> energyList;
+        if (count <= 5) {
+            while (count > 0) {
+                Thread.sleep(3000);
+                String json = HttpUtil.doPost(dog_url_feedPets, headers, null, String.class);
+                resp = JsonUtil.json2java(json, DogFeedPetsResp.class);
+                if (resp.isSuccess()) {
+                    success++;
+                }
+                count--;
+            }
+            energyList = resp.getResult().getPetPlaceInfoList();
+            //调用收集
+            if (energyList != null) {
+                for (PetPlaceInfoListBean item : energyList) {
+                    if (item.getEnergy() != 0) {
+                        Thread.sleep(2000);
+                        needFeed = energyCollect2(cookie, item);
+                    }
+                }
+            }
+        } else {
+            int whileCount = count / 5 + 1;
+            int whileLastCount = count % 5;
+            while (whileCount > 0) {
+                int itemCount;
+                if (whileCount == 1) {
+                    itemCount = whileLastCount;
+                } else {
+                    itemCount = 5;
+                }
+                while (itemCount > 0) {
+                    Thread.sleep(5000);
+                    String json = HttpUtil.doPost(dog_url_feedPets, headers, null, String.class);
+                    resp = JsonUtil.json2java(json, DogFeedPetsResp.class);
+                    if (resp.isSuccess()) {
+                        success++;
+                    }
+                    itemCount--;
+                }
+                energyList = resp.getResult().getPetPlaceInfoList();
+                //调用收集
+                if (energyList != null) {
+                    for (PetPlaceInfoListBean item : energyList) {
+                        if (item.getEnergy() != 0) {
+                            Thread.sleep(2000);
+                            needFeed = energyCollect2(cookie, item);
+                        }
+                    }
+                }
+                whileCount--;
+            }
+        }
+        String msg = String.format("连续喂食%s次，成功%s次，还需%s", count, success, needFeed);
+        reqLogService.addLog(PlatformEnum.JD_PETS.getCode(), openId, msg, null);
+        return msg;
     }
 
     /**
