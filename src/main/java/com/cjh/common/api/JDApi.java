@@ -389,14 +389,15 @@ public class JDApi {
         DogFeedPetsResp resp = null;
         List<PetPlaceInfoListBean> energyList;
         if (count <= 5) {
-            while (count > 0) {
+            int whileCount = count;
+            while (whileCount > 0) {
                 Thread.sleep(3000);
                 String json = HttpUtil.doPost(dog_url_feedPets, headers, null, String.class);
                 resp = JsonUtil.json2java(json, DogFeedPetsResp.class);
                 if (resp.isSuccess()) {
                     success++;
                 }
-                count--;
+                whileCount--;
             }
             foodAmount = resp.getResult().getFoodAmount();
             energyList = resp.getResult().getPetPlaceInfoList();
@@ -404,7 +405,7 @@ public class JDApi {
             if (energyList != null) {
                 for (PetPlaceInfoListBean item : energyList) {
                     if (item.getEnergy() != 0) {
-                        Thread.sleep(2000);
+                        Thread.sleep(1000);
                         needFeed = energyCollect2(cookie, item);
                     }
                 }
@@ -420,7 +421,7 @@ public class JDApi {
                     itemCount = 5;
                 }
                 while (itemCount > 0) {
-                    Thread.sleep(5000);
+                    Thread.sleep(3000);
                     String json = HttpUtil.doPost(dog_url_feedPets, headers, null, String.class);
                     resp = JsonUtil.json2java(json, DogFeedPetsResp.class);
                     if (resp.isSuccess()) {
@@ -433,7 +434,7 @@ public class JDApi {
                 if (energyList != null) {
                     for (PetPlaceInfoListBean item : energyList) {
                         if (item.getEnergy() != 0) {
-                            Thread.sleep(2000);
+                            Thread.sleep(1000);
                             needFeed = energyCollect2(cookie, item);
                         }
                     }
