@@ -381,6 +381,7 @@ public class JDApi {
     public String continuousFeed(Integer count, String openId, String cookie) {
         int success = 0;
         int needFeed = 0;
+        int foodAmount = 0;
         HashMap<String, Object> headers = new HashMap<>();
         headers.put("cookie", cookie);
         headers.put("User-Agent",
@@ -397,6 +398,7 @@ public class JDApi {
                 }
                 count--;
             }
+            foodAmount = resp.getResult().getFoodAmount();
             energyList = resp.getResult().getPetPlaceInfoList();
             //调用收集
             if (energyList != null) {
@@ -439,7 +441,7 @@ public class JDApi {
                 whileCount--;
             }
         }
-        String msg = String.format("连续喂食%s次，成功%s次，还需%s", count, success, needFeed);
+        String msg = String.format("连续喂食%s次，成功%s次，还需%s，可用%s", count, success, needFeed, foodAmount);
         reqLogService.addLog(PlatformEnum.JD_PETS.getCode(), openId, msg, null);
         return msg;
     }
