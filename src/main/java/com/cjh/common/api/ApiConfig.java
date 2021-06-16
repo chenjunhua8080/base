@@ -57,6 +57,7 @@ public class ApiConfig {
     @Data
     public static class BossConfig {
 
+        private Boolean emailWorking;
         private String subjectMatch;
     }
 
