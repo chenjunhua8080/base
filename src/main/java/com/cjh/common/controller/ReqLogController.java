@@ -3,11 +3,14 @@ package com.cjh.common.controller;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cjh.common.entity.ReqLog;
 import com.cjh.common.service.ReqLogService;
+import com.google.common.collect.Lists;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -51,6 +54,10 @@ public class ReqLogController {
      */
     @GetMapping("/page")
     public R selectAll(Page<ReqLog> page, ReqLog reqLog) {
+        OrderItem orderItem=new OrderItem();
+        orderItem.setColumn("id");
+        orderItem.setAsc(false);
+        page.setOrders(Lists.newArrayList(orderItem));
         return R.ok(reqLogService.page(page, new QueryWrapper<>(reqLog)));
     }
 

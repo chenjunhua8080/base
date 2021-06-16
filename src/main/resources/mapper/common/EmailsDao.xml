@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cjh.common.dao.EmailsDao">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.cjh.common.po.EmailsPO" id="emailsMap">
+        <result property="id" column="id"/>
+        <result property="fromMail" column="from_mail"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="downloadTime" column="download_time"/>
+        <result property="orgTitle" column="org_title"/>
+        <result property="orgContent" column="org_content"/>
+        <result property="orgFrom" column="org_from"/>
+        <result property="orgTo" column="org_to"/>
+        <result property="orgSendTime" column="org_send_time"/>
+        <result property="attrSrc" column="attr_src"/>
+    </resultMap>
+
+    <sql id="baseColumnList">
+        id,from_mail,create_time,update_time,download_time,org_title,org_content,org_from,org_to,org_send_time
+    </sql>
+
+    <sql id="baseWhereSql">
+        <where>
+            <if test="params.id != null">
+                and t.id = #{params.id}
+            </if>
+            <if test="params.fromMail != null">
+                and t.from_mail = #{params.fromMail}
+            </if>
+            <if test="params.createTime != null">
+                and t.create_time = #{params.createTime}
+            </if>
+            <if test="params.updateTime != null">
+                and t.update_time = #{params.updateTime}
+            </if>
+            <if test="params.downloadTime != null">
+                and t.download_time = #{params.downloadTime}
+            </if>
+            <if test="params.orgTitle != null">
+                and t.org_title = #{params.orgTitle}
+            </if>
+            <if test="params.orgContent != null">
+                and t.org_content = #{params.orgContent}
+            </if>
+            <if test="params.orgFrom != null">
+                and t.org_from = #{params.orgFrom}
+            </if>
+            <if test="params.orgTo != null">
+                and (t.org_to = #{params.orgTo} or t.org_to like "%"#{params.orgTo}"%" )
+            </if>
+            <if test="params.orgSendTime != null">
+                and t.org_send_time = #{params.orgSendTime}
+            </if>
+        </where>
+    </sql>
+
+    <select id="listByPage" resultType="com.cjh.common.po.EmailsPO">
+        select
+        <include refid="baseColumnList"/>
+        from emails t
+        <include refid="baseWhereSql"/>
+        order by id desc
+    </select>
+
+</mapper>
