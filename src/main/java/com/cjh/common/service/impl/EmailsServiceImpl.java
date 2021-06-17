@@ -11,11 +11,11 @@ import com.cjh.common.dao.EmailsDao;
 import com.cjh.common.po.EmailsPO;
 import com.cjh.common.request.EmailsRequest;
 import com.cjh.common.service.EmailsService;
+import com.google.common.collect.Lists;
 import java.io.File;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * 邮件表
@@ -126,11 +127,26 @@ public class EmailsServiceImpl extends ServiceImpl<EmailsDao, EmailsPO> implemen
     }
 
     private File handleData(EmailsRequest emails, List<EmailsPO> list) {
-        Set<String> set = list.stream().map(EmailsPO::getAttrSrc).filter(Objects::nonNull).collect(Collectors.toSet());
-        if (CollectionUtils.isEmpty(set)) {
+        list = list.stream().filter(po -> !StringUtils.isEmpty(po.getAttrSrc())).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(list)) {
             throw new BossException("附件地址为空！");
         }
-        File[] files = set.stream().map(File::new).toArray(File[]::new);
+        List<File> fileList = Lists.newArrayList();
+        for (Iterator<EmailsPO> iterator = list.iterator(); iterator.hasNext(); ) {
+            EmailsPO po = iterator.next();
+            File file = new File(po.getAttrSrc());
+            if (file.exists()) {
+                fileList.add(file);
+            } else {
+                iterator.remove();
+            }
+        }
+//        Set<String> set = list.stream().map(EmailsPO::getAttrSrc).collect(Collectors.toSet());
+//        File[] files = set.stream().map(File::new).filter(File::exists).toArray(File[]::new);
+        File[] files = fileList.toArray(new File[0]);
+        if (ObjectUtils.isEmpty(files)) {
+            throw new BossException("附件文件为空！");
+        }
         File zipFile = new File(createDir(emails.getFromMail()) + "_共" + files.length + "份.zip");
         File zip = ZipUtil.zip(zipFile, false, files);
 
