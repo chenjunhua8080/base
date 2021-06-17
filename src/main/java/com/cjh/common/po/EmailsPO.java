@@ -33,17 +33,17 @@ public class EmailsPO implements Serializable {
 	/**
 	 * 
 	 */
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date createTime;
 	/**
 	 * 
 	 */
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date updateTime;
 	/**
 	 * 下载时间
 	 */
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date downloadTime;
 	/**
 	 * 原邮件标题
@@ -64,7 +64,7 @@ public class EmailsPO implements Serializable {
 	/**
 	 * 原邮件发送时间
 	 */
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date orgSendTime;
 	/**
 	 * 附件文件本地地址
