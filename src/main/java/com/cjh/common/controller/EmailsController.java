@@ -1,6 +1,8 @@
 package com.cjh.common.controller;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.IoUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.cjh.common.po.EmailsPO;
@@ -9,10 +11,14 @@ import com.cjh.common.service.EmailsService;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -55,36 +61,31 @@ public class EmailsController {
      */
     @RequestMapping("/downloadByIds")
     public void downloadByIds(EmailsRequest emails, HttpServletResponse response) {
-        File zip = emailsService.zip(emails);
-        try (ServletOutputStream outputStream = response.getOutputStream()) {
-            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(zip.getName(), "UTF-8"));
-            response.setContentType("application/octet-stream");
-            response.setContentLengthLong(zip.length());
-            response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
-            FileUtil.writeToStream(zip, outputStream);
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
-        } finally {
-            log.info("删除{}：{}", zip.getName(), zip.delete());
+        File zip = null;
+        Exception error = null;
+        try {
+            zip = emailsService.zip(emails);
+        } catch (Exception e) {
+            e.printStackTrace();
+            error = e;
         }
+        outputFile(response, zip, true, error);
     }
-
 
     /**
      * 单个下载
      */
     @RequestMapping("/downloadById")
     public void downloadById(EmailsRequest emails, HttpServletResponse response) {
-        File file = emailsService.down(emails);
-        try (ServletOutputStream outputStream = response.getOutputStream()) {
-            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(file.getName(), "UTF-8"));
-            response.setContentType("application/octet-stream");
-            response.setContentLengthLong(file.length());
-            response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
-            FileUtil.writeToStream(file, outputStream);
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
+        File file = null;
+        Exception error = null;
+        try {
+            file = emailsService.down(emails);
+        } catch (Exception e) {
+            e.printStackTrace();
+            error = e;
         }
+        outputFile(response, file, false, error);
     }
 
     /**
@@ -92,15 +93,45 @@ public class EmailsController {
      */
     @RequestMapping("/downloadByNever")
     public void downloadByNever(EmailsRequest emails, HttpServletResponse response) {
-        File zip = emailsService.downloadByNever(emails);
+        File zip = null;
+        Exception error = null;
+        try {
+            zip = emailsService.downloadByNever(emails);
+        } catch (Exception e) {
+            e.printStackTrace();
+            error = e;
+        }
+        outputFile(response, zip, true, error);
+    }
+
+    @SneakyThrows
+    private void outputFile(HttpServletResponse response, File zip, boolean deleteFile, Exception error) {
+        if (!ObjectUtils.isEmpty(error)) {
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("application/json;charset=UTF-8");
+            try (ServletOutputStream outputStream = response.getOutputStream()) {
+                String msg = StringUtils.isEmpty(error.getMessage()) ? error.toString() : error.getMessage();
+                IoUtil.write(outputStream, false,
+                    JSON.toJSONString(R.failed(msg)).getBytes(StandardCharsets.UTF_8));
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+            return;
+        }
+        String encodeFileName = URLEncoder.encode(zip.getName(), "UTF-8");
+        response.setContentType("application/octet-stream");
+        response.setContentLengthLong(zip.length());
+        response.setHeader("Content-Disposition", "attachment;filename=" + encodeFileName);
+        //设置这个才会给前端拿到文件名
+        response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
         try (ServletOutputStream outputStream = response.getOutputStream()) {
-            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(zip.getName(), "UTF-8"));
-            response.setContentType("application/octet-stream");
-            response.setContentLengthLong(zip.length());
-            response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
             FileUtil.writeToStream(zip, outputStream);
         } catch (IOException ioException) {
             ioException.printStackTrace();
+        } finally {
+            if (deleteFile) {
+                log.info("删除{}：{}", zip.getName(), zip.delete());
+            }
         }
     }
 
