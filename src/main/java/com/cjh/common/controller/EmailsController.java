@@ -59,6 +59,7 @@ public class EmailsController {
         try (ServletOutputStream outputStream = response.getOutputStream()) {
             response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(zip.getName(), "UTF-8"));
             response.setContentType("application/octet-stream");
+            response.setContentLengthLong(zip.length());
             response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
             FileUtil.writeToStream(zip, outputStream);
         } catch (IOException ioException) {
@@ -78,6 +79,7 @@ public class EmailsController {
         try (ServletOutputStream outputStream = response.getOutputStream()) {
             response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(file.getName(), "UTF-8"));
             response.setContentType("application/octet-stream");
+            response.setContentLengthLong(file.length());
             response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
             FileUtil.writeToStream(file, outputStream);
         } catch (IOException ioException) {
@@ -94,6 +96,7 @@ public class EmailsController {
         try (ServletOutputStream outputStream = response.getOutputStream()) {
             response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(zip.getName(), "UTF-8"));
             response.setContentType("application/octet-stream");
+            response.setContentLengthLong(zip.length());
             response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
             FileUtil.writeToStream(zip, outputStream);
         } catch (IOException ioException) {
