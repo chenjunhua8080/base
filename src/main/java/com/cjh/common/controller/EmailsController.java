@@ -43,7 +43,7 @@ public class EmailsController {
     @RequestMapping("/list")
     public R<IPage<EmailsPO>> list(EmailsRequest emails) throws InterruptedException {
         IPage<EmailsPO> pageData = emailsService.listByPage(emails);
-        Thread.sleep(1000);
+//        Thread.sleep(1000);
         return R.ok(pageData);
     }
 
