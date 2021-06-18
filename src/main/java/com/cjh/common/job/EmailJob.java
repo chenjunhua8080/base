@@ -17,7 +17,7 @@ import com.cjh.common.service.EmailsService;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
@@ -75,6 +75,8 @@ public class EmailJob {
     private EmailsService emailsService;
 
     public static List<EmailsPO> readEmail(String emailAccount, String auth) throws Exception {
+        System.setProperty("sun.jnu.encoding ","utf-8");
+
         List<EmailsPO> list = new ArrayList<>();
 
         ApiConfig apiConfig = SpringUtil.getBean(ApiConfig.class);
@@ -234,7 +236,7 @@ public class EmailJob {
                     fileName = fileName.replaceAll("\\|", "-");
                     log.info(Part.ATTACHMENT + "...................\n{}", fileName);
                     InputStream is = bodyPart.getInputStream();
-                    String fileFullPath = filePath + File.separator + fileName;
+                    String fileFullPath = filePath + File.separator + new String(fileName.getBytes("utf-8"));
                     log.info(fileFullPath);
                     copy(is, fileFullPath);
                     return fileFullPath;
@@ -276,15 +278,26 @@ public class EmailJob {
     }
 
     public static void main(String[] args) throws IOException {
-
+//        System.setProperty("sun.jnu.encoding","UTF-8");
 //        FileUtil.getOutputStream("C:\\Users\\11095\\resume\\1249709667@qq.com\\2021-05-29_10\\【项目助理 | 广州4-5K】罗镜标 2年.jpg");
-        File file = new File("C:\\Users\\11095\\resume\\1249709667@qq.com\\2021-05-29_10\\【项目助理 - 广州4-5K】罗镜标 2年.jpg");
+//        String path = "C:\\Users\\11095\\resume\\1249709667@qq.com\\2021-06-17";
+//        String name = "【HTML前端工程师 - 广州4-7K】陈剑峰 3年.pdf";
+
+        String path = "/resume";
+        String name = "【HTML前端工程师 - 广州4-7K】陈剑峰 3年.pdf";
+        File file = new File(path + File.separator + name);
 //        FileUtil.getOutputStream(file);
 //        new FileOutputStream(file);
 
-        file.createNewFile();
+//        file.createNewFile();
 
-        new FileOutputStream(file);
+//        new FileOutputStream(file);
+        System.out.println(file.length());
+
+        InputStream is = new FileInputStream(file);
+        String fileFullPath = path + File.separator + ((int)(Math.random()*100)) + new String(name.getBytes("utf-8"));
+        log.info(fileFullPath);
+        copy(is, fileFullPath);
     }
 
     @Scheduled(cron = "0 0/5 * * * ?")
