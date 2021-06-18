@@ -57,6 +57,8 @@ public class EmailService {
         .build();
 
     public static Map<String, Object> getResumeZip(String emailAccount, String auth) throws Exception {
+        System.setProperty("sun.jnu.encoding ","utf-8");
+
         Map<String, Object> map = Maps.newHashMap();
         ApiConfig apiConfig = SpringUtil.getBean(ApiConfig.class);
 

@@ -13,9 +13,12 @@ import com.cjh.common.request.EmailsRequest;
 import com.cjh.common.service.EmailsService;
 import com.google.common.collect.Lists;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,8 +49,9 @@ public class EmailsServiceImpl extends ServiceImpl<EmailsDao, EmailsPO> implemen
         String filePath = System.getProperty("user.home")
             + File.separator + "resume"
             + File.separator + username
+            + File.separator + DateUtil.formatDate(DateUtil.date())
             + File.separator + System.currentTimeMillis()
-            + File.separator + DateUtil.formatDate(DateUtil.date());
+            + File.separator;
         File dir = new File(filePath);
         if (dir.exists()) {
             int i = 2;
@@ -127,7 +131,12 @@ public class EmailsServiceImpl extends ServiceImpl<EmailsDao, EmailsPO> implemen
     }
 
     private File handleData(EmailsRequest emails, List<EmailsPO> list) {
-        list = list.stream().filter(po -> !StringUtils.isEmpty(po.getAttrSrc())).collect(Collectors.toList());
+        list = list.stream().filter(po -> !StringUtils.isEmpty(po.getAttrSrc())).collect(
+            Collectors.collectingAndThen(
+                Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(EmailsPO::getAttrSrc)))
+                , ArrayList::new
+            )
+        );
         if (CollectionUtils.isEmpty(list)) {
             throw new BossException("附件地址为空！");
         }
@@ -147,7 +156,13 @@ public class EmailsServiceImpl extends ServiceImpl<EmailsDao, EmailsPO> implemen
         if (ObjectUtils.isEmpty(files)) {
             throw new BossException("附件文件为空！");
         }
-        File zipFile = new File(createDir(emails.getFromMail()) + "_共" + files.length + "份.zip");
+        String name = "";
+        try {
+            name = new String((DateUtil.formatDate(DateUtil.date()) + "_共" + files.length + "份.zip").getBytes("utf-8"));
+        } catch (Exception ignored) {
+
+        }
+        File zipFile = new File(createDir(emails.getOrgTo()) + name);
         File zip = ZipUtil.zip(zipFile, false, files);
 
         List<EmailsPO> updateList = list.stream().map(item -> {
@@ -161,4 +176,5 @@ public class EmailsServiceImpl extends ServiceImpl<EmailsDao, EmailsPO> implemen
 
         return zip;
     }
+
 }
