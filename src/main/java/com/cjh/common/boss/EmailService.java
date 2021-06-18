@@ -38,6 +38,7 @@ import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.internet.MimeUtility;
 import javax.mail.search.FlagTerm;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -57,7 +58,6 @@ public class EmailService {
         .build();
 
     public static Map<String, Object> getResumeZip(String emailAccount, String auth) throws Exception {
-        System.setProperty("sun.jnu.encoding ","utf-8");
 
         Map<String, Object> map = Maps.newHashMap();
         ApiConfig apiConfig = SpringUtil.getBean(ApiConfig.class);
@@ -147,9 +147,7 @@ public class EmailService {
 
         //压缩附件
         if (resumeCount.get() > 0) {
-            File zip = ZipUtil.zip(filePath, filePath +
-                new String(("_共" + resumeCount + "份)").getBytes(StandardCharsets.UTF_8))
-                + ".zip");
+            File zip = ZipUtil.zip(filePath, filePath + "_共" + resumeCount + "份.zip");
             log.info(zip.getAbsolutePath());
             map.put("link", "http://resume.springeasy.cn/"
                 + emailAccount + "/"
@@ -197,7 +195,7 @@ public class EmailService {
                     fileName = MimeUtility.decodeText(fileName);
                     log.info(Part.ATTACHMENT + "...................\n{}", fileName);
                     InputStream is = bodyPart.getInputStream();
-                    String fileFullPath = filePath + File.separator + new String(fileName.getBytes("utf-8"));
+                    String fileFullPath = filePath + File.separator + fileName;
                     log.info(fileFullPath);
                     copy(is, fileFullPath);
                     return true;
@@ -243,9 +241,12 @@ public class EmailService {
     /**
      * 文件拷贝，在用户进行附件下载的时候，可以把附件的InputStream传给用户进行下载
      */
+    @SneakyThrows
     private static void copy(InputStream is, String fileFullPath) {
+        System.setProperty("sun.jnu.encoding ","utf-8");
+        File file = new File(new String(fileFullPath.getBytes("utf-8")));
         BufferedReader reader = IoUtil.getReader(is, StandardCharsets.ISO_8859_1);
-        BufferedOutputStream outputStream = FileUtil.getOutputStream(fileFullPath);
+        BufferedOutputStream outputStream = FileUtil.getOutputStream(file);
         OutputStreamWriter writer = IoUtil.getWriter(outputStream, StandardCharsets.ISO_8859_1);
         IoUtil.copy(reader, writer, NioUtil.DEFAULT_MIDDLE_BUFFER_SIZE);
         IoUtil.close(writer);
