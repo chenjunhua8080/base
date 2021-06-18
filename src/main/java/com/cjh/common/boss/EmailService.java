@@ -147,7 +147,9 @@ public class EmailService {
 
         //压缩附件
         if (resumeCount.get() > 0) {
-            File zip = ZipUtil.zip(filePath, filePath + "_共" + resumeCount + "份.zip");
+            File zip = ZipUtil.zip(filePath, filePath +
+                new String(("_共" + resumeCount + "份)").getBytes(StandardCharsets.UTF_8))
+                + ".zip");
             log.info(zip.getAbsolutePath());
             map.put("link", "http://resume.springeasy.cn/"
                 + emailAccount + "/"
@@ -195,7 +197,7 @@ public class EmailService {
                     fileName = MimeUtility.decodeText(fileName);
                     log.info(Part.ATTACHMENT + "...................\n{}", fileName);
                     InputStream is = bodyPart.getInputStream();
-                    String fileFullPath = filePath + File.separator + fileName;
+                    String fileFullPath = filePath + File.separator + new String(fileName.getBytes("utf-8"));
                     log.info(fileFullPath);
                     copy(is, fileFullPath);
                     return true;
