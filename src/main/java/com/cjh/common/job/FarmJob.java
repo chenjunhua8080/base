@@ -45,7 +45,7 @@ public class FarmJob {
         for (UserPO user : users) {
             bindFarmPO = bindFarmDao.selectByOpenId(user.getOpenId(), PlatformEnum.JD_FARM.getCode());
             if (bindFarmPO != null) {
-                farmApi.gotThreeMealForFarm(user.getOpenId(), bindFarmPO.getCookie());
+                farmApi.gotThreeMealForFarmV13(user.getOpenId(), bindFarmPO.getCookie());
             }
         }
         log.info("#### 定时任务[水滴 - 三餐] 结束: {} ####", DateUtil.format(new Date()));
@@ -64,7 +64,7 @@ public class FarmJob {
         for (UserPO user : users) {
             bindFarmPO = bindFarmDao.selectByOpenId(user.getOpenId(), PlatformEnum.JD_FARM.getCode());
             if (bindFarmPO != null) {
-                farmApi.signForFarm(user.getOpenId(), bindFarmPO.getCookie());
+                farmApi.signForFarmV13(user.getOpenId(), bindFarmPO.getCookie());
             }
         }
         log.info("#### 定时任务[水滴 - 签到] 结束: {} ####", DateUtil.format(new Date()));
