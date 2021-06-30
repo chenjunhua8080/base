@@ -408,19 +408,20 @@ public class JDApi {
                 resp = JsonUtil.json2java(json, DogFeedPetsResp.class);
                 if (resp.isSuccess()) {
                     success++;
-                }
-                whileCount--;
-            }
-            foodAmount = resp.getResult().getFoodAmount();
-            energyList = resp.getResult().getPetPlaceInfoList();
-            //调用收集
-            if (energyList != null) {
-                for (PetPlaceInfoListBean item : energyList) {
-                    if (item.getEnergy() != 0) {
-                        Thread.sleep(1000);
-                        needFeed = energyCollect2(cookie, item);
+                    foodAmount = resp.getResult().getFoodAmount();
+                    //调用收集
+                    energyList = resp.getResult().getPetPlaceInfoList();
+                    if (energyList != null) {
+                        for (PetPlaceInfoListBean item : energyList) {
+                                foodAmount = foodAmount + item.getEnergy();
+                            if (item.getEnergy() != 0) {
+                                Thread.sleep(2000);
+                                needFeed = energyCollect2(cookie, item);
+                            }
+                        }
                     }
                 }
+                whileCount--;
             }
         } else {
             int whileCount = count / 5 + 1;
@@ -438,18 +439,20 @@ public class JDApi {
                     resp = JsonUtil.json2java(json, DogFeedPetsResp.class);
                     if (resp.isSuccess()) {
                         success++;
-                    }
-                    itemCount--;
-                }
-                energyList = resp.getResult().getPetPlaceInfoList();
-                //调用收集
-                if (energyList != null) {
-                    for (PetPlaceInfoListBean item : energyList) {
-                        if (item.getEnergy() != 0) {
-                            Thread.sleep(1000);
-                            needFeed = energyCollect2(cookie, item);
+                        foodAmount = resp.getResult().getFoodAmount();
+                        //调用收集
+                        energyList = resp.getResult().getPetPlaceInfoList();
+                        if (energyList != null) {
+                            for (PetPlaceInfoListBean item : energyList) {
+                                foodAmount = foodAmount + item.getEnergy();
+                                if (item.getEnergy() != 0) {
+                                    Thread.sleep(2000);
+                                    needFeed = energyCollect2(cookie, item);
+                                }
+                            }
                         }
                     }
+                    itemCount--;
                 }
                 whileCount--;
             }
