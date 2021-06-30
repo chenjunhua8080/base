@@ -114,11 +114,13 @@ public class EmailJob {
         folder.open(Folder.READ_WRITE); // 设置对邮件帐户的访问权限
 
         int n = folder.getUnreadMessageCount();// 得到未读数量
-        log.info("未读数量: {}", n);
+        if (n>0){
+            log.info("未读数量: {}", n);
+        }
 
         //createDir
         String filePath = createDir(emailAccount);
-        log.info(filePath);
+        log.debug(filePath);
 
         //查找未读的邮件
         FlagTerm ft = new FlagTerm(new Flags(Flags.Flag.SEEN), false); // false代表未读，true代表已读
@@ -234,10 +236,10 @@ public class EmailJob {
                     String fileName = bodyPart.getFileName();
                     fileName = MimeUtility.decodeText(fileName);
                     fileName = fileName.replaceAll("\\|", "-");
-                    log.info(Part.ATTACHMENT + "...................\n{}", fileName);
+                    log.debug(Part.ATTACHMENT + "...................\n{}", fileName);
                     InputStream is = bodyPart.getInputStream();
                     String fileFullPath = filePath + File.separator + new String(fileName.getBytes("utf-8"));
-                    log.info(fileFullPath);
+                    log.debug(fileFullPath);
                     copy(is, fileFullPath);
                     return fileFullPath;
                 }
@@ -308,7 +310,7 @@ public class EmailJob {
             List<BindFarmPO> binds = bindFarmDao.selectList(queryWrapper);
             for (BindFarmPO bind : binds) {
                 String cookie = bind.getCookie();
-                log.info("read email... {}", cookie);
+                log.info("[----- email job: {} -----", cookie);
                 String[] split = cookie.split(";");
                 List<EmailsPO> list = readEmail(split[0], split[1]);
                 if (!CollectionUtils.isEmpty(list)) {
