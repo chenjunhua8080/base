@@ -35,6 +35,9 @@ public class FarmJob {
 
     @Scheduled(cron = "${job.farm.gotThreeMealForFarm}")
     public void gotThreeMealForFarm() {
+        if (!apiConfig.getFarmConfig().getWorking()) {
+            return;
+        }
         List<UserPO> users = userDao.selectList(null);
         log.info("#### 定时任务[水滴 - 三餐] 开始: {} ####", DateUtil.format(new Date()));
         log.info("#### 统计: {} ####", users.size());
@@ -51,6 +54,9 @@ public class FarmJob {
 
     @Scheduled(cron = "${job.farm.signForFarm}")
     public void signForFarm() {
+        if (!apiConfig.getFarmConfig().getWorking()) {
+            return;
+        }
         List<UserPO> users = userDao.selectList(null);
         log.info("#### 定时任务[水滴 - 签到] 开始: {} ####", DateUtil.format(new Date()));
         log.info("#### 统计: {} ####", users.size());
@@ -67,6 +73,9 @@ public class FarmJob {
 
     @Scheduled(cron = "${job.farm.waterGoodForFarm}")
     public void waterGoodForFarm() {
+        if (!apiConfig.getFarmConfig().getWorking()) {
+            return;
+        }
         List<UserPO> users = userDao.selectList(null);
         log.info("#### 定时任务[水滴 - 浇水] 开始: {} ####", DateUtil.format(new Date()));
         log.info("#### 统计: {} ####", users.size());
@@ -82,6 +91,9 @@ public class FarmJob {
 
     @Scheduled(cron = "${job.farm.firstWaterTaskForFarm}")
     public void firstWaterTaskForFarm() {
+        if (!apiConfig.getFarmConfig().getWorking()) {
+            return;
+        }
         List<UserPO> users = userDao.selectList(null);
         log.info("#### 定时任务[水滴 - 首浇奖励] 开始: {} ####", DateUtil.format(new Date()));
         log.info("#### 统计: {} ####", users.size());
