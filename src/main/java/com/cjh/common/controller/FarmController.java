@@ -29,7 +29,7 @@ public class FarmController {
         if (bindFarmPO == null) {
             return "未绑定";
         }
-        return farmApi.signForFarm(openId, bindFarmPO.getCookie());
+        return farmApi.signForFarmV13(openId, bindFarmPO.getCookie());
     }
 
     @GetMapping("/waterGoodForFarm")
@@ -67,7 +67,7 @@ public class FarmController {
         if (bindFarmPO == null) {
             return "未绑定";
         }
-        return farmApi.gotThreeMealForFarm(openId, bindFarmPO.getCookie());
+        return farmApi.gotThreeMealForFarmV13(openId, bindFarmPO.getCookie());
     }
 
 

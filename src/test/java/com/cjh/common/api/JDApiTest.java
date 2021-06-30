@@ -52,6 +52,6 @@ class JDApiTest {
 
     @Test
     void getSingleShop() {
-        jdApi.getSingleShop(openId, cookie);
+        jdApi.getFirstFeedReward(openId, cookie);
     }
 }

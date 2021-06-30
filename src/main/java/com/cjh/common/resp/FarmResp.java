@@ -6,6 +6,7 @@ import lombok.Data;
 public class FarmResp {
 
     private int amount;
+    private int addEnergy;
     private int totalEnergy;
     private int sendAmount;
     private int treeEnergy;
