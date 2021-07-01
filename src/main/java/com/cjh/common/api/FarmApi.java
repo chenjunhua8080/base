@@ -9,6 +9,7 @@ import com.cjh.common.resp.TreeInfo;
 import com.cjh.common.resp.TreeInfo.FarmUserProBean;
 import com.cjh.common.service.ReqLogService;
 import com.cjh.common.util.HttpUtil;
+import java.util.HashMap;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -129,7 +130,9 @@ public class FarmApi {
      * 签到v13
      */
     public String signForFarmV13(String openId, String cookie) {
-        String resp = HttpUtil.doGet(url_signForFarm_v13, cookie);
+        HashMap<String, Object> headers = new HashMap<>();
+        headers.put("cookie",cookie);
+        String resp = HttpUtil.doPost(url_signForFarm_v13, headers,null,String.class);
         FarmSignV13Resp signV13Resp = JSONObject.parseObject(resp, FarmSignV13Resp.class);
         String result;
         if (signV13Resp.getCode() == 0) {
