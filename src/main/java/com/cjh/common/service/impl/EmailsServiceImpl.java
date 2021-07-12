@@ -131,9 +131,15 @@ public class EmailsServiceImpl extends ServiceImpl<EmailsDao, EmailsPO> implemen
     }
 
     private File handleData(EmailsRequest emails, List<EmailsPO> list) {
+        //重复的也标记一已下载
+        List<EmailsPO> updateList = list;
+
         list = list.stream().filter(po -> !StringUtils.isEmpty(po.getAttrSrc())).collect(
             Collectors.collectingAndThen(
-                Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(EmailsPO::getAttrSrc)))
+                //处理文件同名，以及不同文件夹文件同名
+                Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(
+                    item-> item.getAttrSrc().substring(item.getAttrSrc().lastIndexOf("/")))
+                ))
                 , ArrayList::new
             )
         );
@@ -165,7 +171,8 @@ public class EmailsServiceImpl extends ServiceImpl<EmailsDao, EmailsPO> implemen
         File zipFile = new File(createDir(emails.getOrgTo()) + name);
         File zip = ZipUtil.zip(zipFile, false, files);
 
-        List<EmailsPO> updateList = list.stream().map(item -> {
+        //全部标记下载
+        updateList = updateList.stream().map(item -> {
             EmailsPO po = new EmailsPO();
             po.setId(item.getId());
             po.setDownloadTime(new Date());
