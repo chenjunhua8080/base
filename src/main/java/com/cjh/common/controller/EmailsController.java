@@ -130,6 +130,7 @@ public class EmailsController {
             ioException.printStackTrace();
         } finally {
             if (deleteFile) {
+                log.info("file {},size {}", zip, zip.length());
                 log.info("删除{}：{}", zip.getName(), zip.delete());
             }
         }
