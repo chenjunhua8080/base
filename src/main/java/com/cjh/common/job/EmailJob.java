@@ -129,6 +129,8 @@ public class EmailJob {
 
         // 标记已读
         List<Message> readMessages = new ArrayList<>();
+        // 标记未读
+        List<Message> unReadMessages = new ArrayList<>();
         for (Message message : messages) {
             EmailsPO emailsPO = new EmailsPO();
 
@@ -136,8 +138,10 @@ public class EmailJob {
             Address from = message.getFrom()[0];// 获得发送者地址
             if (!subject.replaceAll(apiConfig.getBossConfig().getSubjectMatch(), "666~").contains("666~")) {
                 log.warn("邮件内容不是简历: {}", subject);
-                message.setFlag(Flags.Flag.SEEN, false);     //imap读取后邮件状态会变为已读,设为未读
-                message.saveChanges();
+                //不支持单个标记，只能标记文件夹
+//                message.setFlag(Flags.Flag.SEEN, false);     //imap读取后邮件状态会变为已读,设为未读
+//                message.saveChanges();
+                unReadMessages.add(message);
                 countDownLatch.countDown();
                 continue;
             }
@@ -191,7 +195,16 @@ public class EmailJob {
         }
         countDownLatch.await();
 
-        folder.setFlags(readMessages.toArray(new Message[0]), new Flags(Flags.Flag.SEEN), true);
+        try {
+            folder.setFlags(unReadMessages.toArray(new Message[0]), new Flags(Flags.Flag.SEEN), false);
+        } catch (MessagingException e) {
+            log.error("标记未读失败了。。。",e);
+        }
+        try {
+            folder.setFlags(readMessages.toArray(new Message[0]), new Flags(Flags.Flag.SEEN), true);
+        } catch (MessagingException e) {
+            log.error("标记已读失败了。。。",e);
+        }
 
         folder.close(false);// 关闭邮件夹对象
         store.close(); // 关闭连接对象
