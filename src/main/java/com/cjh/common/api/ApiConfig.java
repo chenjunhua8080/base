@@ -22,6 +22,7 @@ public class ApiConfig {
     private CakeConfig cakeConfig;
     private BankChinaConfig bankChinaConfig;
     private PetsConfig petsConfig;
+    private BossConfig bossConfig;
 
     @Data
     public static class TestConfig {
@@ -51,6 +52,13 @@ public class ApiConfig {
     public static class PetsConfig {
 
         private Boolean working;
+    }
+
+    @Data
+    public static class BossConfig {
+
+        private Boolean emailWorking;
+        private String subjectMatch;
     }
 
 }

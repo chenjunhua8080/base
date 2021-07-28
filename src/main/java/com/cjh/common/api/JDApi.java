@@ -16,12 +16,15 @@ import com.cjh.common.resp.HomeDataResp.DataBean.ResultBean.CakeBakerInfoBean.Ra
 import com.cjh.common.service.ReqLogService;
 import com.cjh.common.util.HttpUtil;
 import com.cjh.common.util.JsonUtil;
+import com.google.common.collect.Maps;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -103,8 +106,32 @@ public class JDApi {
      * {"code":0,"data":{"bizCode":0,"bizMsg":"success","result":{"activityInfo":{"activityEndTime":1592668799000,"activityStartTime":1589903999000,"mainAwardStartTime":1592481600000,"mainWaitLotteryStartTime":1592467200000,"nowTime":1590291850715},"cakeBakerInfo":{"jdCipher":0,"raiseInfo":{"brandFlag":true,"buttonStatus":1,"curLevelStartScore":"600","firstStatus":0,"fullFlag":false,"levelImageList":["https://m.360buyimg.com/babel/jfs/t1/123756/31/152/48661/5eb3b25aE9bd0a75a/c6a314732a2a1d84.png","https://m.360buyimg.com/babel/jfs/t1/111636/5/5442/45217/5eb3b2afEfb9ba929/15cf8a90ae00dd0c.png","https://m.360buyimg.com/babel/jfs/t1/121050/11/155/44829/5eb3b2c3Ebb2a7a8d/708e52f055ddc5f9.png"],"maxLevelScore":"156850","nextLevelScore":"1400","pkButtonStatus":1,"raiseButtonShow":2,"remainScore":"626","scoreLevel":3,"signPopStatus":0,"totalScore":"1226","usedScore":"600","wxPayStatus":0},"secretp":"Vl4IStM3QydXJKE38Wr7YB6e33c","shareMiniprogramSwitch":0,"userType":1}},"success":true},"msg":"调用成功"}
      */
     private final String url_cakebaker_getHomeData = "http://api.m.jd.com/client.action?functionId=cakebaker_getHomeData";
+    /**
+     * 签到
+     */
+    private final String dog_url_getSignReward = "https://api.m.jd.com/client.action?functionId=getSignReward&clientVersion=10.0.5&build=88681&client=android&d_brand=realme&d_model=RMX1991&osVersion=10&screen=2264*1080&partner=oppo&oaid=&openudid=637bd8ae1589f566&eid=eidA2c4481233es2cDODdE0oQDGZAsqjipfs6nAzhOSbOtWyvbmq6irkk3V DBzs8bnZ4XBot0EvrytRfYqmEiF9aQYIV4R2JEYZIQ mxPHZbZWdOR4x&sdkVersion=29&lang=zh_CN&uuid=637bd8ae1589f566&aid=637bd8ae1589f566&area=19_1601_3634_63211&networkType=wifi&wifiBssid=13fa56423c251d614f0d3f559c636a56&uts=0f31TVRjBSsQX3eoNIdoeWWO3nNynz9FG4raKjdBGRk9iWKxxkbW1yvdxBgz8+pnwKnRsvkn1nDkql3s3KUZa0/N06BQVsq7XGfGX9TrJfHMd1xjDyEgOrqHc/vE70ebzVcUYCmNyv4eCSOHweUR7AI2MevtZ4S13/XS7RCWTKlhBnUniInFXnNni4zHbmoRbzHGST/sRMvEVaU5uY7nWA==&uemps=0-0&st=1625048498832&sign=c5cee9b6f199d3e7124228e4ed04e992&sv=112";
+    /**
+     * 喂食
+     */
+    private final String dog_url_feedPets = "https://api.m.jd.com/client.action?functionId=feedPets&clientVersion=10.0.5&build=88681&client=android&d_brand=realme&d_model=RMX1991&osVersion=10&screen=2264*1080&partner=oppo&oaid=&openudid=637bd8ae1589f566&eid=eidA2c4481233es2cDODdE0oQDGZAsqjipfs6nAzhOSbOtWyvbmq6irkk3V DBzs8bnZ4XBot0EvrytRfYqmEiF9aQYIV4R2JEYZIQ mxPHZbZWdOR4x&sdkVersion=29&lang=zh_CN&uuid=637bd8ae1589f566&aid=637bd8ae1589f566&area=19_1601_3634_63211&networkType=wifi&wifiBssid=13fa56423c251d614f0d3f559c636a56&uts=0f31TVRjBSsQX3eoNIdoeWWO3nNynz9FG4raKjdBGRk9iWKxxkbW1yvdxBgz8+pnwKnRsvkn1nDkql3s3KUZa0/N06BQVsq7XGfGX9TrJfHMd1xjDyEgOrqHc/vE70ebzVcUYCmNyv4eCSOHweUR7AI2MevtZ4S13/XS7RCWTKlhBnUniInFXnNni4zHbmoRbzHGST/sRMvEVaU5uY7nWA==&uemps=0-0&st=1625047124477&sign=47e92c0427581bf1bf1034e8a4526a98&sv=101";
+    /**
+     * 收集
+     */
+    private final String dog_url_energyCollect = "https://api.m.jd.com/client.action?functionId=energyCollect&clientVersion=10.0.5&build=88681&client=android&d_brand=realme&d_model=RMX1991&osVersion=10&screen=2264*1080&partner=oppo&oaid=&openudid=637bd8ae1589f566&eid=eidA2c4481233es2cDODdE0oQDGZAsqjipfs6nAzhOSbOtWyvbmq6irkk3V DBzs8bnZ4XBot0EvrytRfYqmEiF9aQYIV4R2JEYZIQ mxPHZbZWdOR4x&sdkVersion=29&lang=zh_CN&uuid=637bd8ae1589f566&aid=637bd8ae1589f566&area=19_1601_3634_63211&networkType=wifi&wifiBssid=13fa56423c251d614f0d3f559c636a56&uts=0f31TVRjBSsQX3eoNIdoeWWO3nNynz9FG4raKjdBGRk9iWKxxkbW1yvdxBgz8+pnwKnRsvkn1nDkql3s3KUZa0/N06BQVsq7XGfGX9TrJfHMd1xjDyEgOrqHc/vE70ebzVcUYCmNyv4eCSOHweUR7AI2MevtZ4S13/XS7RCWTKlhBnUniInFXnNni4zHbmoRbzHGST/sRMvEVaU5uY7nWA==&uemps=0-0&st=1625047994928&sign=54dcc29c1e31c18b884235275990e6eb&sv=112";
+    /**
+     * 三餐
+     */
+    private final String dog_url_getThreeMealReward = "https://api.m.jd.com/client.action?functionId=getThreeMealReward&clientVersion=10.0.5&build=88681&client=android&d_brand=realme&d_model=RMX1991&osVersion=10&screen=2264*1080&partner=oppo&oaid=&openudid=637bd8ae1589f566&eid=eidA2c4481233es2cDODdE0oQDGZAsqjipfs6nAzhOSbOtWyvbmq6irkk3V DBzs8bnZ4XBot0EvrytRfYqmEiF9aQYIV4R2JEYZIQ mxPHZbZWdOR4x&sdkVersion=29&lang=zh_CN&uuid=637bd8ae1589f566&aid=637bd8ae1589f566&area=19_1601_3634_63211&networkType=wifi&wifiBssid=13fa56423c251d614f0d3f559c636a56&uts=0f31TVRjBSsQX3eoNIdoeWWO3nNynz9FG4raKjdBGRk9iWKxxkbW1yvdxBgz8+pnwKnRsvkn1nDkql3s3KUZa0/N06BQVsq7XGfGX9TrJfHMd1xjDyEgOrqHc/vE70ebzVcUYCmNyv4eCSOHweUR7AI2MevtZ4S13/XS7RCWTKlhBnUniInFXnNni4zHbmoRbzHGST/sRMvEVaU5uY7nWA==&uemps=0-0&st=1625048354119&sign=717f2596b6e8d41080e92e3e2abe8f83&sv=122";
+    /**
+     * 首次喂食奖励
+     */
+    private final String dog_url_getFirstFeedReward = "https://api.m.jd.com/client.action?functionId=getFirstFeedReward&clientVersion=10.0.5&build=88681&client=android&d_brand=realme&d_model=RMX1991&osVersion=10&screen=2264*1080&partner=oppo&oaid=&openudid=637bd8ae1589f566&eid=eidA2c4481233es2cDODdE0oQDGZAsqjipfs6nAzhOSbOtWyvbmq6irkk3V DBzs8bnZ4XBot0EvrytRfYqmEiF9aQYIV4R2JEYZIQ mxPHZbZWdOR4x&sdkVersion=29&lang=zh_CN&uuid=637bd8ae1589f566&aid=637bd8ae1589f566&area=19_1601_3634_63211&networkType=wifi&wifiBssid=13fa56423c251d614f0d3f559c636a56&uts=0f31TVRjBSsQX3eoNIdoeWWO3nNynz9FG4raKjdBGRk9iWKxxkbW1yvdxBgz8+pnwKnRsvkn1nDkql3s3KUZa0/N06BQVsq7XGfGX9TrJfHMd1xjDyEgOrqHc/vE70ebzVcUYCmNyv4eCSOHweUR7AI2MevtZ4S13/XS7RCWTKlhBnUniInFXnNni4zHbmoRbzHGST/sRMvEVaU5uY7nWA==&uemps=0-0&st=1625048633098&sign=dbce3f22e1c1083936f92bbbc8201dc8&sv=112";
+
+
     private ReqLogService reqLogService;
     private CloudFeignClient cloudFeignClient;
+
+    //################################### 宠物 ###########################################
 
     public static void main(String[] args) {
         String cookie =
@@ -117,6 +144,12 @@ public class JDApi {
 //        JDApi jdApi = new JDApi(null, null);
 //        jdApi.getHomeData("ccc", cookie, false);
 //        jdApi.collectScore("ccc", cookie);
+
+        int i = 13 / 5 + 1;
+        int j = 13 % 5;
+        System.out.println(i);
+        System.out.println(j);
+
     }
 
     /**
@@ -136,11 +169,6 @@ public class JDApi {
         }
         return strings;
     }
-
-    /**
-     * 签到
-     */
-    private final String dog_url_getSignReward = "https://api.m.jd.com/client.action?functionId=getSignReward&appid=wh5&loginType=1&loginWQBiz=pet-town";
 
     /**
      * 我的金币
@@ -199,24 +227,6 @@ public class JDApi {
         return result;
     }
 
-    //################################### 宠物 ###########################################
-    /**
-     * 喂食
-     */
-    private final String dog_url_feedPets = "https://api.m.jd.com/client.action?functionId=feedPets&appid=wh5&loginType=1&loginWQBiz=pet-town";
-    /**
-     * 收集
-     */
-    private final String dog_url_energyCollect = "https://api.m.jd.com/client.action?functionId=energyCollect&appid=wh5&loginType=1&loginWQBiz=pet-town&body=%7B%22place%22%3AINDEX%7D";
-    /**
-     * 三餐
-     */
-    private final String dog_url_getThreeMealReward = "https://api.m.jd.com/client.action?functionId=getThreeMealReward&appid=wh5&loginType=1&loginWQBiz=pet-town";
-    /**
-     * 浏览
-     */
-    private final String dog_url_getSingleShopReward = "https://api.m.jd.com/client.action?functionId=getSingleShopReward&appid=wh5&loginType=1&loginWQBiz=pet-town";
-
     /**
      * 收集金币
      *
@@ -227,7 +237,7 @@ public class JDApi {
         HashMap<String, Object> headers = new HashMap<>();
         String[] parseCookie = parseCookie(cookie);
         headers.put("cookie", parseCookie[0]);
-        headers.put("User-Agent",
+        headers.put("xxx-User-Agent",
             "jdapp;android;8.5.12;10;867092042012392-5885e9fcd3c1;network/wifi;model/RMX1991;addressid/2082865096;aid/637bd8ae1589f566;oaid/;osVer/29;appBuild/73078;psn/867092042012392-5885e9fcd3c1|66;psq/6;uid/867092042012392-5885e9fcd3c1;adk/;ads/;pap/JA2015_311210|8.5.12|ANDROID 10;osv/10;pv/68.7;jdv/0|kong|t_35460321_|tuiguang|72fc343003794a5d81c8fd5927c51d4e|1587882752;ref/com.jingdong.app.mall.home.JDHomeFragment;partner/oppo;apprpd/Home_Main;Mozilla/5.0 (Linux; Android 10; RMX1991 Build/QKQ1.191201.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/66.0.3359.126 MQQBrowser/6.2 TBS/045136 Mobile Safari/537.36");
         HashMap<String, Object> params = new HashMap<>();
         params.put("functionId", "cakebaker_ckCollectScore");
@@ -257,9 +267,11 @@ public class JDApi {
     public void getSignReward(String openId, String cookie) {
         HashMap<String, Object> headers = new HashMap<>();
         headers.put("cookie", cookie);
-        headers.put("User-Agent",
+        headers.put("xxx-User-Agent",
             "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36");
-        String json = HttpUtil.doPost(dog_url_getSignReward, headers, null, String.class);
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("body","{}");
+        String json = HttpUtil.doPost(dog_url_getSignReward, headers, params, String.class);
         DogSignResp resp = JsonUtil.json2java(json, DogSignResp.class);
         String result = "";
         if (resp.isSuccess()) {
@@ -284,9 +296,11 @@ public class JDApi {
     public void feedPets(String openId, String cookie) {
         HashMap<String, Object> headers = new HashMap<>();
         headers.put("cookie", cookie);
-        headers.put("User-Agent",
+        headers.put("xxx-User-Agent",
             "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36");
-        String json = HttpUtil.doPost(dog_url_feedPets, headers, null, String.class);
+        Map<String, Object> params = Maps.newHashMap();
+        params.put("body","{\"version\":1}");
+        String json = HttpUtil.doPost(dog_url_feedPets, headers, params, String.class);
         DogFeedPetsResp resp = JsonUtil.json2java(json, DogFeedPetsResp.class);
         String result = "";
         String[] energyResult = {""};
@@ -328,10 +342,11 @@ public class JDApi {
     public void energyCollect(String openId, String cookie, PetPlaceInfoListBean energy) {
         HashMap<String, Object> headers = new HashMap<>();
         headers.put("cookie", cookie);
-        headers.put("User-Agent",
+        headers.put("xxx-User-Agent",
             "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36");
-        String url = dog_url_energyCollect.replace("INDEX", String.valueOf(energy.getPlace()));
-        String json = HttpUtil.doPost(url, headers, null, String.class);
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("body","{\"place\":1}");
+        String json = HttpUtil.doPost(dog_url_energyCollect, headers, params, String.class);
         DogEnergyCollectResp resp = JsonUtil.json2java(json, DogEnergyCollectResp.class);
         String result = "";
         if (resp.isSuccess()) {
@@ -348,6 +363,106 @@ public class JDApi {
     }
 
     /**
+     * 收集能量
+     *
+     * @param cookie 用户绑定cookie
+     * @param energy 能量
+     * @return NeedCollectEnergy
+     */
+    public int energyCollect2(String cookie, PetPlaceInfoListBean energy) {
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("body","{\"place\":1}");
+        HashMap<String, Object> headers = new HashMap<>();
+        headers.put("cookie", cookie);
+        headers.put("xxx-User-Agent",
+            "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36");
+        String json = HttpUtil.doPost(dog_url_energyCollect, headers, params, String.class);
+        DogEnergyCollectResp resp = JsonUtil.json2java(json, DogEnergyCollectResp.class);
+        if (resp.isSuccess()) {
+            return resp.getResult().getNeedCollectEnergy();
+        }
+        return -1;
+    }
+
+    /**
+     * 连续喂食
+     */
+    @SneakyThrows
+    public String continuousFeed(Integer count, String openId, String cookie) {
+        int success = 0;
+        int needFeed = 0;
+        int foodAmount = 0;
+        HashMap<String, Object> headers = new HashMap<>();
+        headers.put("cookie", cookie);
+        headers.put("xxx-User-Agent",
+            "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36");
+        DogFeedPetsResp resp = null;
+        List<PetPlaceInfoListBean> energyList;
+        Map<String, Object> params = Maps.newHashMap();
+        params.put("body","{\"version\":1}");
+        if (count <= 5) {
+            int whileCount = count;
+            while (whileCount > 0) {
+                Thread.sleep(3000);
+                String json = HttpUtil.doPost(dog_url_feedPets, headers, params, String.class);
+                resp = JsonUtil.json2java(json, DogFeedPetsResp.class);
+                if (resp.isSuccess()) {
+                    success++;
+                    foodAmount = resp.getResult().getFoodAmount();
+                    //调用收集
+                    energyList = resp.getResult().getPetPlaceInfoList();
+                    if (energyList != null) {
+                        for (PetPlaceInfoListBean item : energyList) {
+                                foodAmount = foodAmount + item.getEnergy();
+                            if (item.getEnergy() != 0) {
+                                Thread.sleep(2000);
+                                needFeed = energyCollect2(cookie, item);
+                            }
+                        }
+                    }
+                }
+                whileCount--;
+            }
+        } else {
+            int whileCount = count / 5 + 1;
+            int whileLastCount = count % 5;
+            while (whileCount > 0) {
+                int itemCount;
+                if (whileCount == 1) {
+                    itemCount = whileLastCount;
+                } else {
+                    itemCount = 5;
+                }
+                while (itemCount > 0) {
+                    Thread.sleep(3000);
+                    String json = HttpUtil.doPost(dog_url_feedPets, headers, params, String.class);
+                    resp = JsonUtil.json2java(json, DogFeedPetsResp.class);
+                    if (resp.isSuccess()) {
+                        success++;
+                        foodAmount = resp.getResult().getFoodAmount();
+                        //调用收集
+                        energyList = resp.getResult().getPetPlaceInfoList();
+                        if (energyList != null) {
+                            for (PetPlaceInfoListBean item : energyList) {
+                                foodAmount = foodAmount + item.getEnergy();
+                                if (item.getEnergy() != 0) {
+                                    Thread.sleep(2000);
+                                    needFeed = energyCollect2(cookie, item);
+                                }
+                            }
+                        }
+                    }
+                    itemCount--;
+                }
+                whileCount--;
+            }
+        }
+        String msg = String.format("连续喂食%s次，成功%s次，还需%s，可用%s", count, success, needFeed, foodAmount);
+        reqLogService.addLog(PlatformEnum.JD_PETS.getCode(), openId, msg, null);
+        return msg;
+    }
+
+    /**
      * 三餐
      *
      * @param openId 公众号openId
@@ -356,9 +471,11 @@ public class JDApi {
     public void getThreeMeal(String openId, String cookie) {
         HashMap<String, Object> headers = new HashMap<>();
         headers.put("cookie", cookie);
-        headers.put("User-Agent",
+        headers.put("xxx-User-Agent",
             "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36");
-        String json = HttpUtil.doPost(dog_url_getThreeMealReward, headers, null, String.class);
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("body","{}");
+        String json = HttpUtil.doPost(dog_url_getThreeMealReward, headers, params, String.class);
         DogThreeMealResp resp = JsonUtil.json2java(json, DogThreeMealResp.class);
         String result = "";
         if (resp.isSuccess()) {
@@ -374,25 +491,27 @@ public class JDApi {
     }
 
     /**
-     * 浏览单个商店任务
+     * 首次喂食奖励
      *
      * @param openId 公众号openId
      * @param cookie 用户绑定cookie
      */
-    public void getSingleShop(String openId, String cookie) {
+    public void getFirstFeedReward(String openId, String cookie) {
         HashMap<String, Object> headers = new HashMap<>();
         headers.put("cookie", cookie);
-        headers.put("User-Agent",
+        headers.put("xxx-User-Agent",
             "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36");
-        String json = HttpUtil.doPost(dog_url_getSingleShopReward, headers, null, String.class);
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("body","{}");
+        String json = HttpUtil.doPost(dog_url_getFirstFeedReward, headers, params, String.class);
         DogSingleShopResp resp = JsonUtil.json2java(json, DogSingleShopResp.class);
         String result = "";
         if (resp.isSuccess()) {
-            result += String.format("#### 浏览任务成功, 狗粮 +[%s]     \n", resp.getResult().getReward());
+            result += String.format("#### 首次喂食奖励, 狗粮 +[%s]     \n", resp.getResult().getReward());
             result += String.format("     当前狗粮: [%s]           ####", resp.getResult().getFoodAmount());
             log.info(result);
         } else {
-            result = String.format("#### 浏览任务失败, %s ####", resp.getErrorMsg());
+            result = String.format("#### 首次喂食奖励领取失败, %s ####", resp.getErrorMsg());
             log.error(result);
             cloudFeignClient.pushErrorMsg(openId, result);
         }

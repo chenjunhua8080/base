@@ -4,6 +4,7 @@ import com.cjh.common.api.FarmApi;
 import com.cjh.common.dao.BindFarmDao;
 import com.cjh.common.entity.ReqLog;
 import com.cjh.common.enums.PlatformEnum;
+import com.cjh.common.feign.CloudFeignClient;
 import com.cjh.common.po.BindFarmPO;
 import com.cjh.common.service.ReqLogService;
 import java.util.Date;
@@ -20,6 +21,7 @@ public class FarmController {
     private FarmApi farmApi;
     private ReqLogService reqLogService;
     private BindFarmDao bindFarmDao;
+    private CloudFeignClient feignClient;
 
     @GetMapping("/signForFarm")
     public String signForFarm(String openId) {
@@ -27,7 +29,7 @@ public class FarmController {
         if (bindFarmPO == null) {
             return "未绑定";
         }
-        return farmApi.signForFarm(openId, bindFarmPO.getCookie());
+        return farmApi.signForFarmV13(openId, bindFarmPO.getCookie());
     }
 
     @GetMapping("/waterGoodForFarm")
@@ -37,6 +39,17 @@ public class FarmController {
             return "未绑定";
         }
         return farmApi.waterGoodForFarm(openId, bindFarmPO.getCookie());
+    }
+
+    @GetMapping("/continuousWater")
+    public String continuousWater(String openId, Integer count) {
+        BindFarmPO bindFarmPO = bindFarmDao.selectByOpenId(openId, PlatformEnum.JD_FARM.getCode());
+        if (bindFarmPO == null) {
+            return "未绑定";
+        }
+        String result = farmApi.continuousWater(count, openId, bindFarmPO.getCookie());
+        feignClient.tempPush(openId, result);
+        return result;
     }
 
     @GetMapping("/firstWaterTaskForFarm")
@@ -54,7 +67,7 @@ public class FarmController {
         if (bindFarmPO == null) {
             return "未绑定";
         }
-        return farmApi.gotThreeMealForFarm(openId, bindFarmPO.getCookie());
+        return farmApi.gotThreeMealForFarmV13(openId, bindFarmPO.getCookie());
     }
 
 

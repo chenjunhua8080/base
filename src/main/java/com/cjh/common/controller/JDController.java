@@ -3,6 +3,7 @@ package com.cjh.common.controller;
 import com.cjh.common.api.JDApi;
 import com.cjh.common.dao.BindFarmDao;
 import com.cjh.common.enums.PlatformEnum;
+import com.cjh.common.feign.CloudFeignClient;
 import com.cjh.common.po.BindFarmPO;
 import java.util.Date;
 import lombok.AllArgsConstructor;
@@ -16,6 +17,18 @@ public class JDController {
 
     private JDApi jdApi;
     private BindFarmDao bindFarmDao;
+    private CloudFeignClient feignClient;
+
+    @GetMapping("/continuousFeed")
+    public String continuousFeed(@RequestParam("openId") String openId, @RequestParam("count") Integer count) {
+        BindFarmPO bindFarmPO = bindFarmDao.selectByOpenId(openId, PlatformEnum.JD_PETS.getCode());
+        if (bindFarmPO == null) {
+            return "未绑定";
+        }
+        String result = jdApi.continuousFeed(count, openId, bindFarmPO.getCookie());
+        feignClient.tempPush(openId, result);
+        return result;
+    }
 
     @GetMapping("/getHomeData")
     public String getHomeData(@RequestParam("openId") String openId) {
