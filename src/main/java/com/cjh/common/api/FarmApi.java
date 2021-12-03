@@ -1,5 +1,7 @@
 package com.cjh.common.api;
 
+import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpResponse;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.cjh.common.enums.PlatformEnum;
@@ -37,6 +39,11 @@ public class FarmApi {
      * @result {"amount":20,"code":"0","todayGotWaterGoalTask":{"canPop":false},"statisticsTimes":null,"signDay":1,"sysTime":1575614306624,"message":null}
      */
     private final String url_signForFarm_v13 = "https://api.m.jd.com/client.action?functionId=clockInForFarm&body=%7B%22type%22%3A1%2C%22version%22%3A13%2C%22channel%22%3A1%7D&appid=wh5";
+      /**
+     * @name 签到v14
+     * @result {"amount":20,"code":"0","todayGotWaterGoalTask":{"canPop":false},"statisticsTimes":null,"signDay":1,"sysTime":1575614306624,"message":null}
+     */
+    private final String url_signForFarm_v14 = "https://api.m.jd.com/client.action?functionId=clockInForFarm&body=%7B%22type%22%3A1%2C%22version%22%3A14%2C%22channel%22%3A1%2C%22babelChannel%22%3A%22121%22%7D&appid=wh5";
     /**
      * @name 任务列表
      * @result {"gotThreeMealInit":{"threeMealAmount":"5-15","pos":-1,"f":true,"threeMealTimes":["6-9","11-14","17-21"]},"code":"0","firstWaterInit":{"firstWaterFinished":false,"f":false,"totalWaterTimes":0,"firstWaterEnergy":10},"signInit":{"signEnergyEachAmount":"20","f":false,"signEnergyShared":false,"totalSigned":0,"signEnergyAmounts":["20","20","20","20","20"],"todaySigned":false},"totalWaterTaskInit":{"totalWaterTaskLimit":10,"totalWaterTaskEnergy":15,"f":false,"totalWaterTaskFinished":false,"totalWaterTaskTimes":0},"statisticsTimes":null,"inviteToFarmInit":{"sendEnergyFinishedTimes":0,"inviteToFarmTimes":15,"f":false,"totalEnergy":0,"curInviteToFarmTimes":0,"inviteToFarmFinished":false,"inviteToFarmEnergy":60},"gotBrowseTaskAdInit":{"f":false,"userBrowseTaskAds":[{"advertId":"0066278604","mainTitle":"浏览推荐商品","subTitle":"奖励10g水滴，每天1次","wechatPic":"https://m.360buyimg.com/babel/jfs/t1/64560/13/9630/4130/5d722fdfE1c21e0e5/38da6883faa13d44.png","link":"https://pro.m.jd.com/mall/active/4MDaRCgfSMNWGLcLtFDdaoZqUST/index.html","picurl":"https://m.360buyimg.com/babel/jfs/t1/46086/40/15399/4130/5dc3b4aeEd350e570/40bf70e12f3582ef.png","wechatLink":"https://pro.m.jd.com/mall/active/4MDaRCgfSMNWGLcLtFDdaoZqUST/index.html","wechatMain":"浏览推荐商品","wechatSub":"奖励10g水滴，每天1次","reward":10,"limit":1,"hadGotTimes":0,"hadFinishedTimes":0},{"advertId":"0066278605","mainTitle":"浏览生鲜暖冬好物","subTitle":"奖励10g水滴，每天1次","wechatPic":"https://m.360buyimg.com/babel/jfs/t1/86316/40/4609/19860/5de7904cE6d3071da/9dd7cdd9deaa7996.png","link":"https://prodev.m.jd.com/mall/active/jNQkK3c9EJjxkRPbt5hHxGYLKMz/index.html","picurl":"https://m.360buyimg.com/babel/jfs/t1/101895/25/4565/5943/5de76a41E05c9648e/a80b66686bf446ef.png","wechatLink":"https://wq.jd.com/webportal/event/27436","wechatMain":"浏览限时补贴好货","wechatSub":"奖励10g水滴，每天1次","reward":10,"limit":1,"hadGotTimes":0,"hadFinishedTimes":0}]},"sysTime":1575613656230,"message":null,"waterRainInit":{"lastTime":0,"f":false,"winTimes":0,"config":{"maxLimit":2,"intervalTime":3,"lotteryProb":100,"imgArea":"https://m.360buyimg.com/babel/jfs/t1/95018/25/1064/277315/5db93bf1Ecbbcedc1/85782b18bb05eab2.png","countDown":10,"countOfBomb":0,"minAwardWater":3,"maxAwardWater":12,"bottomImg":"https://m.360buyimg.com/babel/jfs/t1/79941/15/14063/356572/5db93bf7E838db707/8454fe6098c0fca3.png","logo":"","vendorid":"","vendorName":"","key":"","actId":11288,"btnText":"回我的农场","btnLink":""}},"taskOrder":["signInit","firstWaterInit","inviteToFarmInit","waterRainInit","totalWaterTaskInit","gotBrowseTaskAdInit","gotThreeMealInit"]}
@@ -146,6 +153,33 @@ public class FarmApi {
         return result;
     }
 
+    /**
+     * 签到v14
+     */
+    public String signForFarmV14(String openId, String cookie) {
+//        HashMap<String, Object> headers = new HashMap<>();
+//        headers.put("cookie",cookie);
+//        headers.put("Host","api.m.jd.com");
+//        headers.put("X-Requested-With","com.jingdong.app.mall");
+//        String resp = HttpUtil.doPost(url_signForFarm_v14, headers,null,String.class);
+        HttpRequest request=new HttpRequest(url_signForFarm_v14);
+        request.header("Cookie",cookie);
+        HttpResponse httpResponse = request.execute();
+        log.info(String.valueOf(request));
+        log.info(String.valueOf(httpResponse));
+        String resp = httpResponse.body();
+        FarmSignV13Resp signV13Resp = JSONObject.parseObject(resp, FarmSignV13Resp.class);
+        String result;
+        if (signV13Resp.getCode() == 0) {
+            result = String.format("#### 签到成功, 签到%s天, 获得水滴: %s ####", signV13Resp.getSignDay(), signV13Resp.getAmount());
+            log.info(result);
+        } else {
+            result = String.format("#### 签到失败, code: %s ####", signV13Resp.getCode());
+            log.error(result);
+        }
+        reqLogService.addLog(PlatformEnum.JD_FARM.getCode(), openId, result, resp);
+        return result;
+    }
 
     /**
      * 浇水

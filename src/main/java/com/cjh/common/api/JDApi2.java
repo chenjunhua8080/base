@@ -1,14 +1,10 @@
 package com.cjh.common.api;
 
-import cn.hutool.http.HttpRequest;
-import cn.hutool.http.HttpResponse;
 import com.alibaba.fastjson.JSONObject;
 import com.cjh.common.entity.ReqLog;
 import com.cjh.common.enums.PlatformEnum;
 import com.cjh.common.feign.CloudFeignClient;
 import com.cjh.common.resp.CollectCakeResp;
-import com.cjh.common.resp.DogBrowseResp;
-import com.cjh.common.resp.DogBrowseResp.ResultBean;
 import com.cjh.common.resp.DogEnergyCollectResp;
 import com.cjh.common.resp.DogFeedPetsResp;
 import com.cjh.common.resp.DogFeedPetsResp.ResultBean.PetPlaceInfoListBean;
@@ -25,7 +21,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.AllArgsConstructor;
@@ -36,9 +31,8 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 @Component
 @Slf4j
-public class JDApi {
+public class JDApi2 {
 
-    private static final String browseUrl = "https://api.m.jd.com/client.action?appid=wh5&loginType=1&functionId=getSingleShopReward&loginWQBiz=pet-town&body={\"index\":INDEX,\"version\":1,\"type\":TYPE}";
     /**
      * 点击小天使获取金币, 限制不详
      * <p>
@@ -115,27 +109,29 @@ public class JDApi {
     /**
      * 签到
      */
-    private final String dog_url_getSignReward = "https://api.m.jd.com/client.action?functionId=getSignReward&appid=wh5&loginType=1&loginWQBiz=pet-town";
+    private final String dog_url_getSignReward = "https://api.m.jd.com/client.action?functionId=getSignReward&clientVersion=10.0.5&build=88681&client=android&d_brand=realme&d_model=RMX1991&osVersion=10&screen=2264*1080&partner=oppo&oaid=&openudid=637bd8ae1589f566&eid=eidA2c4481233es2cDODdE0oQDGZAsqjipfs6nAzhOSbOtWyvbmq6irkk3V DBzs8bnZ4XBot0EvrytRfYqmEiF9aQYIV4R2JEYZIQ mxPHZbZWdOR4x&sdkVersion=29&lang=zh_CN&uuid=637bd8ae1589f566&aid=637bd8ae1589f566&area=19_1601_3634_63211&networkType=wifi&wifiBssid=13fa56423c251d614f0d3f559c636a56&uts=0f31TVRjBSsQX3eoNIdoeWWO3nNynz9FG4raKjdBGRk9iWKxxkbW1yvdxBgz8+pnwKnRsvkn1nDkql3s3KUZa0/N06BQVsq7XGfGX9TrJfHMd1xjDyEgOrqHc/vE70ebzVcUYCmNyv4eCSOHweUR7AI2MevtZ4S13/XS7RCWTKlhBnUniInFXnNni4zHbmoRbzHGST/sRMvEVaU5uY7nWA==&uemps=0-0&st=1625048498832&sign=c5cee9b6f199d3e7124228e4ed04e992&sv=112";
     /**
      * 喂食
      */
-    private final String dog_url_feedPets = "https://api.m.jd.com/client.action?functionId=feedPets&appid=wh5&loginType=1&loginWQBiz=pet-town&body=%7B%22version%22%3A1%7D";
+    private final String dog_url_feedPets = "https://api.m.jd.com/client.action?functionId=feedPets&clientVersion=10.0.5&build=88681&client=android&d_brand=realme&d_model=RMX1991&osVersion=10&screen=2264*1080&partner=oppo&oaid=&openudid=637bd8ae1589f566&eid=eidA2c4481233es2cDODdE0oQDGZAsqjipfs6nAzhOSbOtWyvbmq6irkk3V DBzs8bnZ4XBot0EvrytRfYqmEiF9aQYIV4R2JEYZIQ mxPHZbZWdOR4x&sdkVersion=29&lang=zh_CN&uuid=637bd8ae1589f566&aid=637bd8ae1589f566&area=19_1601_3634_63211&networkType=wifi&wifiBssid=13fa56423c251d614f0d3f559c636a56&uts=0f31TVRjBSsQX3eoNIdoeWWO3nNynz9FG4raKjdBGRk9iWKxxkbW1yvdxBgz8+pnwKnRsvkn1nDkql3s3KUZa0/N06BQVsq7XGfGX9TrJfHMd1xjDyEgOrqHc/vE70ebzVcUYCmNyv4eCSOHweUR7AI2MevtZ4S13/XS7RCWTKlhBnUniInFXnNni4zHbmoRbzHGST/sRMvEVaU5uY7nWA==&uemps=0-0&st=1625047124477&sign=47e92c0427581bf1bf1034e8a4526a98&sv=101";
     /**
      * 收集
      */
-    private final String dog_url_energyCollect = "https://api.m.jd.com/client.action?functionId=energyCollect&appid=wh5&loginType=1&loginWQBiz=pet-town&body=%7B%22place%22%3AplaceIndex%7D";
+    private final String dog_url_energyCollect = "https://api.m.jd.com/client.action?functionId=energyCollect&clientVersion=10.0.5&build=88681&client=android&d_brand=realme&d_model=RMX1991&osVersion=10&screen=2264*1080&partner=oppo&oaid=&openudid=637bd8ae1589f566&eid=eidA2c4481233es2cDODdE0oQDGZAsqjipfs6nAzhOSbOtWyvbmq6irkk3V DBzs8bnZ4XBot0EvrytRfYqmEiF9aQYIV4R2JEYZIQ mxPHZbZWdOR4x&sdkVersion=29&lang=zh_CN&uuid=637bd8ae1589f566&aid=637bd8ae1589f566&area=19_1601_3634_63211&networkType=wifi&wifiBssid=13fa56423c251d614f0d3f559c636a56&uts=0f31TVRjBSsQX3eoNIdoeWWO3nNynz9FG4raKjdBGRk9iWKxxkbW1yvdxBgz8+pnwKnRsvkn1nDkql3s3KUZa0/N06BQVsq7XGfGX9TrJfHMd1xjDyEgOrqHc/vE70ebzVcUYCmNyv4eCSOHweUR7AI2MevtZ4S13/XS7RCWTKlhBnUniInFXnNni4zHbmoRbzHGST/sRMvEVaU5uY7nWA==&uemps=0-0&st=1625047994928&sign=54dcc29c1e31c18b884235275990e6eb&sv=112";
     /**
      * 三餐
      */
-    private final String dog_url_getThreeMealReward = "https://api.m.jd.com/client.action?functionId=getThreeMealReward&appid=wh5&loginType=1&loginWQBiz=pet-town";
+    private final String dog_url_getThreeMealReward = "https://api.m.jd.com/client.action?functionId=getThreeMealReward&clientVersion=10.0.5&build=88681&client=android&d_brand=realme&d_model=RMX1991&osVersion=10&screen=2264*1080&partner=oppo&oaid=&openudid=637bd8ae1589f566&eid=eidA2c4481233es2cDODdE0oQDGZAsqjipfs6nAzhOSbOtWyvbmq6irkk3V DBzs8bnZ4XBot0EvrytRfYqmEiF9aQYIV4R2JEYZIQ mxPHZbZWdOR4x&sdkVersion=29&lang=zh_CN&uuid=637bd8ae1589f566&aid=637bd8ae1589f566&area=19_1601_3634_63211&networkType=wifi&wifiBssid=13fa56423c251d614f0d3f559c636a56&uts=0f31TVRjBSsQX3eoNIdoeWWO3nNynz9FG4raKjdBGRk9iWKxxkbW1yvdxBgz8+pnwKnRsvkn1nDkql3s3KUZa0/N06BQVsq7XGfGX9TrJfHMd1xjDyEgOrqHc/vE70ebzVcUYCmNyv4eCSOHweUR7AI2MevtZ4S13/XS7RCWTKlhBnUniInFXnNni4zHbmoRbzHGST/sRMvEVaU5uY7nWA==&uemps=0-0&st=1625048354119&sign=717f2596b6e8d41080e92e3e2abe8f83&sv=122";
     /**
      * 首次喂食奖励
      */
     private final String dog_url_getFirstFeedReward = "https://api.m.jd.com/client.action?functionId=getFirstFeedReward&clientVersion=10.0.5&build=88681&client=android&d_brand=realme&d_model=RMX1991&osVersion=10&screen=2264*1080&partner=oppo&oaid=&openudid=637bd8ae1589f566&eid=eidA2c4481233es2cDODdE0oQDGZAsqjipfs6nAzhOSbOtWyvbmq6irkk3V DBzs8bnZ4XBot0EvrytRfYqmEiF9aQYIV4R2JEYZIQ mxPHZbZWdOR4x&sdkVersion=29&lang=zh_CN&uuid=637bd8ae1589f566&aid=637bd8ae1589f566&area=19_1601_3634_63211&networkType=wifi&wifiBssid=13fa56423c251d614f0d3f559c636a56&uts=0f31TVRjBSsQX3eoNIdoeWWO3nNynz9FG4raKjdBGRk9iWKxxkbW1yvdxBgz8+pnwKnRsvkn1nDkql3s3KUZa0/N06BQVsq7XGfGX9TrJfHMd1xjDyEgOrqHc/vE70ebzVcUYCmNyv4eCSOHweUR7AI2MevtZ4S13/XS7RCWTKlhBnUniInFXnNni4zHbmoRbzHGST/sRMvEVaU5uY7nWA==&uemps=0-0&st=1625048633098&sign=dbce3f22e1c1083936f92bbbc8201dc8&sv=112";
+
+
     private ReqLogService reqLogService;
+    private CloudFeignClient cloudFeignClient;
 
     //################################### 宠物 ###########################################
-    private CloudFeignClient cloudFeignClient;
 
     public static void main(String[] args) {
         String cookie =
@@ -271,8 +267,10 @@ public class JDApi {
     public void getSignReward(String openId, String cookie) {
         HashMap<String, Object> headers = new HashMap<>();
         headers.put("cookie", cookie);
+        headers.put("xxx-User-Agent",
+            "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36");
         HashMap<String, Object> params = new HashMap<>();
-        params.put("body", "{}");
+        params.put("body","{}");
         String json = HttpUtil.doPost(dog_url_getSignReward, headers, params, String.class);
         DogSignResp resp = JsonUtil.json2java(json, DogSignResp.class);
         String result = "";
@@ -301,7 +299,7 @@ public class JDApi {
         headers.put("xxx-User-Agent",
             "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36");
         Map<String, Object> params = Maps.newHashMap();
-        params.put("body", "{\"version\":1}");
+        params.put("body","{\"version\":1}");
         String json = HttpUtil.doPost(dog_url_feedPets, headers, params, String.class);
         DogFeedPetsResp resp = JsonUtil.json2java(json, DogFeedPetsResp.class);
         String result = "";
@@ -344,8 +342,11 @@ public class JDApi {
     public void energyCollect(String openId, String cookie, PetPlaceInfoListBean energy) {
         HashMap<String, Object> headers = new HashMap<>();
         headers.put("cookie", cookie);
-        String url = dog_url_energyCollect.replace("placeIndex", String.valueOf(energy.getPlace()));
-        String json = HttpUtil.doGet(url, headers);
+        headers.put("xxx-User-Agent",
+            "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36");
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("body","{\"place\":1}");
+        String json = HttpUtil.doPost(dog_url_energyCollect, headers, params, String.class);
         DogEnergyCollectResp resp = JsonUtil.json2java(json, DogEnergyCollectResp.class);
         String result = "";
         if (resp.isSuccess()) {
@@ -369,10 +370,13 @@ public class JDApi {
      * @return NeedCollectEnergy
      */
     public int energyCollect2(String cookie, PetPlaceInfoListBean energy) {
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("body","{\"place\":1}");
         HashMap<String, Object> headers = new HashMap<>();
         headers.put("cookie", cookie);
-        String url = dog_url_energyCollect.replace("placeIndex", String.valueOf(energy.getPlace()));
-        String json = HttpUtil.doGet(url, headers);
+        headers.put("xxx-User-Agent",
+            "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36");
+        String json = HttpUtil.doPost(dog_url_energyCollect, headers, params, String.class);
         DogEnergyCollectResp resp = JsonUtil.json2java(json, DogEnergyCollectResp.class);
         if (resp.isSuccess()) {
             return resp.getResult().getNeedCollectEnergy();
@@ -395,7 +399,7 @@ public class JDApi {
         DogFeedPetsResp resp = null;
         List<PetPlaceInfoListBean> energyList;
         Map<String, Object> params = Maps.newHashMap();
-        params.put("body", "{\"version\":1}");
+        params.put("body","{\"version\":1}");
         if (count <= 5) {
             int whileCount = count;
             while (whileCount > 0) {
@@ -409,7 +413,7 @@ public class JDApi {
                     energyList = resp.getResult().getPetPlaceInfoList();
                     if (energyList != null) {
                         for (PetPlaceInfoListBean item : energyList) {
-                            foodAmount = foodAmount + item.getEnergy();
+                                foodAmount = foodAmount + item.getEnergy();
                             if (item.getEnergy() != 0) {
                                 Thread.sleep(2000);
                                 needFeed = energyCollect2(cookie, item);
@@ -470,7 +474,7 @@ public class JDApi {
         headers.put("xxx-User-Agent",
             "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36");
         HashMap<String, Object> params = new HashMap<>();
-        params.put("body", "{}");
+        params.put("body","{}");
         String json = HttpUtil.doPost(dog_url_getThreeMealReward, headers, params, String.class);
         DogThreeMealResp resp = JsonUtil.json2java(json, DogThreeMealResp.class);
         String result = "";
@@ -498,7 +502,7 @@ public class JDApi {
         headers.put("xxx-User-Agent",
             "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36");
         HashMap<String, Object> params = new HashMap<>();
-        params.put("body", "{}");
+        params.put("body","{}");
         String json = HttpUtil.doPost(dog_url_getFirstFeedReward, headers, params, String.class);
         DogSingleShopResp resp = JsonUtil.json2java(json, DogSingleShopResp.class);
         String result = "";
@@ -512,58 +516,5 @@ public class JDApi {
             cloudFeignClient.pushErrorMsg(openId, result);
         }
         reqLogService.addLog(PlatformEnum.JD_PETS.getCode(), openId, result, json);
-    }
-
-    /**
-     * 浏览任务
-     */
-    public String browseExec(String openId, String cookie, Integer index) throws InterruptedException {
-        if (index > 8) {
-            return "浏览数量过大" + index + "，停止继续浏览";
-        }
-        String url = browseUrl.replace("INDEX", index.toString()).replace("TYPE", "1");
-        HttpRequest request = new HttpRequest(url);
-        request.header("Cookie", cookie);
-        HttpResponse httpResponse = request.execute();
-        log.info(String.valueOf(request));
-        log.info(String.valueOf(httpResponse));
-        String resp = httpResponse.body();
-        DogBrowseResp browseResp = JSONObject.parseObject(resp, DogBrowseResp.class);
-        String result;
-        ResultBean respResult = browseResp.getResult();
-        if ("0".equals(browseResp.getCode()) && respResult.getStatus() == 1) {
-            TimeUnit.SECONDS.sleep(10);
-            DogBrowseResp browseGiftResp = browseGift(cookie, index);
-            if ("0".equals(browseResp.getCode()) && browseGiftResp.getResult().getStatus() == 1) {
-                result = String.format("#### 浏览[%s]成功, 获得奖励: %s ####", index, browseGiftResp.getResult().getReward());
-                log.info(result);
-                TimeUnit.SECONDS.sleep(2);
-                if (browseGiftResp.getResult().getReward() > 0) {
-                    browseExec(openId, cookie, ++index);
-                }
-            } else {
-                result = String.format("#### 浏览[%s]成功, 但未获得奖励: %s ####", index, browseGiftResp.getResult().getStatus());
-                log.info(result);
-            }
-        } else {
-            result = String.format("#### 浏览[%s]失败, code: %s ####", browseResp.getCode());
-            log.error(result);
-        }
-        reqLogService.addLog(PlatformEnum.JD_FARM.getCode(), openId, result, resp);
-        return result;
-    }
-
-    /**
-     * 浏览任务奖励
-     */
-    private DogBrowseResp browseGift(String cookie, Integer index) {
-        String url = browseUrl.replace("INDEX", index.toString()).replace("TYPE", "2");
-        HttpRequest request = new HttpRequest(url);
-        request.header("Cookie", cookie);
-        HttpResponse httpResponse = request.execute();
-        log.info(String.valueOf(request));
-        log.info(String.valueOf(httpResponse));
-        String resp = httpResponse.body();
-        return JSONObject.parseObject(resp, DogBrowseResp.class);
     }
 }
