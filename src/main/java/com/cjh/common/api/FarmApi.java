@@ -303,7 +303,13 @@ public class FarmApi {
     private String taskExec(String openId, String cookie, String taskName, String taskId) throws InterruptedException {
         TimeUnit.SECONDS.sleep(10);
         String url = url_task_exec.replace("taskId", taskId).replace("taskType", "2");
-        String resp = HttpUtil.doGet(url, cookie);
+//        String resp = HttpUtil.doGet(url, cookie);
+        HttpRequest request = new HttpRequest(url);
+        request.header("Cookie", cookie);
+        HttpResponse httpResponse = request.execute();
+        log.info(String.valueOf(request));
+        log.info(String.valueOf(httpResponse));
+        String resp = httpResponse.body();
         FarmTaskResp taskResp = JSONObject.parseObject(resp, FarmTaskResp.class);
         String result;
         if (taskResp.getCode() == 0) {
@@ -313,12 +319,12 @@ public class FarmApi {
                 result = String.format("#### 浏览[%s-%s]成功, 获得奖励: %s ####", taskId, taskName, taskResp.getAmount());
                 log.info(result);
             } else {
-                result = String.format("#### 浏览[%s-%s]成功失败, %s ####", taskId, taskName, taskGift.getMessage());
+                result = String.format("#### 浏览[%s-%s]成功失败, %s ####", taskId, taskName, taskGift.getCode());
                 log.info(result);
             }
             log.info(result);
         } else {
-            result = String.format("#### 浏览[%s-%s]失败, code: %s ####", taskId, taskName, taskResp.getMessage());
+            result = String.format("#### 浏览[%s-%s]失败, code: %s ####", taskId, taskName, taskResp.getCode());
             log.error(result);
         }
         reqLogService.addLog(PlatformEnum.JD_FARM.getCode(), openId, result, resp);
@@ -330,7 +336,13 @@ public class FarmApi {
      */
     private FarmTaskResp taskGift(String cookie, String taskId) {
         String url = url_task_gift.replace("taskId", taskId).replace("taskType", "1");
-        String resp = HttpUtil.doGet(url, cookie);
+//        String resp = HttpUtil.doGet(url, cookie);
+        HttpRequest request = new HttpRequest(url);
+        request.header("Cookie", cookie);
+        HttpResponse httpResponse = request.execute();
+        log.info(String.valueOf(request));
+        log.info(String.valueOf(httpResponse));
+        String resp = httpResponse.body();
         FarmTaskResp taskResp = JSONObject.parseObject(resp, FarmTaskResp.class);
         return taskResp;
     }
