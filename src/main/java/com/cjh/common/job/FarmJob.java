@@ -107,4 +107,22 @@ public class FarmJob {
         log.info("#### 定时任务[水滴 - 首浇奖励] 结束: {} ####", DateUtil.format(new Date()));
     }
 
+    @Scheduled(cron = "${job.farm.task}")
+    public void task() {
+        if (!apiConfig.getFarmConfig().getWorking()) {
+            return;
+        }
+        List<UserPO> users = userDao.selectList(null);
+        log.info("#### 定时任务[水滴 - 浏览任务] 开始: {} ####", DateUtil.format(new Date()));
+        log.info("#### 统计: {} ####", users.size());
+        BindFarmPO bindFarmPO;
+        for (UserPO user : users) {
+            bindFarmPO = bindFarmDao.selectByOpenId(user.getOpenId(), PlatformEnum.JD_FARM.getCode());
+            if (bindFarmPO != null) {
+                farmApi.taskList(user.getOpenId(), bindFarmPO.getCookie());
+            }
+        }
+        log.info("#### 定时任务[水滴 - 浏览任务] 结束: {} ####", DateUtil.format(new Date()));
+    }
+
 }
