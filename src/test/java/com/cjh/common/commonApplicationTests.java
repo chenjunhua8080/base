@@ -11,6 +11,7 @@ public class commonApplicationTests {
 
     @Test
     public void contextLoads() {
+        System.out.println("hello test!");
     }
 
 }
