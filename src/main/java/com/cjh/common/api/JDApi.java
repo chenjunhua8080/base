@@ -131,7 +131,7 @@ public class JDApi {
     /**
      * 首次喂食奖励
      */
-    private final String dog_url_getFirstFeedReward = "https://api.m.jd.com/client.action?functionId=getFirstFeedReward&clientVersion=10.0.5&build=88681&client=android&d_brand=realme&d_model=RMX1991&osVersion=10&screen=2264*1080&partner=oppo&oaid=&openudid=637bd8ae1589f566&eid=eidA2c4481233es2cDODdE0oQDGZAsqjipfs6nAzhOSbOtWyvbmq6irkk3V DBzs8bnZ4XBot0EvrytRfYqmEiF9aQYIV4R2JEYZIQ mxPHZbZWdOR4x&sdkVersion=29&lang=zh_CN&uuid=637bd8ae1589f566&aid=637bd8ae1589f566&area=19_1601_3634_63211&networkType=wifi&wifiBssid=13fa56423c251d614f0d3f559c636a56&uts=0f31TVRjBSsQX3eoNIdoeWWO3nNynz9FG4raKjdBGRk9iWKxxkbW1yvdxBgz8+pnwKnRsvkn1nDkql3s3KUZa0/N06BQVsq7XGfGX9TrJfHMd1xjDyEgOrqHc/vE70ebzVcUYCmNyv4eCSOHweUR7AI2MevtZ4S13/XS7RCWTKlhBnUniInFXnNni4zHbmoRbzHGST/sRMvEVaU5uY7nWA==&uemps=0-0&st=1625048633098&sign=dbce3f22e1c1083936f92bbbc8201dc8&sv=112";
+    private final String dog_url_getFirstFeedReward = "https://api.m.jd.com/client.action?functionId=getFirstFeedReward&appid=wh5&loginType=1&loginWQBiz=pet-town";
     private ReqLogService reqLogService;
 
     //################################### 宠物 ###########################################

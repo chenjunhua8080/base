@@ -149,4 +149,21 @@ public class JDJob {
         }
     }
 
+    @Scheduled(cron = "${job.pets.browseExec}")
+    public void browseExec() throws InterruptedException {
+        if (apiConfig.getPetsConfig().getWorking()) {
+            List<UserPO> users = userDao.selectList(null);
+            log.info("#### 定时任务[京东 - 宠物 - 浏览任务] 开始: {} ####", DateUtil.format(new Date()));
+            BindFarmPO bindFarmPO;
+            for (UserPO user : users) {
+                bindFarmPO = bindFarmDao.selectByOpenId(user.getOpenId(), PlatformEnum.JD_PETS.getCode());
+                if (bindFarmPO != null) {
+                    log.info("#### 用户: {} ####", user.getOpenId());
+                    jdApi.browseExec(user.getOpenId(), bindFarmPO.getCookie(),10);
+                }
+            }
+            log.info("#### 定时任务[京东 - 宠物 - 浏览任务] 结束: {} ####", DateUtil.format(new Date()));
+        }
+    }
+
 }
