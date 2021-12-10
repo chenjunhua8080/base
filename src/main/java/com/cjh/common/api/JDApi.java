@@ -535,14 +535,14 @@ public class JDApi {
             TimeUnit.SECONDS.sleep(10);
             DogBrowseResp browseGiftResp = browseGift(cookie, index);
             if ("0".equals(browseResp.getCode()) && browseGiftResp.getResult().getStatus() == 1) {
-                result = String.format("#### 浏览[%s]成功, 获得奖励: %s ####", index, browseGiftResp.getResult().getReward());
+                result = String.format("#### 浏览[%s]成功, 领取奖励: %s ####", index, browseGiftResp.getResult().getReward());
                 log.info(result);
                 TimeUnit.SECONDS.sleep(2);
                 if (browseGiftResp.getResult().getReward() > 0) {
                     browseExec(openId, cookie, ++index);
                 }
             } else {
-                result = String.format("#### 浏览[%s]成功, 但未获得奖励: %s ####", index, browseGiftResp.getResult().getStatus());
+                result = String.format("#### 浏览[%s]成功, 领取失败, %s ####", index, browseGiftResp.getResult().getStatus());
                 log.info(result);
             }
         } else {
