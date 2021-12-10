@@ -149,8 +149,8 @@ public class FarmApi {
         HttpRequest request = new HttpRequest(url_signForFarm_v13);
         request.header("Cookie", cookie);
         HttpResponse httpResponse = request.execute();
-        log.info(String.valueOf(request));
-        log.info(String.valueOf(httpResponse));
+        //log.info(String.valueOf(request));
+        //log.info(String.valueOf(httpResponse));
         String resp = httpResponse.body();
         FarmSignV13Resp signV13Resp = JSONObject.parseObject(resp, FarmSignV13Resp.class);
         String result;
@@ -307,8 +307,8 @@ public class FarmApi {
         HttpRequest request = new HttpRequest(url);
         request.header("Cookie", cookie);
         HttpResponse httpResponse = request.execute();
-        log.info(String.valueOf(request));
-        log.info(String.valueOf(httpResponse));
+        //log.info(String.valueOf(request));
+        //log.info(String.valueOf(httpResponse));
         String resp = httpResponse.body();
         FarmTaskResp taskResp = JSONObject.parseObject(resp, FarmTaskResp.class);
         String result;
@@ -340,8 +340,8 @@ public class FarmApi {
         HttpRequest request = new HttpRequest(url);
         request.header("Cookie", cookie);
         HttpResponse httpResponse = request.execute();
-        log.info(String.valueOf(request));
-        log.info(String.valueOf(httpResponse));
+        //log.info(String.valueOf(request));
+        //log.info(String.valueOf(httpResponse));
         String resp = httpResponse.body();
         FarmTaskResp taskResp = JSONObject.parseObject(resp, FarmTaskResp.class);
         return taskResp;

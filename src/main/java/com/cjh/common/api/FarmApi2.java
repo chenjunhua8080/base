@@ -165,8 +165,8 @@ public class FarmApi2 {
         HttpRequest request=new HttpRequest(url_signForFarm_v14);
         request.header("Cookie",cookie);
         HttpResponse httpResponse = request.execute();
-        log.info(String.valueOf(request));
-        log.info(String.valueOf(httpResponse));
+        //log.info(String.valueOf(request));
+        //log.info(String.valueOf(httpResponse));
         String resp = httpResponse.body();
         FarmSignV13Resp signV13Resp = JSONObject.parseObject(resp, FarmSignV13Resp.class);
         String result;

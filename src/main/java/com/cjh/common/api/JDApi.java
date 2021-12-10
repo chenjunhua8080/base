@@ -525,8 +525,8 @@ public class JDApi {
         HttpRequest request = new HttpRequest(url);
         request.header("Cookie", cookie);
         HttpResponse httpResponse = request.execute();
-        log.info(String.valueOf(request));
-        log.info(String.valueOf(httpResponse));
+        //log.info(String.valueOf(request));
+        //log.info(String.valueOf(httpResponse));
         String resp = httpResponse.body();
         DogBrowseResp browseResp = JSONObject.parseObject(resp, DogBrowseResp.class);
         String result;
@@ -561,8 +561,8 @@ public class JDApi {
         HttpRequest request = new HttpRequest(url);
         request.header("Cookie", cookie);
         HttpResponse httpResponse = request.execute();
-        log.info(String.valueOf(request));
-        log.info(String.valueOf(httpResponse));
+        //log.info(String.valueOf(request));
+        //log.info(String.valueOf(httpResponse));
         String resp = httpResponse.body();
         return JSONObject.parseObject(resp, DogBrowseResp.class);
     }
