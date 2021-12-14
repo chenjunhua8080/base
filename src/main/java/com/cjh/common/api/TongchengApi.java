@@ -4,6 +4,7 @@ import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import com.alibaba.fastjson.JSON;
 import com.cjh.common.enums.PlatformEnum;
+import com.cjh.common.feign.CloudFeignClient;
 import com.cjh.common.resp.tongcheng.GetAutoRestoreWaterResp;
 import com.cjh.common.resp.tongcheng.GetTaskAward;
 import com.cjh.common.resp.tongcheng.SignResp;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class TongchengApi {
+
 
     /**
      * @name 签到
@@ -49,6 +51,8 @@ public class TongchengApi {
 
     @Autowired
     private ReqLogService reqLogService;
+    @Autowired
+    private CloudFeignClient cloudFeignClient;
 
     /**
      * 签到
@@ -69,6 +73,7 @@ public class TongchengApi {
         } else {
             result = String.format("#### 里程-签到 失败, %s ####", resp.getMessage());
             log.error(result);
+            cloudFeignClient.pushErrorMsg(openId, result);
         }
         reqLogService.addLog(PlatformEnum.TONGCHENG.getCode(), openId, result, respBody);
         return result;
@@ -91,6 +96,7 @@ public class TongchengApi {
         } else {
             result = String.format("#### 水滴-签到 失败, %s ####", resp.getMessage());
             log.error(result);
+            cloudFeignClient.pushErrorMsg(openId, result);
         }
         reqLogService.addLog(PlatformEnum.TONGCHENG.getCode(), openId, result, respBody);
         return result;
