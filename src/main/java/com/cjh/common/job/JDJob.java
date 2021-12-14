@@ -107,7 +107,7 @@ public class JDJob {
                         e.printStackTrace();
                         Thread.currentThread().interrupt();
                     }
-                    jdApi.getFirstFeedReward(user.getOpenId(), bindFarmPO.getCookie());
+//                    jdApi.getFirstFeedReward(user.getOpenId(), bindFarmPO.getCookie());
                 }
             }
             log.info("#### 定时任务[京东 - 宠物 - 喂食] 结束: {} ####", DateUtil.format(new Date()));
