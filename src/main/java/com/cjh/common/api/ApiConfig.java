@@ -24,6 +24,7 @@ public class ApiConfig {
     private PetsConfig petsConfig;
     private BossConfig bossConfig;
     private UHomeConfig uHomeConfig;
+    private TongchengConfig tongchengConfig;
 
     @Data
     public static class TestConfig {
@@ -64,6 +65,12 @@ public class ApiConfig {
 
     @Data
     public static class UHomeConfig {
+
+        private Boolean working;
+    }
+
+    @Data
+    public static class TongchengConfig {
 
         private Boolean working;
     }

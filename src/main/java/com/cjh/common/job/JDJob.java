@@ -102,7 +102,7 @@ public class JDJob {
                     log.info("#### 用户: {} ####", user.getOpenId());
                     jdApi.feedPets(user.getOpenId(), bindFarmPO.getCookie());
                     try {
-                        Thread.sleep(2000);
+                        Thread.sleep(10000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                         Thread.currentThread().interrupt();
