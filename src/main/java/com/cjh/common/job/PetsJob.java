@@ -101,7 +101,7 @@ public class PetsJob {
                 bindFarmPO = bindFarmDao.selectByOpenId(user.getOpenId(), PlatformEnum.JD_PETS.getCode());
                 if (bindFarmPO != null) {
                     log.info("#### 用户: {} ####", user.getOpenId());
-                    petsApi.browseExec(user.getOpenId(), bindFarmPO.getCookie(), 10);
+                    petsApi.browseExec(user.getOpenId(), bindFarmPO.getCookie(), 1);
                 }
             }
             log.info("#### 定时任务[京东 - 宠物 - 浏览任务] 结束: {} ####", DateUtil.format(new Date()));

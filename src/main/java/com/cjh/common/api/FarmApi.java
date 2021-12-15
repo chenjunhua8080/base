@@ -14,7 +14,6 @@ import com.cjh.common.resp.TreeInfo;
 import com.cjh.common.resp.TreeInfo.FarmUserProBean;
 import com.cjh.common.service.ReqLogService;
 import com.cjh.common.util.HttpUtil;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -46,7 +45,7 @@ public class FarmApi {
      */
     private final String url_signForFarm_v13 = "https://api.m.jd.com/client.action?functionId=clockInForFarm&body=%7B%22type%22%3A1%2C%22version%22%3A14%2C%22channel%22%3A2%2C%22babelChannel%22%3A0%7D&appid=wh5&client=&clientVersion=&loginType=1&loginWQBiz=ddnc";
 
-     /**
+    /**
      * @name 任务列表
      * @result {"gotThreeMealInit":{"threeMealAmount":"5-15","pos":-1,"f":true,"threeMealTimes":["6-9","11-14","17-21"]},"code":"0","firstWaterInit":{"firstWaterFinished":false,"f":false,"totalWaterTimes":0,"firstWaterEnergy":10},"signInit":{"signEnergyEachAmount":"20","f":false,"signEnergyShared":false,"totalSigned":0,"signEnergyAmounts":["20","20","20","20","20"],"todaySigned":false},"totalWaterTaskInit":{"totalWaterTaskLimit":10,"totalWaterTaskEnergy":15,"f":false,"totalWaterTaskFinished":false,"totalWaterTaskTimes":0},"statisticsTimes":null,"inviteToFarmInit":{"sendEnergyFinishedTimes":0,"inviteToFarmTimes":15,"f":false,"totalEnergy":0,"curInviteToFarmTimes":0,"inviteToFarmFinished":false,"inviteToFarmEnergy":60},"gotBrowseTaskAdInit":{"f":false,"userBrowseTaskAds":[{"advertId":"0066278604","mainTitle":"浏览推荐商品","subTitle":"奖励10g水滴，每天1次","wechatPic":"https://m.360buyimg.com/babel/jfs/t1/64560/13/9630/4130/5d722fdfE1c21e0e5/38da6883faa13d44.png","link":"https://pro.m.jd.com/mall/active/4MDaRCgfSMNWGLcLtFDdaoZqUST/index.html","picurl":"https://m.360buyimg.com/babel/jfs/t1/46086/40/15399/4130/5dc3b4aeEd350e570/40bf70e12f3582ef.png","wechatLink":"https://pro.m.jd.com/mall/active/4MDaRCgfSMNWGLcLtFDdaoZqUST/index.html","wechatMain":"浏览推荐商品","wechatSub":"奖励10g水滴，每天1次","reward":10,"limit":1,"hadGotTimes":0,"hadFinishedTimes":0},{"advertId":"0066278605","mainTitle":"浏览生鲜暖冬好物","subTitle":"奖励10g水滴，每天1次","wechatPic":"https://m.360buyimg.com/babel/jfs/t1/86316/40/4609/19860/5de7904cE6d3071da/9dd7cdd9deaa7996.png","link":"https://prodev.m.jd.com/mall/active/jNQkK3c9EJjxkRPbt5hHxGYLKMz/index.html","picurl":"https://m.360buyimg.com/babel/jfs/t1/101895/25/4565/5943/5de76a41E05c9648e/a80b66686bf446ef.png","wechatLink":"https://wq.jd.com/webportal/event/27436","wechatMain":"浏览限时补贴好货","wechatSub":"奖励10g水滴，每天1次","reward":10,"limit":1,"hadGotTimes":0,"hadFinishedTimes":0}]},"sysTime":1575613656230,"message":null,"waterRainInit":{"lastTime":0,"f":false,"winTimes":0,"config":{"maxLimit":2,"intervalTime":3,"lotteryProb":100,"imgArea":"https://m.360buyimg.com/babel/jfs/t1/95018/25/1064/277315/5db93bf1Ecbbcedc1/85782b18bb05eab2.png","countDown":10,"countOfBomb":0,"minAwardWater":3,"maxAwardWater":12,"bottomImg":"https://m.360buyimg.com/babel/jfs/t1/79941/15/14063/356572/5db93bf7E838db707/8454fe6098c0fca3.png","logo":"","vendorid":"","vendorName":"","key":"","actId":11288,"btnText":"回我的农场","btnLink":""}},"taskOrder":["signInit","firstWaterInit","inviteToFarmInit","waterRainInit","totalWaterTaskInit","gotBrowseTaskAdInit","gotThreeMealInit"]}
      */
@@ -317,10 +316,11 @@ public class FarmApi {
             FarmTaskResp taskGift = taskGift(cookie, taskId);
             if (taskGift.getCode() == 0 && taskGift.getAmount() > 0) {
                 result = String.format("#### 浏览[%s-%s]成功, 领取奖励: %s ####", taskId, taskName, taskGift.getAmount());
+                log.info(result);
             } else {
                 result = String.format("#### 浏览[%s-%s]成功, 领取失败, %s ####", taskId, taskName, taskGift.getCode());
+                log.error(result);
             }
-            log.info(result);
         } else {
             result = String.format("#### 浏览[%s-%s]失败, code: %s ####", taskId, taskName, taskResp.getCode());
             log.error(result);

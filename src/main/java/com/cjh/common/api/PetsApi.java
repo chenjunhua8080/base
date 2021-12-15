@@ -304,8 +304,11 @@ public class PetsApi {
      * 浏览任务
      */
     public String browseExec(String openId, String cookie, Integer index) throws InterruptedException {
+        String result;
         if (index > 8) {
-            return "浏览数量过大" + index + "，停止继续浏览";
+            result = "浏览任务数量已达" + index + "，停止继续浏览";
+            log.info(result);
+            return result;
         }
         String url = browseUrl.replace("INDEX", index.toString()).replace("TYPE", "1");
         HttpRequest request = new HttpRequest(url);
@@ -315,7 +318,6 @@ public class PetsApi {
         //log.info(String.valueOf(httpResponse));
         String resp = httpResponse.body();
         DogBrowseResp browseResp = JSONObject.parseObject(resp, DogBrowseResp.class);
-        String result;
         ResultBean respResult = browseResp.getResult();
         if ("0".equals(browseResp.getCode()) && respResult.getStatus() == 1) {
             TimeUnit.SECONDS.sleep(10);
@@ -323,13 +325,13 @@ public class PetsApi {
             if ("0".equals(browseResp.getCode()) && browseGiftResp.getResult().getStatus() == 1) {
                 result = String.format("#### 浏览[%s]成功, 领取奖励: %s ####", index, browseGiftResp.getResult().getReward());
                 log.info(result);
-                TimeUnit.SECONDS.sleep(2);
+                TimeUnit.SECONDS.sleep(10);
                 if (browseGiftResp.getResult().getReward() > 0) {
                     browseExec(openId, cookie, ++index);
                 }
             } else {
                 result = String.format("#### 浏览[%s]成功, 领取失败, %s ####", index, browseGiftResp.getResult().getStatus());
-                log.info(result);
+                log.error(result);
             }
         } else {
             result = String.format("#### 浏览[%s]失败, code: %s ####", browseResp.getCode());
