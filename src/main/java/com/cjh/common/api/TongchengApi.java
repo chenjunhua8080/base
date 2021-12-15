@@ -3,8 +3,12 @@ package com.cjh.common.api;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.cjh.common.enums.PlatformEnum;
 import com.cjh.common.feign.CloudFeignClient;
+import com.cjh.common.req.tongcheng.TongchengCookie;
+import com.cjh.common.req.tongcheng.TongchengSignParam;
+import com.cjh.common.req.tongcheng.TongchengWaterParam;
 import com.cjh.common.resp.tongcheng.GetAutoRestoreWaterResp;
 import com.cjh.common.resp.tongcheng.GetTaskAward;
 import com.cjh.common.resp.tongcheng.SignResp;
@@ -55,13 +59,25 @@ public class TongchengApi {
     private CloudFeignClient cloudFeignClient;
 
     /**
+     * cookie 里存了 {@link TongchengCookie}
+     */
+    private static TongchengCookie parseCookie(String cookie) {
+        return JSON.parseObject(cookie, TongchengCookie.class);
+    }
+
+    /**
      * 签到
      */
     public String sign(String openId, String cookie) {
+        TongchengCookie param = parseCookie(cookie);
         HttpRequest request = new HttpRequest(URL_SIGN);
-        request.body(
-            "{\"unionId\":\"ohmdTtxCLKfllUbfPa2bqIif3FN4\",\"openId\":\"o498X0Zcbr5AvQoatOpUe3m9Gyh8\",\"taskSharerId\":\"\",\"userIcon\":\"https://file.40017.cn/img140017cnproduct/touch/pushcode/qiandao/2020a/icon_defaultheader.png\",\"nickName\":\"匿名好友\"}");
-        HttpResponse response = getResp(request, true, true);
+        JSONObject json = (JSONObject) JSON.toJSON(new TongchengSignParam(param.getUnionId(), param.getOpenId()));
+        json.put("userIcon",
+            "https://file.40017.cn/img140017cnproduct/touch/pushcode/qiandao/2020a/icon_defaultheader.png");
+        json.put("nickName", "匿名好友");
+        json.put("taskSharerId", "");
+        request.body(json.toJSONString());
+        HttpResponse response = getResp(request, true, cookie, true);
         String respBody = response.body();
         SignResp resp = JSON.parseObject(respBody, SignResp.class);
         String result;
@@ -83,9 +99,10 @@ public class TongchengApi {
      * 水滴-签到
      */
     public String waterSign(String openId, String cookie) {
+        TongchengCookie param = parseCookie(cookie);
         HttpRequest request = new HttpRequest(URL_WATER_SIGN);
-        request.body("{\"unionId\":\"ohmdTtxCLKfllUbfPa2bqIif3FN4\",\"openId\":\"o498X0Zcbr5AvQoatOpUe3m9Gyh8\"}");
-        HttpResponse response = getResp(request, true, true);
+        request.body(JSON.toJSONString(new TongchengWaterParam(param.getUnionId(), param.getOpenId())));
+        HttpResponse response = getResp(request, true, cookie, true);
         String respBody = response.body();
         WaterSignResp resp = JSON.parseObject(respBody, WaterSignResp.class);
         String result;
@@ -106,11 +123,11 @@ public class TongchengApi {
      * 水滴-浇水
      */
     public String waterTree(String openId, String cookie) {
+        TongchengCookie param = parseCookie(cookie);
         HttpRequest request = new HttpRequest(URL_WATER_WATER_TREE);
-        request.cookie(cookie);
-        request
-            .body("{\"gameId\":\"83b5df9bc0b95475d69895024e0aa6d6\",\"token\":\"d16fe66df5e93f4198a8d27a2604e287\"}");
-        HttpResponse response = getResp(request, false, false);
+        request.cookie(param.getCookie());
+        request.body(JSON.toJSONString(new TongchengWaterParam(param.getUnionId(), param.getOpenId())));
+        HttpResponse response = getResp(request, false, null, false);
         String respBody = response.body();
         WaterTreeResp resp = JSON.parseObject(respBody, WaterTreeResp.class);
         String result;
@@ -131,12 +148,13 @@ public class TongchengApi {
      * 水滴-获取自动恢复水
      */
     public String getAutoRestoreWater(String openId, String cookie) {
+        TongchengCookie param = parseCookie(cookie);
         HttpRequest request = new HttpRequest(URL_WATER_GET_AUTO_RESTORE_WATER);
-        request.cookie(cookie);
-        request
-            .body(
-                "{\"waterNum\":10,\"gameId\":\"83b5df9bc0b95475d69895024e0aa6d6\",\"token\":\"d16fe66df5e93f4198a8d27a2604e287\"}");
-        HttpResponse response = getResp(request, false, false);
+        request.cookie(param.getCookie());
+        JSONObject json = (JSONObject) JSON.toJSON(new TongchengWaterParam(param.getGameId(), param.getToken()));
+        json.put("waterNum", "10");
+        request.body(json.toJSONString());
+        HttpResponse response = getResp(request, false, null, false);
         String respBody = response.body();
         GetAutoRestoreWaterResp resp = JSON.parseObject(respBody, GetAutoRestoreWaterResp.class);
         String result;
@@ -155,13 +173,13 @@ public class TongchengApi {
      * 水滴-获取任务奖励
      */
     public String getTaskAward(String openId, String cookie, String taskId) {
+        TongchengCookie param = parseCookie(cookie);
         HttpRequest request = new HttpRequest(URL_WATER_GET_TASK_AWARD);
-        request.cookie(cookie);
-        request
-            .body(
-                "{\"taskId\":\"" + taskId
-                    + "\",\"gameId\":\"83b5df9bc0b95475d69895024e0aa6d6\",\"token\":\"d16fe66df5e93f4198a8d27a2604e287\"}");
-        HttpResponse response = getResp(request, false, false);
+        request.cookie(param.getCookie());
+        JSONObject json = (JSONObject) JSON.toJSON(new TongchengWaterParam(param.getGameId(), param.getToken()));
+        json.put("taskId", taskId);
+        request.body(json.toJSONString());
+        HttpResponse response = getResp(request, false, null, false);
         String respBody = response.body();
         GetTaskAward resp = JSON.parseObject(respBody, GetTaskAward.class);
         String result;
@@ -188,24 +206,23 @@ public class TongchengApi {
      * content-type: application/json
      * sectoken: ZfOeS2YX9IStsHx-3-C4uwGbHNV1okjW5XYrqEPEf0sEn2BQ3zuvDQkFIeLZDYqLdoAvLsi6pmc_DMiPLbcnRrU56vvZ_b8JL9VyY9rjxkowdszFN6wTw4jePfJ6bufs9j6Lv0MI6uUd3fBiM500JaCzGemYO0B1Wl4ZgjuE6eNA4FgyoBmLm4wcZiMZHszTIz8ti7oEwDtWCMVlYY5bMQ**4641
      */
-    private void addBaseHeads(HttpRequest request) {
-        request.header("Host", "wx.17u.cn");
+    private void addBaseHeads(HttpRequest request, String cookie) {
+        TongchengCookie param = parseCookie(cookie);
+        request.header("Host", param.getHost());
         request.header("Connection", "keep-alive");
-        request.header("TCReferer", "page%2FAC%2Fsign%2Fmsindex%2Fmsindex");
-        request.header("TCSecTk",
-            "ZfOeS2YX9IStsHx-3-C4uwGbHNV1okjW5XYrqEPEf0sEn2BQ3zuvDQkFIeLZDYqLdoAvLsi6pmc_DMiPLbcnRrU56vvZ_b8JL9VyY9rjxkowdszFN6wTw4jePfJ6bufs9j6Lv0MI6uUd3fBiM500JaCzGemYO0B1Wl4ZgjuE6eNA4FgyoBmLm4wcZiMZHszTIz8ti7oEwDtWCMVlYY5bMQ**4641");
-        request.header("apmat", "o498X0Zcbr5AvQoatOpUe3m9Gyh8");
+        request.header("TCReferer", param.getTCReferer());
+        request.header("TCSecTk", param.getTCSecTk());
+        request.header("apmat", param.getApmat());
         request.header("content-type", "application/json");
-        request.header("sectoken",
-            "ZfOeS2YX9IStsHx-3-C4uwGbHNV1okjW5XYrqEPEf0sEn2BQ3zuvDQkFIeLZDYqLdoAvLsi6pmc_DMiPLbcnRrU56vvZ_b8JL9VyY9rjxkowdszFN6wTw4jePfJ6bufs9j6Lv0MI6uUd3fBiM500JaCzGemYO0B1Wl4ZgjuE6eNA4FgyoBmLm4wcZiMZHszTIz8ti7oEwDtWCMVlYY5bMQ**4641");
+        request.header("sectoken", param.getSectoken());
     }
 
     /**
      * execute http
      */
-    private HttpResponse getResp(HttpRequest request, boolean addBaseHeads, boolean showLog) {
+    private HttpResponse getResp(HttpRequest request, boolean addBaseHeads, String cookie, boolean showLog) {
         if (addBaseHeads) {
-            addBaseHeads(request);
+            addBaseHeads(request, cookie);
         }
         HttpResponse response = request.execute();
         if (showLog) {
