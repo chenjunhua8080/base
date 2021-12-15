@@ -317,10 +317,8 @@ public class FarmApi {
             FarmTaskResp taskGift = taskGift(cookie, taskId);
             if (taskGift.getCode() == 0 && taskGift.getAmount() > 0) {
                 result = String.format("#### 浏览[%s-%s]成功, 领取奖励: %s ####", taskId, taskName, taskGift.getAmount());
-                log.info(result);
             } else {
                 result = String.format("#### 浏览[%s-%s]成功, 领取失败, %s ####", taskId, taskName, taskGift.getCode());
-                log.info(result);
             }
             log.info(result);
         } else {
