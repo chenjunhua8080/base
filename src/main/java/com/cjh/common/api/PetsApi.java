@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-public class JDApi {
+public class PetsApi {
 
     /**
      * 浏览任务

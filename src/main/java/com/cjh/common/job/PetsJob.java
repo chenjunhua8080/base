@@ -1,7 +1,7 @@
 package com.cjh.common.job;
 
 import com.cjh.common.api.ApiConfig;
-import com.cjh.common.api.JDApi;
+import com.cjh.common.api.PetsApi;
 import com.cjh.common.dao.BindFarmDao;
 import com.cjh.common.dao.UserDao;
 import com.cjh.common.enums.PlatformEnum;
@@ -17,7 +17,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 /**
- * 京东 - 叠蛋糕定时任务
+ * 京东 - 宠物定时任务
  *
  * @author cjh
  * @date 2020/5/24
@@ -26,52 +26,12 @@ import org.springframework.stereotype.Component;
 @EnableScheduling
 @Component
 @Slf4j
-public class JDJob {
+public class PetsJob {
 
-    private JDApi jdApi;
+    private PetsApi petsApi;
     private ApiConfig apiConfig;
     private UserDao userDao;
     private BindFarmDao bindFarmDao;
-
-    @Scheduled(cron = "${job.cake.collectScore}")
-    public void collectScore() {
-        if (apiConfig.getCakeConfig().getWorking()) {
-            List<UserPO> users = userDao.selectList(null);
-//            log.info("#### 定时任务[京东 - 叠蛋糕 - 收集金币] 开始: {} ####", DateUtil.format(new Date()));
-//            log.info("#### 统计: {} ####", users.size());
-            BindFarmPO bindFarmPO;
-            for (UserPO user : users) {
-                bindFarmPO = bindFarmDao.selectByOpenId(user.getOpenId(), PlatformEnum.JD_CAKE.getCode());
-                if (bindFarmPO != null) {
-                    try {
-                        jdApi.collectScore(user.getOpenId(), bindFarmPO.getCookie());
-                    } catch (Exception e) {
-                        log.info("#### 定时任务[京东 - 叠蛋糕 - 收集金币] 异常:  ####", e);
-                    }
-                }
-            }
-//            log.info("#### 定时任务[京东 - 叠蛋糕 - 收集金币] 结束: {} ####", DateUtil.format(new Date()));
-        }
-    }
-
-    @Scheduled(cron = "${job.cake.getHomeData}")
-    public void getHomeData() {
-        if (apiConfig.getCakeConfig().getWorking()) {
-            List<UserPO> users = userDao.selectList(null);
-            log.info("#### 定时任务[京东 - 叠蛋糕 - 查询升级] 开始: {} ####", DateUtil.format(new Date()));
-            log.info("#### 统计: {} ####", users.size());
-            BindFarmPO bindFarmPO;
-            for (UserPO user : users) {
-                bindFarmPO = bindFarmDao.selectByOpenId(user.getOpenId(), PlatformEnum.JD_CAKE.getCode());
-                if (bindFarmPO != null) {
-                    jdApi.getHomeData(user.getOpenId(), bindFarmPO.getCookie(), true);
-                }
-            }
-            log.info("#### 定时任务[京东 - 叠蛋糕 - 查询升级] 结束: {} ####", DateUtil.format(new Date()));
-        }
-    }
-
-    //################################# 京东宠物 ####################################
 
     @Scheduled(cron = "${job.pets.getSignReward}")
     public void getSignReward() {
@@ -83,7 +43,7 @@ public class JDJob {
                 bindFarmPO = bindFarmDao.selectByOpenId(user.getOpenId(), PlatformEnum.JD_PETS.getCode());
                 if (bindFarmPO != null) {
                     log.info("#### 用户: {} ####", user.getOpenId());
-                    jdApi.getSignReward(user.getOpenId(), bindFarmPO.getCookie());
+                    petsApi.getSignReward(user.getOpenId(), bindFarmPO.getCookie());
                 }
             }
             log.info("#### 定时任务[京东 - 宠物 - 签到] 结束: {} ####", DateUtil.format(new Date()));
@@ -100,37 +60,19 @@ public class JDJob {
                 bindFarmPO = bindFarmDao.selectByOpenId(user.getOpenId(), PlatformEnum.JD_PETS.getCode());
                 if (bindFarmPO != null) {
                     log.info("#### 用户: {} ####", user.getOpenId());
-                    jdApi.feedPets(user.getOpenId(), bindFarmPO.getCookie());
+                    petsApi.feedPets(user.getOpenId(), bindFarmPO.getCookie());
                     try {
                         Thread.sleep(10000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                         Thread.currentThread().interrupt();
                     }
-//                    jdApi.getFirstFeedReward(user.getOpenId(), bindFarmPO.getCookie());
+                    petsApi.getFirstFeedReward(user.getOpenId(), bindFarmPO.getCookie());
                 }
             }
             log.info("#### 定时任务[京东 - 宠物 - 喂食] 结束: {} ####", DateUtil.format(new Date()));
         }
     }
-
-//    @Scheduled(cron = "${job.pets.getSingleShop}")
-//    public void getSingleShop() {
-//        if (apiConfig.getPetsConfig().getWorking()) {
-//            List<UserPO> users = userDao.selectList(null);
-//            log.info("#### 定时任务[京东 - 宠物 - 浏览商店] 开始: {} ####", DateUtil.format(new Date()));
-//            BindFarmPO bindFarmPO;
-//            for (UserPO user : users) {
-//                bindFarmPO = bindFarmDao.selectByOpenId(user.getOpenId(), PlatformEnum.JD_PETS.getCode());
-//                if (bindFarmPO != null) {
-//                    log.info("#### 用户: {} ####", user.getOpenId());
-//                    jdApi.getFirstFeedReward(user.getOpenId(), bindFarmPO.getCookie());
-//                }
-//            }
-//            log.info("#### 定时任务[京东 - 宠物 - 浏览商店] 结束: {} ####", DateUtil.format(new Date()));
-//        }
-//    }
-
 
     @Scheduled(cron = "${job.pets.getThreeMeal}")
     public void getThreeMeal() {
@@ -142,7 +84,7 @@ public class JDJob {
                 bindFarmPO = bindFarmDao.selectByOpenId(user.getOpenId(), PlatformEnum.JD_PETS.getCode());
                 if (bindFarmPO != null) {
                     log.info("#### 用户: {} ####", user.getOpenId());
-                    jdApi.getThreeMeal(user.getOpenId(), bindFarmPO.getCookie());
+                    petsApi.getThreeMeal(user.getOpenId(), bindFarmPO.getCookie());
                 }
             }
             log.info("#### 定时任务[京东 - 宠物 - 三餐领取] 结束: {} ####", DateUtil.format(new Date()));
@@ -159,7 +101,7 @@ public class JDJob {
                 bindFarmPO = bindFarmDao.selectByOpenId(user.getOpenId(), PlatformEnum.JD_PETS.getCode());
                 if (bindFarmPO != null) {
                     log.info("#### 用户: {} ####", user.getOpenId());
-                    jdApi.browseExec(user.getOpenId(), bindFarmPO.getCookie(),10);
+                    petsApi.browseExec(user.getOpenId(), bindFarmPO.getCookie(), 10);
                 }
             }
             log.info("#### 定时任务[京东 - 宠物 - 浏览任务] 结束: {} ####", DateUtil.format(new Date()));

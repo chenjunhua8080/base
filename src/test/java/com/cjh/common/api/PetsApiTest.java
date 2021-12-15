@@ -11,10 +11,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
 @Slf4j
-class JDApiTest {
+class PetsApiTest {
 
     @Autowired
-    private JDApi jdApi;
+    private PetsApi petsApi;
 
     private String openId;
     private String cookie;
@@ -27,26 +27,26 @@ class JDApiTest {
 
     @Test
     void getSignReward() {
-        jdApi.getSignReward(openId, cookie);
+        petsApi.getSignReward(openId, cookie);
     }
 
     @Test
     void getThreeMeal() {
-        jdApi.getThreeMeal(openId, cookie);
+        petsApi.getThreeMeal(openId, cookie);
     }
 
     @Test
     void feedPets() {
-        jdApi.feedPets(openId, cookie);
+        petsApi.feedPets(openId, cookie);
     }
 
     @Test
     void getFirstFeedReward() {
-        jdApi.getFirstFeedReward(openId, cookie);
+        petsApi.getFirstFeedReward(openId, cookie);
     }
 
     @Test
     void browseExec() throws InterruptedException {
-        jdApi.browseExec(openId, cookie, 30);
+        petsApi.browseExec(openId, cookie, 30);
     }
 }
