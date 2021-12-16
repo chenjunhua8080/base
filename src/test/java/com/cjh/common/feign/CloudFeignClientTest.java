@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 @Slf4j
-public class CloudFeignClientTest {
+class CloudFeignClientTest {
 
     @Autowired
     private CloudFeignClient cloudFeignClient;

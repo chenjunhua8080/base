@@ -24,8 +24,9 @@ import org.springframework.stereotype.Component;
  */
 @AllArgsConstructor
 @EnableScheduling
-@Component
+//@Component
 @Slf4j
+@Deprecated
 public class BankChinaJob {
 
     private BankChinaApi bankApi;

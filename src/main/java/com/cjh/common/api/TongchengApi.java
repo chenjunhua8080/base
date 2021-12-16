@@ -11,12 +11,14 @@ import com.cjh.common.req.tongcheng.TongchengSignParam;
 import com.cjh.common.req.tongcheng.TongchengWaterParam;
 import com.cjh.common.resp.tongcheng.GetAutoRestoreWaterResp;
 import com.cjh.common.resp.tongcheng.GetTaskAward;
+import com.cjh.common.resp.tongcheng.SignInfoResp;
 import com.cjh.common.resp.tongcheng.SignResp;
 import com.cjh.common.resp.tongcheng.SignResp.DataBean;
 import com.cjh.common.resp.tongcheng.SignResp.DataBean.PrizesBean;
 import com.cjh.common.resp.tongcheng.WaterSignResp;
 import com.cjh.common.resp.tongcheng.WaterTreeResp;
 import com.cjh.common.service.ReqLogService;
+import com.xxl.job.core.context.XxlJobHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,6 +27,10 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class TongchengApi {
 
+    /**
+     * 获取签到信息
+     */
+    private static final String URL_GET_SIGN_INFO = "https://wx.17u.cn/wcsign/sign/GetSignInfoNew";
 
     /**
      * @name 签到
@@ -66,6 +72,27 @@ public class TongchengApi {
     }
 
     /**
+     * 获取签到信息
+     */
+    public void getSignInfo(String openId, String cookie) {
+        TongchengCookie param = parseCookie(cookie);
+        HttpRequest request = HttpRequest.post(URL_GET_SIGN_INFO);
+        request.body(JSON.toJSONString(new TongchengSignParam(param.getUnionId(), param.getOpenId())));
+        HttpResponse response = getResp(request, true, cookie, true);
+        String respBody = response.body();
+        SignInfoResp resp = JSON.parseObject(respBody, SignInfoResp.class);
+        String result;
+        if (resp.getRspCode() == 0) {
+            result = String.format("#### 里程-获取签到信息 成功, %s ####", resp.getData().getSignDesc());
+            XxlJobHelper.log(result);
+        } else {
+            result = String.format("#### 里程-获取签到信息 失败, %s ####", resp.getMessage());
+            XxlJobHelper.log(result);
+        }
+        reqLogService.addLog(PlatformEnum.TONGCHENG.getCode(), openId, result, respBody);
+    }
+
+    /**
      * 签到
      */
     public String sign(String openId, String cookie) {
@@ -85,10 +112,10 @@ public class TongchengApi {
             DataBean data = resp.getData();
             PrizesBean prizes = data.getPrizes().get(0);
             result = String.format("#### 里程-签到 成功, 签到%s天, 获得里程: %s ####", data.getSignDay(), prizes.getAmount());
-            log.info(result);
+            XxlJobHelper.log(result);
         } else {
             result = String.format("#### 里程-签到 失败, %s ####", resp.getMessage());
-            log.error(result);
+            XxlJobHelper.log(result);
             cloudFeignClient.pushErrorMsg(openId, result);
         }
         reqLogService.addLog(PlatformEnum.TONGCHENG.getCode(), openId, result, respBody);
@@ -100,8 +127,8 @@ public class TongchengApi {
      */
     public String waterSign(String openId, String cookie) {
         TongchengCookie param = parseCookie(cookie);
-        HttpRequest request = new HttpRequest(URL_WATER_SIGN);
-        request.body(JSON.toJSONString(new TongchengWaterParam(param.getUnionId(), param.getOpenId())));
+        HttpRequest request = HttpRequest.post(URL_WATER_SIGN);
+        request.body(JSON.toJSONString(new TongchengSignParam(param.getUnionId(), param.getOpenId())));
         HttpResponse response = getResp(request, true, cookie, true);
         String respBody = response.body();
         WaterSignResp resp = JSON.parseObject(respBody, WaterSignResp.class);
@@ -109,10 +136,10 @@ public class TongchengApi {
         if (resp.getRspCode() == 0) {
             WaterSignResp.DataBean data = resp.getData();
             result = String.format("#### 水滴-签到 成功, 获得水滴: %s ####", data.getWaterNum());
-            log.info(result);
+            XxlJobHelper.log(result);
         } else {
             result = String.format("#### 水滴-签到 失败, %s ####", resp.getMessage());
-            log.error(result);
+            XxlJobHelper.log(result);
             cloudFeignClient.pushErrorMsg(openId, result);
         }
         reqLogService.addLog(PlatformEnum.TONGCHENG.getCode(), openId, result, respBody);
@@ -126,7 +153,7 @@ public class TongchengApi {
         TongchengCookie param = parseCookie(cookie);
         HttpRequest request = new HttpRequest(URL_WATER_WATER_TREE);
         request.cookie(param.getCookie());
-        request.body(JSON.toJSONString(new TongchengWaterParam(param.getUnionId(), param.getOpenId())));
+        request.body(JSON.toJSONString(new TongchengWaterParam(param.getGameId(), param.getToken())));
         HttpResponse response = getResp(request, false, null, false);
         String respBody = response.body();
         WaterTreeResp resp = JSON.parseObject(respBody, WaterTreeResp.class);
@@ -134,10 +161,10 @@ public class TongchengApi {
         if (resp.getCode() == 0) {
             result = String.format("#### 水滴-浇水 成功, 总次数: %s, 可用: %s ####",
                 resp.getPlantInfo().getTotalWaterCount(), resp.getItems().getK1());
-            log.info(result);
+            XxlJobHelper.log(result);
         } else {
             result = String.format("#### 水滴-浇水 失败, %s ####", resp.getCode());
-            log.error(result);
+            XxlJobHelper.log(result);
         }
         reqLogService.addLog(PlatformEnum.TONGCHENG.getCode(), openId, result, respBody);
         return result;
@@ -160,10 +187,10 @@ public class TongchengApi {
         String result;
         if (resp.getCode() == 0) {
             result = String.format("#### 水滴-获取自动恢复水 成功, 获得水滴: %s ####", resp.getAutoRestoreWater().getWaterNum());
-            log.info(result);
+            XxlJobHelper.log(result);
         } else {
             result = String.format("#### 水滴-获取自动恢复水 失败, %s ####", resp.getErrMsg());
-            log.error(result);
+            XxlJobHelper.log(result);
         }
         reqLogService.addLog(PlatformEnum.TONGCHENG.getCode(), openId, result, respBody);
         return result;
@@ -186,10 +213,10 @@ public class TongchengApi {
         if (resp.getCode() == 0) {
             String waterNum = resp.getAwardItems().get(0);
             result = String.format("#### 水滴-获取任务(%s)奖励 成功, 获得水滴: %s ####", taskId, waterNum);
-            log.info(result);
+            XxlJobHelper.log(result);
         } else {
             result = String.format("#### 水滴-获取任务(%s)奖励 失败, %s ####", taskId, resp.getErrMsg());
-            log.error(result);
+            XxlJobHelper.log(result);
         }
         reqLogService.addLog(PlatformEnum.TONGCHENG.getCode(), openId, result, respBody);
         return result;
@@ -208,12 +235,13 @@ public class TongchengApi {
      */
     private void addBaseHeads(HttpRequest request, String cookie) {
         TongchengCookie param = parseCookie(cookie);
+//        request.header("Connection", "keep-alive");
+//        request.header("content-type", "application/json");
         request.header("Host", param.getHost());
-        request.header("Connection", "keep-alive");
         request.header("TCReferer", param.getTCReferer());
         request.header("TCSecTk", param.getTCSecTk());
         request.header("apmat", param.getApmat());
-        request.header("content-type", "application/json");
+        request.header("wxapp", param.getWxapp());
         request.header("sectoken", param.getSectoken());
     }
 
@@ -226,8 +254,8 @@ public class TongchengApi {
         }
         HttpResponse response = request.execute();
         if (showLog) {
-            log.info(String.valueOf(request));
-            log.info(String.valueOf(response));
+            XxlJobHelper.log(String.valueOf(request));
+            XxlJobHelper.log(String.valueOf(response));
         }
         return response;
     }

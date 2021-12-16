@@ -24,6 +24,10 @@ public class TongchengCookie {
      */
     private String apmat;
     /**
+     * wxapp
+     */
+    private String wxapp;
+    /**
      * sectoken
      */
     private String sectoken;

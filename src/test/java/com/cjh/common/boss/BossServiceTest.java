@@ -3,14 +3,14 @@ package com.cjh.common.boss;
 import com.cjh.common.api.BossApi;
 import com.cjh.common.boss.resp.Cookie;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 @Slf4j
-public class BossServiceTest {
+class BossServiceTest {
 
     @Autowired
     private BossService bossService;
@@ -18,17 +18,17 @@ public class BossServiceTest {
     private BossApi bossApi;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         System.out.println("");
     }
 
     @Test
-    public void login() {
+    void login() {
         bossService.login();
     }
 
     @Test
-    public void acceptResume() {
+    void acceptResume() {
 //        Cookie cookie = bossService.login();
         Cookie cookie = new Cookie();
         cookie.setWt2("DRW20V34V5a_VN8CL0ebxqyFU2uVleHwFupRUOdBsVxRkFEcqiw_pmnjD1Ls3lBNvbRuurfamdm1nge9XWvBrPg~~");
@@ -37,7 +37,7 @@ public class BossServiceTest {
     }
 
     @Test
-    public void test() {
+    void test() {
 //        Cookie cookie = bossApi.getDispatcher("bosszp-3227823c-705d-421a-aedf-a6fe8a0096b2");
 //        log.info("获取cookie成功\n{}", cookie);
 

@@ -8,6 +8,7 @@ import com.cjh.common.enums.PlatformEnum;
 import com.cjh.common.po.BindFarmPO;
 import com.cjh.common.po.UserPO;
 import com.cjh.common.util.DateUtil;
+import com.xxl.job.core.handler.annotation.XxlJob;
 import java.util.Date;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +37,8 @@ public class UHomeJob {
     @Autowired
     private BindFarmDao bindFarmDao;
 
-    @Scheduled(cron = "${job.uhome.sign}")
+//    @Scheduled(cron = "${job.uhome.sign}")
+    @XxlJob("job.uhome.sign")
     public void sign() {
         if (!apiConfig.getUHomeConfig().getWorking()) {
             return;

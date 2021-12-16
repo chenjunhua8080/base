@@ -1,6 +1,7 @@
 package com.cjh.common.job;
 
 import com.cjh.common.api.ApiConfig;
+import com.xxl.job.core.handler.annotation.XxlJob;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -21,7 +22,8 @@ public class TestJob {
     @Autowired
     private ApiConfig apiConfig;
 
-    @Scheduled(cron = "${job.test.test}")
+//    @Scheduled(cron = "${job.test.test}")
+    @XxlJob("job.test.test")
     public void test() {
         if (apiConfig.getTestConfig().getWorking()) {
             log.info("[----- test job ----]");

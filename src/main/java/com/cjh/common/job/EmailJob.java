@@ -56,8 +56,9 @@ import org.springframework.util.CollectionUtils;
  * @date 2021/4/26
  */
 @EnableScheduling
-@Component
+//@Component
 @Slf4j
+@Deprecated
 public class EmailJob {
 
     private static final ExecutorService executor = ExecutorBuilder.create()
