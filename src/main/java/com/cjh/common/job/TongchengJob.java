@@ -92,13 +92,13 @@ public class TongchengJob {
             if (bindFarm != null) {
                 XxlJobHelper.log("#### 用户: {} ####", user.getOpenId());
                 tongchengApi.waterTree(user.getOpenId(), bindFarm.getCookie());
-                Integer waterTreeCount = redisService.get("waterTree:" + user.getOpenId(), Integer.class);
+                String waterTreeCount = redisService.get("waterTree:" + user.getOpenId());
                 if (waterTreeCount == null) {
-                    waterTreeCount = 1;
-                    redisService.set("waterTree:" + user.getOpenId(), waterTreeCount, 60 * 60 * 23L);
+                    waterTreeCount = "1";
+                    redisService.setToday("waterTree:" + user.getOpenId(), waterTreeCount);
                 } else {
-                    waterTreeCount++;
-                    redisService.set("waterTree:" + user.getOpenId(), waterTreeCount);
+                    waterTreeCount = String.valueOf(Integer.parseInt(waterTreeCount) + 1);
+                    redisService.updateValue("waterTree:" + user.getOpenId(), waterTreeCount);
                 }
             }
         }
@@ -129,12 +129,13 @@ public class TongchengJob {
             bindFarm = bindFarmDao.selectByOpenId(user.getOpenId(), PlatformEnum.TONGCHENG.getCode());
             if (bindFarm != null) {
                 XxlJobHelper.log("#### 用户: {} ####", user.getOpenId());
-                Integer task1Num = redisService.get("getTaskAward1:" + user.getOpenId(), Integer.class);
+                String task1Num = redisService.get("getTaskAward1:" + user.getOpenId());
                 if (task1Num == null) {
-                    task1Num = 1;
+                    task1Num = "1";
+                    redisService.setToday("getTaskAward1:" + user.getOpenId(), task1Num);
                 } else {
-                    task1Num++;
-                    redisService.set("getTaskAward1:" + user.getOpenId(), task1Num, 60 * 65L);
+                    task1Num = String.valueOf(Integer.parseInt(task1Num) + 1);
+                    redisService.updateValue("getTaskAward1:" + user.getOpenId(), task1Num);
                 }
                 tongchengApi.getTaskAward(user.getOpenId(), bindFarm.getCookie(), "T10" + task1Num);
             }
@@ -151,7 +152,7 @@ public class TongchengJob {
             bindFarm = bindFarmDao.selectByOpenId(user.getOpenId(), PlatformEnum.TONGCHENG.getCode());
             if (bindFarm != null) {
                 XxlJobHelper.log("#### 用户: {} ####", user.getOpenId());
-                Integer waterTreeCount = redisService.get("waterTree:" + user.getOpenId(), Integer.class);
+                String waterTreeCount = redisService.get("waterTree:" + user.getOpenId());
                 XxlJobHelper.log("今日共浇水：" + waterTreeCount);
                 tongchengApi.getTaskAward(user.getOpenId(), bindFarm.getCookie(), "T201");
 //                    if (waterTreeCount != null) {
