@@ -17,11 +17,11 @@ public class BankChinaController {
 
     @GetMapping("/getBankChinaInfo")
     public String getBankChinaInfo(String openId) {
-        BindFarmPO bindFarmPO = bindFarmDao.selectByOpenId(openId, PlatformEnum.BANK_CHINA.getCode());
-        if (bindFarmPO == null) {
+        BindFarmPO bindFarm = bindFarmDao.selectByOpenId(openId, PlatformEnum.BANK_CHINA.getCode());
+        if (bindFarm == null) {
             return "未绑定";
         }
-        return bankChinaApi.index(openId, bindFarmPO.getCookie(), false);
+        return bankChinaApi.index(openId, bindFarm.getCookie(), false);
     }
 
 }

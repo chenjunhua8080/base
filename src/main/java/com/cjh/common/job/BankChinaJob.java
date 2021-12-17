@@ -38,16 +38,16 @@ public class BankChinaJob {
     public void sign() {
         if (apiConfig.getBankChinaConfig().getWorking()) {
             List<UserPO> users = userDao.selectList(null);
-            log.info("#### 定时任务[中银 - 签到] 开始: {} ####", DateUtil.format(new Date()));
+            log.info("#### 定时任务[中银 - 签到] 开始 ####");
             log.info("#### 统计: {} ####", users.size());
-            BindFarmPO bindFarmPO;
+            BindFarmPO bindFarm;
             for (UserPO user : users) {
-                bindFarmPO = bindFarmDao.selectByOpenId(user.getOpenId(), PlatformEnum.BANK_CHINA.getCode());
-                if (bindFarmPO != null) {
-                    bankApi.sign(user.getOpenId(), bindFarmPO.getCookie());
+                bindFarm = bindFarmDao.selectByOpenId(user.getOpenId(), PlatformEnum.BANK_CHINA.getCode());
+                if (bindFarm != null) {
+                    bankApi.sign(user.getOpenId(), bindFarm.getCookie());
                 }
             }
-            log.info("#### 定时任务[中银 - 签到] 结束: {} ####", DateUtil.format(new Date()));
+            log.info("#### 定时任务[中银 - 签到] 结束 ####");
         }
     }
 
@@ -58,16 +58,16 @@ public class BankChinaJob {
     public void index() {
         if (apiConfig.getBankChinaConfig().getWorking()) {
             List<UserPO> users = userDao.selectList(null);
-            log.info("#### 定时任务[中银 - 查询] 开始: {} ####", DateUtil.format(new Date()));
+            log.info("#### 定时任务[中银 - 查询] 开始 ####");
             log.info("#### 统计: {} ####", users.size());
-            BindFarmPO bindFarmPO;
+            BindFarmPO bindFarm;
             for (UserPO user : users) {
-                bindFarmPO = bindFarmDao.selectByOpenId(user.getOpenId(), PlatformEnum.BANK_CHINA.getCode());
-                if (bindFarmPO != null) {
-                    bankApi.index(user.getOpenId(), bindFarmPO.getCookie(), true);
+                bindFarm = bindFarmDao.selectByOpenId(user.getOpenId(), PlatformEnum.BANK_CHINA.getCode());
+                if (bindFarm != null) {
+                    bankApi.index(user.getOpenId(), bindFarm.getCookie(), true);
                 }
             }
-            log.info("#### 定时任务[中银 - 查询] 结束: {} ####", DateUtil.format(new Date()));
+            log.info("#### 定时任务[中银 - 查询] 结束 ####");
         }
     }
 

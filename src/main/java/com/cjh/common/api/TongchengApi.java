@@ -18,6 +18,7 @@ import com.cjh.common.resp.tongcheng.SignResp.DataBean.PrizesBean;
 import com.cjh.common.resp.tongcheng.WaterSignResp;
 import com.cjh.common.resp.tongcheng.WaterTreeResp;
 import com.cjh.common.service.ReqLogService;
+import com.cjh.common.util.XxlJobUtil;
 import com.xxl.job.core.context.XxlJobHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,7 +79,7 @@ public class TongchengApi {
         TongchengCookie param = parseCookie(cookie);
         HttpRequest request = HttpRequest.post(URL_GET_SIGN_INFO);
         request.body(JSON.toJSONString(new TongchengSignParam(param.getUnionId(), param.getOpenId())));
-        HttpResponse response = getResp(request, true, cookie, true);
+        HttpResponse response = executeHttp(request, true, cookie, true);
         String respBody = response.body();
         SignInfoResp resp = JSON.parseObject(respBody, SignInfoResp.class);
         String result;
@@ -87,7 +88,7 @@ public class TongchengApi {
             XxlJobHelper.log(result);
         } else {
             result = String.format("#### 里程-获取签到信息 失败, %s ####", resp.getMessage());
-            XxlJobHelper.log(result);
+            XxlJobUtil.showErrorLog(result);
         }
         reqLogService.addLog(PlatformEnum.TONGCHENG.getCode(), openId, result, respBody);
     }
@@ -104,7 +105,7 @@ public class TongchengApi {
         json.put("nickName", "匿名好友");
         json.put("taskSharerId", "");
         request.body(json.toJSONString());
-        HttpResponse response = getResp(request, true, cookie, true);
+        HttpResponse response = executeHttp(request, true, cookie, true);
         String respBody = response.body();
         SignResp resp = JSON.parseObject(respBody, SignResp.class);
         String result;
@@ -115,8 +116,7 @@ public class TongchengApi {
             XxlJobHelper.log(result);
         } else {
             result = String.format("#### 里程-签到 失败, %s ####", resp.getMessage());
-            XxlJobHelper.log(result);
-            cloudFeignClient.pushErrorMsg(openId, result);
+            XxlJobUtil.showErrorLog(result, openId);
         }
         reqLogService.addLog(PlatformEnum.TONGCHENG.getCode(), openId, result, respBody);
         return result;
@@ -129,7 +129,7 @@ public class TongchengApi {
         TongchengCookie param = parseCookie(cookie);
         HttpRequest request = HttpRequest.post(URL_WATER_SIGN);
         request.body(JSON.toJSONString(new TongchengSignParam(param.getUnionId(), param.getOpenId())));
-        HttpResponse response = getResp(request, true, cookie, true);
+        HttpResponse response = executeHttp(request, true, cookie, true);
         String respBody = response.body();
         WaterSignResp resp = JSON.parseObject(respBody, WaterSignResp.class);
         String result;
@@ -139,8 +139,7 @@ public class TongchengApi {
             XxlJobHelper.log(result);
         } else {
             result = String.format("#### 水滴-签到 失败, %s ####", resp.getMessage());
-            XxlJobHelper.log(result);
-            cloudFeignClient.pushErrorMsg(openId, result);
+            XxlJobUtil.showErrorLog(result, openId);
         }
         reqLogService.addLog(PlatformEnum.TONGCHENG.getCode(), openId, result, respBody);
         return result;
@@ -154,7 +153,7 @@ public class TongchengApi {
         HttpRequest request = new HttpRequest(URL_WATER_WATER_TREE);
         request.cookie(param.getCookie());
         request.body(JSON.toJSONString(new TongchengWaterParam(param.getGameId(), param.getToken())));
-        HttpResponse response = getResp(request, false, null, false);
+        HttpResponse response = executeHttp(request, false, null, false);
         String respBody = response.body();
         WaterTreeResp resp = JSON.parseObject(respBody, WaterTreeResp.class);
         String result;
@@ -181,7 +180,7 @@ public class TongchengApi {
         JSONObject json = (JSONObject) JSON.toJSON(new TongchengWaterParam(param.getGameId(), param.getToken()));
         json.put("waterNum", "10");
         request.body(json.toJSONString());
-        HttpResponse response = getResp(request, false, null, false);
+        HttpResponse response = executeHttp(request, false, null, false);
         String respBody = response.body();
         GetAutoRestoreWaterResp resp = JSON.parseObject(respBody, GetAutoRestoreWaterResp.class);
         String result;
@@ -190,7 +189,7 @@ public class TongchengApi {
             XxlJobHelper.log(result);
         } else {
             result = String.format("#### 水滴-获取自动恢复水 失败, %s ####", resp.getErrMsg());
-            XxlJobHelper.log(result);
+            XxlJobUtil.showErrorLog(result);
         }
         reqLogService.addLog(PlatformEnum.TONGCHENG.getCode(), openId, result, respBody);
         return result;
@@ -206,7 +205,7 @@ public class TongchengApi {
         JSONObject json = (JSONObject) JSON.toJSON(new TongchengWaterParam(param.getGameId(), param.getToken()));
         json.put("taskId", taskId);
         request.body(json.toJSONString());
-        HttpResponse response = getResp(request, false, null, false);
+        HttpResponse response = executeHttp(request, false, null, false);
         String respBody = response.body();
         GetTaskAward resp = JSON.parseObject(respBody, GetTaskAward.class);
         String result;
@@ -216,7 +215,7 @@ public class TongchengApi {
             XxlJobHelper.log(result);
         } else {
             result = String.format("#### 水滴-获取任务(%s)奖励 失败, %s ####", taskId, resp.getErrMsg());
-            XxlJobHelper.log(result);
+            XxlJobUtil.showErrorLog(result);
         }
         reqLogService.addLog(PlatformEnum.TONGCHENG.getCode(), openId, result, respBody);
         return result;
@@ -248,7 +247,7 @@ public class TongchengApi {
     /**
      * execute http
      */
-    private HttpResponse getResp(HttpRequest request, boolean addBaseHeads, String cookie, boolean showLog) {
+    private HttpResponse executeHttp(HttpRequest request, boolean addBaseHeads, String cookie, boolean showLog) {
         if (addBaseHeads) {
             addBaseHeads(request, cookie);
         }

@@ -2,11 +2,12 @@ package com.cjh.common.api;
 
 import com.alibaba.fastjson.JSONObject;
 import com.cjh.common.enums.PlatformEnum;
-import com.cjh.common.feign.CloudFeignClient;
 import com.cjh.common.resp.UHomeResp;
 import com.cjh.common.resp.UHomeResp.DataBean;
 import com.cjh.common.service.ReqLogService;
 import com.cjh.common.util.HttpUtil;
+import com.cjh.common.util.XxlJobUtil;
+import com.xxl.job.core.context.XxlJobHelper;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -25,8 +26,6 @@ public class UHomeApi {
 
     private final String url_sign = "https://vip.uh24.com.cn/uhome-member-server/task/signIn/memberSign?memberId=MEMBERID&city=CITY&phone=PHONE";
 
-    @Autowired
-    private CloudFeignClient feignClient;
     @Autowired
     private ReqLogService reqLogService;
 
@@ -53,17 +52,17 @@ public class UHomeApi {
             DataBean data = uHomeResp.getData();
             if (data.getStatus() == 1) {
                 result = String.format("#### 签到成功, 获得积分%s, 连续签到%s天 ####", data.getGiftNumber(), data.getDaySign());
-                log.info(result);
+                XxlJobHelper.log(result);
             } else {
                 result = String.format("#### 签到失败, sign status %s ####", data.getStatus());
+                XxlJobUtil.showErrorLog(result, openId);
             }
         } else {
             result = String.format("#### 签到失败, %s ####", uHomeResp.getMessage());
-            log.error(result);
+            XxlJobUtil.showErrorLog(result, openId);
         }
         reqLogService.addLog(PlatformEnum.UHOME.getCode(), openId, result, resp);
 
-        feignClient.tempPush(openId, result);
         return result;
     }
 }

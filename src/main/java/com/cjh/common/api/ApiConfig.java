@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 @RefreshScope
 @ConfigurationProperties(prefix = "api")
 @Data
+@Deprecated
 public class ApiConfig {
 
     private TestConfig testConfig;

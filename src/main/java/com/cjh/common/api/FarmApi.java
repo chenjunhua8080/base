@@ -14,6 +14,8 @@ import com.cjh.common.resp.TreeInfo;
 import com.cjh.common.resp.TreeInfo.FarmUserProBean;
 import com.cjh.common.service.ReqLogService;
 import com.cjh.common.util.HttpUtil;
+import com.cjh.common.util.XxlJobUtil;
+import com.xxl.job.core.context.XxlJobHelper;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -22,6 +24,9 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+/**
+ * @author cjh
+ */
 @AllArgsConstructor
 @Component
 @Slf4j
@@ -79,26 +84,6 @@ public class FarmApi {
     private ReqLogService reqLogService;
 
     /**
-     * 果树信息
-     */
-    public TreeInfo getTreeInfo(String openId, String cookie) {
-        String resp = HttpUtil.doGet(url_tree_info, cookie);
-        TreeInfo treeInfo = JSONObject.parseObject(resp, TreeInfo.class);
-        String result;
-        if (treeInfo.getCode() == 0) {
-            FarmUserProBean farmUserPro = treeInfo.getFarmUserPro();
-            result = String
-                .format("#### 获取果树信息成功, %s-%s ####", farmUserPro.getTreeTotalEnergy(), farmUserPro.getTreeEnergy());
-            log.info(result);
-        } else {
-            result = String.format("#### 获取果树信息失败, %s ####", treeInfo.getCode());
-            log.error(resp);
-        }
-//        reqLogService.addLog(PlatformEnum.JD_FARM.getCode(), openId, result, resp);
-        return treeInfo;
-    }
-
-    /**
      * 果树信息v13
      */
     public TreeInfo getTreeInfoV13(String openId, String cookie) {
@@ -109,57 +94,33 @@ public class FarmApi {
             FarmUserProBean farmUserPro = treeInfo.getFarmUserPro();
             result = String
                 .format("#### 获取果树信息成功, %s-%s ####", farmUserPro.getTreeTotalEnergy(), farmUserPro.getTreeEnergy());
-            log.info(result);
+            XxlJobHelper.log(result);
         } else {
             result = String.format("#### 获取果树信息失败, %s ####", treeInfo.getCode());
-            log.error(resp);
-        }
-//        reqLogService.addLog(PlatformEnum.JD_FARM.getCode(), openId, result, resp);
-        return treeInfo;
-    }
-
-    /**
-     * 签到
-     */
-    public String signForFarm(String openId, String cookie) {
-        String resp = HttpUtil.doGet(url_signForFarm, cookie);
-        FarmResp farmResp = JSONObject.parseObject(resp, FarmResp.class);
-        String result;
-        if (farmResp.getCode() == 0) {
-            result = String.format("#### 签到成功, 获得水滴: %s ####", farmResp.getAmount());
-            log.info(result);
-        } else {
-            result = String.format("#### 签到失败, code: %s ####", farmResp.getCode());
             log.error(result);
+            XxlJobHelper.log(resp);
         }
-        reqLogService.addLog(PlatformEnum.JD_FARM.getCode(), openId, result, resp);
-        return result;
+        return treeInfo;
     }
 
     /**
      * 签到v13
      */
     public String signForFarmV13(String openId, String cookie) {
-//        HashMap<String, Object> headers = new HashMap<>();
-//        headers.put("cookie",cookie);
-//        headers.put("Host","api.m.jd.com");
-//        headers.put("X-Requested-With","com.jingdong.app.mall");
-//        String resp = HttpUtil.doPost(url_signForFarm_v14, headers,null,String.class);
         HttpRequest request = new HttpRequest(url_signForFarm_v13);
         request.header("Cookie", cookie);
         HttpResponse httpResponse = request.execute();
-        //log.info(String.valueOf(request));
-        //log.info(String.valueOf(httpResponse));
         String resp = httpResponse.body();
         FarmSignV13Resp signV13Resp = JSONObject.parseObject(resp, FarmSignV13Resp.class);
         String result;
         if (signV13Resp.getCode() == 0) {
             result = String
                 .format("#### 签到成功, 签到%s天, 获得水滴: %s ####", signV13Resp.getSignDay(), signV13Resp.getAmount());
-            log.info(result);
+            XxlJobHelper.log(result);
         } else {
             result = String.format("#### 签到失败, code: %s ####", signV13Resp.getCode());
             log.error(result);
+            XxlJobUtil.showErrorLog(result, openId);
         }
         reqLogService.addLog(PlatformEnum.JD_FARM.getCode(), openId, result, resp);
         return result;
@@ -177,10 +138,11 @@ public class FarmApi {
             FarmUserProBean farmUserPro = treeInfo.getFarmUserPro();
             result = String.format("#### 浇水成功, 还需%s, 可用水滴: %s ####",
                 farmResp.getTotalEnergy(), farmUserPro.getTreeTotalEnergy() - farmUserPro.getTreeEnergy());
-            log.info(result);
+            XxlJobHelper.log(result);
         } else {
             result = String.format("#### 浇水失败, code: %s ####", farmResp.getCode());
             log.error(result);
+            XxlJobHelper.log(result);
         }
         reqLogService.addLog(PlatformEnum.JD_FARM.getCode(), openId, result, resp);
         return result;
@@ -222,28 +184,10 @@ public class FarmApi {
         String result;
         if (farmResp.getCode() == 0) {
             result = String.format("#### 领取首浇, 获得水滴: %s ####", farmResp.getAmount());
-            log.info(result);
+            XxlJobHelper.log(result);
         } else {
             result = String.format("#### 领取首浇失败, code: %s ####", farmResp.getCode());
-            log.error(result);
-        }
-        reqLogService.addLog(PlatformEnum.JD_FARM.getCode(), openId, result, resp);
-        return result;
-    }
-
-    /**
-     * 定时领取
-     */
-    public String gotThreeMealForFarm(String openId, String cookie) {
-        String resp = HttpUtil.doGet(url_gotThreeMealForFarm, cookie);
-        FarmResp farmResp = JSONObject.parseObject(resp, FarmResp.class);
-        String result;
-        if (farmResp.getCode() == 0) {
-            result = String.format("#### 定时领取, 获得水滴: %s ####", farmResp.getAmount());
-            log.info(result);
-        } else {
-            result = String.format("#### 定时领取失败, code: %s ####", farmResp.getCode());
-            log.error(result);
+            XxlJobUtil.showErrorLog(result);
         }
         reqLogService.addLog(PlatformEnum.JD_FARM.getCode(), openId, result, resp);
         return result;
@@ -258,10 +202,10 @@ public class FarmApi {
         String result;
         if (farmResp.getCode() == 0) {
             result = String.format("#### 定时领取, 获得水滴: %s ####", farmResp.getAmount());
-            log.info(result);
+            XxlJobHelper.log(result);
         } else {
             result = String.format("#### 定时领取失败, code: %s ####", farmResp.getCode());
-            log.error(result);
+            XxlJobUtil.showErrorLog(result);
         }
         reqLogService.addLog(PlatformEnum.JD_FARM.getCode(), openId, result, resp);
         return result;
@@ -285,12 +229,13 @@ public class FarmApi {
                     taskExec(openId, cookie, item.getWechatMain(), item.getAdvertId());
                 } catch (InterruptedException e) {
                     e.printStackTrace();
+                    Thread.currentThread().interrupt();
                 }
             });
-            log.info(result);
+            XxlJobHelper.log(result);
         } else {
             result = String.format("#### 获取浏览任务列表失败, code: %s ####", taskListResp.getCode());
-            log.error(result);
+            XxlJobUtil.showErrorLog(result);
         }
         reqLogService.addLog(PlatformEnum.JD_FARM.getCode(), openId, result, resp);
         return result;
@@ -302,12 +247,9 @@ public class FarmApi {
     private String taskExec(String openId, String cookie, String taskName, String taskId) throws InterruptedException {
         TimeUnit.SECONDS.sleep(10);
         String url = url_task_exec.replace("taskId", taskId).replace("taskType", "2");
-//        String resp = HttpUtil.doGet(url, cookie);
         HttpRequest request = new HttpRequest(url);
         request.header("Cookie", cookie);
         HttpResponse httpResponse = request.execute();
-        //log.info(String.valueOf(request));
-        //log.info(String.valueOf(httpResponse));
         String resp = httpResponse.body();
         FarmTaskResp taskResp = JSONObject.parseObject(resp, FarmTaskResp.class);
         String result;
@@ -316,14 +258,14 @@ public class FarmApi {
             FarmTaskResp taskGift = taskGift(cookie, taskId);
             if (taskGift.getCode() == 0 && taskGift.getAmount() > 0) {
                 result = String.format("#### 浏览[%s-%s]成功, 领取奖励: %s ####", taskId, taskName, taskGift.getAmount());
-                log.info(result);
+                XxlJobHelper.log(result);
             } else {
                 result = String.format("#### 浏览[%s-%s]成功, 领取失败, %s ####", taskId, taskName, taskGift.getCode());
-                log.error(result);
+                XxlJobHelper.log(result);
             }
         } else {
             result = String.format("#### 浏览[%s-%s]失败, code: %s ####", taskId, taskName, taskResp.getCode());
-            log.error(result);
+            XxlJobUtil.showErrorLog(result);
         }
         reqLogService.addLog(PlatformEnum.JD_FARM.getCode(), openId, result, resp);
         return result;
@@ -334,12 +276,9 @@ public class FarmApi {
      */
     private FarmTaskResp taskGift(String cookie, String taskId) {
         String url = url_task_gift.replace("taskId", taskId).replace("taskType", "1");
-//        String resp = HttpUtil.doGet(url, cookie);
         HttpRequest request = new HttpRequest(url);
         request.header("Cookie", cookie);
         HttpResponse httpResponse = request.execute();
-        //log.info(String.valueOf(request));
-        //log.info(String.valueOf(httpResponse));
         String resp = httpResponse.body();
         FarmTaskResp taskResp = JSONObject.parseObject(resp, FarmTaskResp.class);
         return taskResp;

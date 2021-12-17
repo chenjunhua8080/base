@@ -20,11 +20,11 @@ public class PetsController {
 
     @GetMapping("/continuousFeed")
     public String continuousFeed(@RequestParam("openId") String openId, @RequestParam("count") Integer count) {
-        BindFarmPO bindFarmPO = bindFarmDao.selectByOpenId(openId, PlatformEnum.JD_PETS.getCode());
-        if (bindFarmPO == null) {
+        BindFarmPO bindFarm = bindFarmDao.selectByOpenId(openId, PlatformEnum.JD_PETS.getCode());
+        if (bindFarm == null) {
             return "未绑定";
         }
-        String result = petsApi.continuousFeed(count, openId, bindFarmPO.getCookie());
+        String result = petsApi.continuousFeed(count, openId, bindFarm.getCookie());
         feignClient.tempPush(openId, result);
         return result;
     }

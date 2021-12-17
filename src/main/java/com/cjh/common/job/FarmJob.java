@@ -1,20 +1,17 @@
 package com.cjh.common.job;
 
-import com.cjh.common.api.ApiConfig;
 import com.cjh.common.api.FarmApi;
 import com.cjh.common.dao.BindFarmDao;
 import com.cjh.common.dao.UserDao;
 import com.cjh.common.enums.PlatformEnum;
 import com.cjh.common.po.BindFarmPO;
 import com.cjh.common.po.UserPO;
-import com.cjh.common.util.DateUtil;
+import com.cjh.common.util.XxlJobUtil;
+import com.xxl.job.core.context.XxlJobHelper;
 import com.xxl.job.core.handler.annotation.XxlJob;
-import java.util.Date;
 import java.util.List;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -23,112 +20,92 @@ import org.springframework.stereotype.Component;
  * @author cjh
  * @date 2020/4/3
  */
-@AllArgsConstructor
-@EnableScheduling
 @Component
 @Slf4j
 public class FarmJob {
 
+    @Autowired
     private FarmApi farmApi;
-    private ApiConfig apiConfig;
+    @Autowired
     private UserDao userDao;
+    @Autowired
     private BindFarmDao bindFarmDao;
 
-//    @Scheduled(cron = "${job.farm.gotThreeMealForFarm}")
     @XxlJob("job.farm.gotThreeMealForFarm")
     public void gotThreeMealForFarm() {
-        if (!apiConfig.getFarmConfig().getWorking()) {
-            return;
-        }
         List<UserPO> users = userDao.selectList(null);
-        log.info("#### 定时任务[京东农场 - 三餐] 开始: {} ####", DateUtil.format(new Date()));
-        log.info("#### 统计: {} ####", users.size());
-        BindFarmPO bindFarmPO;
+        XxlJobUtil.showLog("#### 定时任务[京东农场 - 三餐] 开始 ####");
+        XxlJobHelper.log("#### 统计: {} ####", users.size());
+        BindFarmPO bindFarm;
         for (UserPO user : users) {
-            bindFarmPO = bindFarmDao.selectByOpenId(user.getOpenId(), PlatformEnum.JD_FARM.getCode());
-            if (bindFarmPO != null) {
-                farmApi.gotThreeMealForFarmV13(user.getOpenId(), bindFarmPO.getCookie());
+            bindFarm = bindFarmDao.selectByOpenId(user.getOpenId(), PlatformEnum.JD_FARM.getCode());
+            if (bindFarm != null) {
+                farmApi.gotThreeMealForFarmV13(user.getOpenId(), bindFarm.getCookie());
             }
         }
-        log.info("#### 定时任务[京东农场 - 三餐] 结束: {} ####", DateUtil.format(new Date()));
+        XxlJobHelper.log("#### 定时任务[京东农场 - 三餐] 结束 ####");
 
     }
 
-//    @Scheduled(cron = "${job.farm.signForFarm}")
     @XxlJob("job.farm.signForFarm")
     public void signForFarm() {
-        if (!apiConfig.getFarmConfig().getWorking()) {
-            return;
-        }
         List<UserPO> users = userDao.selectList(null);
-        log.info("#### 定时任务[京东农场 - 签到] 开始: {} ####", DateUtil.format(new Date()));
-        log.info("#### 统计: {} ####", users.size());
-        BindFarmPO bindFarmPO;
+        XxlJobUtil.showLog("#### 定时任务[京东农场 - 签到] 开始 ####");
+        XxlJobHelper.log("#### 统计: {} ####", users.size());
+        BindFarmPO bindFarm;
         for (UserPO user : users) {
-            bindFarmPO = bindFarmDao.selectByOpenId(user.getOpenId(), PlatformEnum.JD_FARM.getCode());
-            if (bindFarmPO != null) {
-                farmApi.signForFarmV13(user.getOpenId(), bindFarmPO.getCookie());
+            bindFarm = bindFarmDao.selectByOpenId(user.getOpenId(), PlatformEnum.JD_FARM.getCode());
+            if (bindFarm != null) {
+                farmApi.signForFarmV13(user.getOpenId(), bindFarm.getCookie());
             }
         }
-        log.info("#### 定时任务[京东农场 - 签到] 结束: {} ####", DateUtil.format(new Date()));
+        XxlJobHelper.log("#### 定时任务[京东农场 - 签到] 结束 ####");
 
     }
 
-//    @Scheduled(cron = "${job.farm.waterGoodForFarm}")
     @XxlJob("job.farm.waterGoodForFarm")
     public void waterGoodForFarm() {
-        if (!apiConfig.getFarmConfig().getWorking()) {
-            return;
-        }
         List<UserPO> users = userDao.selectList(null);
-        log.info("#### 定时任务[京东农场 - 浇水] 开始: {} ####", DateUtil.format(new Date()));
-        log.info("#### 统计: {} ####", users.size());
-        BindFarmPO bindFarmPO;
+        XxlJobUtil.showLog("#### 定时任务[京东农场 - 浇水] 开始 ####");
+        XxlJobHelper.log("#### 统计: {} ####", users.size());
+        BindFarmPO bindFarm;
         for (UserPO user : users) {
-            bindFarmPO = bindFarmDao.selectByOpenId(user.getOpenId(), PlatformEnum.JD_FARM.getCode());
-            if (bindFarmPO != null) {
-                farmApi.waterGoodForFarm(user.getOpenId(), bindFarmPO.getCookie());
+            bindFarm = bindFarmDao.selectByOpenId(user.getOpenId(), PlatformEnum.JD_FARM.getCode());
+            if (bindFarm != null) {
+                farmApi.waterGoodForFarm(user.getOpenId(), bindFarm.getCookie());
             }
         }
-        log.info("#### 定时任务[京东农场 - 浇水] 结束: {} ####", DateUtil.format(new Date()));
+        XxlJobHelper.log("#### 定时任务[京东农场 - 浇水] 结束 ####");
     }
 
-//    @Scheduled(cron = "${job.farm.firstWaterTaskForFarm}")
     @XxlJob("job.farm.firstWaterTaskForFarm")
     public void firstWaterTaskForFarm() {
-        if (!apiConfig.getFarmConfig().getWorking()) {
-            return;
-        }
         List<UserPO> users = userDao.selectList(null);
-        log.info("#### 定时任务[京东农场 - 首浇奖励] 开始: {} ####", DateUtil.format(new Date()));
-        log.info("#### 统计: {} ####", users.size());
-        BindFarmPO bindFarmPO;
+        XxlJobUtil.showLog("#### 定时任务[京东农场 - 首浇奖励] 开始 ####");
+        XxlJobHelper.log("#### 统计: {} ####", users.size());
+        BindFarmPO bindFarm;
         for (UserPO user : users) {
-            bindFarmPO = bindFarmDao.selectByOpenId(user.getOpenId(), PlatformEnum.JD_FARM.getCode());
-            if (bindFarmPO != null) {
-                farmApi.firstWaterTaskForFarm(user.getOpenId(), bindFarmPO.getCookie());
+            bindFarm = bindFarmDao.selectByOpenId(user.getOpenId(), PlatformEnum.JD_FARM.getCode());
+            if (bindFarm != null) {
+                farmApi.firstWaterTaskForFarm(user.getOpenId(), bindFarm.getCookie());
             }
         }
-        log.info("#### 定时任务[京东农场 - 首浇奖励] 结束: {} ####", DateUtil.format(new Date()));
+        XxlJobHelper.log("#### 定时任务[京东农场 - 首浇奖励] 结束 ####");
     }
 
-//    @Scheduled(cron = "${job.farm.task}")
     @XxlJob("job.farm.task")
     public void task() {
-        if (!apiConfig.getFarmConfig().getWorking()) {
-            return;
-        }
         List<UserPO> users = userDao.selectList(null);
-        log.info("#### 定时任务[京东农场 - 浏览任务] 开始: {} ####", DateUtil.format(new Date()));
-        log.info("#### 统计: {} ####", users.size());
-        BindFarmPO bindFarmPO;
+        XxlJobUtil.showLog("#### 定时任务[京东农场 - 浏览任务] 开始 ####");
+        XxlJobHelper.log("#### 统计: {} ####", users.size());
+        BindFarmPO bindFarm;
         for (UserPO user : users) {
-            bindFarmPO = bindFarmDao.selectByOpenId(user.getOpenId(), PlatformEnum.JD_FARM.getCode());
-            if (bindFarmPO != null) {
-                farmApi.taskList(user.getOpenId(), bindFarmPO.getCookie());
+            bindFarm = bindFarmDao.selectByOpenId(user.getOpenId(), PlatformEnum.JD_FARM.getCode());
+            if (bindFarm != null) {
+                farmApi.taskList(user.getOpenId(), bindFarm.getCookie());
             }
         }
-        log.info("#### 定时任务[京东农场 - 浏览任务] 结束: {} ####", DateUtil.format(new Date()));
+        XxlJobHelper.log("#### 定时任务[京东农场 - 浏览任务] 结束 ####");
     }
 
 }

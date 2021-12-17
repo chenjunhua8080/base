@@ -1,6 +1,5 @@
 package com.cjh.common.job;
 
-import com.cjh.common.api.ApiConfig;
 import com.cjh.common.api.UHomeApi;
 import com.cjh.common.dao.BindFarmDao;
 import com.cjh.common.dao.UserDao;
@@ -8,13 +7,13 @@ import com.cjh.common.enums.PlatformEnum;
 import com.cjh.common.po.BindFarmPO;
 import com.cjh.common.po.UserPO;
 import com.cjh.common.util.DateUtil;
+import com.cjh.common.util.XxlJobUtil;
+import com.xxl.job.core.context.XxlJobHelper;
 import com.xxl.job.core.handler.annotation.XxlJob;
 import java.util.Date;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 /**
@@ -23,13 +22,10 @@ import org.springframework.stereotype.Component;
  * @author cjh
  * @date 2021/7/28
  */
-@EnableScheduling
 @Component
 @Slf4j
 public class UHomeJob {
 
-    @Autowired
-    private ApiConfig apiConfig;
     @Autowired
     private UHomeApi uHomeApi;
     @Autowired
@@ -37,21 +33,18 @@ public class UHomeJob {
     @Autowired
     private BindFarmDao bindFarmDao;
 
-//    @Scheduled(cron = "${job.uhome.sign}")
     @XxlJob("job.uhome.sign")
     public void sign() {
-        if (!apiConfig.getUHomeConfig().getWorking()) {
-            return;
-        }
-        log.info("#### 定时任务[有家便利店 - 签到] 开始: {} ####", DateUtil.format(new Date()));
+        XxlJobUtil.showLog("#### 定时任务[有家便利店 - 签到] 开始 ####");
         List<UserPO> users = userDao.selectList(null);
-        BindFarmPO bindFarmPO;
+        BindFarmPO bindFarm;
         for (UserPO user : users) {
-            bindFarmPO = bindFarmDao.selectByOpenId(user.getOpenId(), PlatformEnum.UHOME.getCode());
-            if (bindFarmPO != null) {
-                uHomeApi.sign(user.getOpenId(), bindFarmPO.getCookie());
+            bindFarm = bindFarmDao.selectByOpenId(user.getOpenId(), PlatformEnum.UHOME.getCode());
+            if (bindFarm != null) {
+                uHomeApi.sign(user.getOpenId(), bindFarm.getCookie());
             }
         }
-        log.info("#### 定时任务[有家便利店 - 签到] 结束: {} ####", DateUtil.format(new Date()));
+        XxlJobHelper.log("#### 定时任务[有家便利店 - 签到] 结束 ####");
     }
+
 }

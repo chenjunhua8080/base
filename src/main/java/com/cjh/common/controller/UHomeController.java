@@ -17,11 +17,11 @@ public class UHomeController {
 
     @GetMapping("/uhome/sign")
     public String getBankChinaInfo(String openId) {
-        BindFarmPO bindFarmPO = bindFarmDao.selectByOpenId(openId, PlatformEnum.UHOME.getCode());
-        if (bindFarmPO == null) {
+        BindFarmPO bindFarm = bindFarmDao.selectByOpenId(openId, PlatformEnum.UHOME.getCode());
+        if (bindFarm == null) {
             return "未绑定";
         }
-        return uHomeApi.sign(openId, bindFarmPO.getCookie());
+        return uHomeApi.sign(openId, bindFarm.getCookie());
     }
 
 }

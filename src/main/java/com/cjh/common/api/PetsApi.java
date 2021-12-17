@@ -4,7 +4,6 @@ import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import com.alibaba.fastjson.JSONObject;
 import com.cjh.common.enums.PlatformEnum;
-import com.cjh.common.feign.CloudFeignClient;
 import com.cjh.common.resp.DogBrowseResp;
 import com.cjh.common.resp.DogBrowseResp.ResultBean;
 import com.cjh.common.resp.DogEnergyCollectResp;
@@ -16,6 +15,8 @@ import com.cjh.common.resp.DogThreeMealResp;
 import com.cjh.common.service.ReqLogService;
 import com.cjh.common.util.HttpUtil;
 import com.cjh.common.util.JsonUtil;
+import com.cjh.common.util.XxlJobUtil;
+import com.xxl.job.core.context.XxlJobHelper;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -55,8 +56,6 @@ public class PetsApi {
 
     @Autowired
     private ReqLogService reqLogService;
-    @Autowired
-    private CloudFeignClient cloudFeignClient;
 
     /**
      * 宠物签到
@@ -74,11 +73,10 @@ public class PetsApi {
             result += String.format("#### 签到成功, 狗粮 +[%s]    \n", resp.getResult().getSignReward());
             result += String.format("     签到天数: [%s]          \n", resp.getResult().getSignDay());
             result += String.format("     当前狗粮: [%s]      ####", resp.getResult().getFoodAmount());
-            log.info(result);
+            XxlJobHelper.log(result);
         } else {
             result = String.format("#### 签到失败, %s ####", resp.getErrorMsg());
-            log.error(result);
-            cloudFeignClient.pushErrorMsg(openId, result);
+            XxlJobUtil.showErrorLog(result, openId);
         }
         reqLogService.addLog(PlatformEnum.JD_PETS.getCode(), openId, result, json);
     }
@@ -112,11 +110,10 @@ public class PetsApi {
             });
             result += energyResult[0];
             result += String.format("     当前狗粮: [%s]      ####", resp.getResult().getFoodAmount());
-            log.info(result);
+            XxlJobHelper.log(result);
         } else {
             result = String.format("#### 喂食失败, %s ####", resp.getErrorMsg());
-            log.error(result);
-            cloudFeignClient.pushErrorMsg(openId, result);
+            XxlJobUtil.showErrorLog(result);
         }
         reqLogService.addLog(PlatformEnum.JD_PETS.getCode(), openId, result, json);
 
@@ -144,11 +141,10 @@ public class PetsApi {
             result += String.format("#### 收集能量成功, 能量 +[%s] \n", energy.getEnergy());
             result += String.format("     当前进度: [%s]          \n", resp.getResult().getMedalPercent());
             result += String.format("     升级还需: [%s]      ####", resp.getResult().getNeedCollectEnergy());
-            log.info(result);
+            XxlJobHelper.log(result);
         } else {
             result = String.format("#### 收集能量失败, %s ####", resp.getErrorMsg());
-            log.error(result);
-            cloudFeignClient.pushErrorMsg(openId, result);
+            XxlJobUtil.showErrorLog(result);
         }
         reqLogService.addLog(PlatformEnum.JD_PETS.getCode(), openId, result, json);
     }
@@ -265,11 +261,10 @@ public class PetsApi {
         if (resp.isSuccess()) {
             result += String.format("#### 三餐领取成功, 狗粮 +[%s]   \n", resp.getResult().getThreeMealReward());
             result += String.format("     当前狗粮: [%s]         ####", resp.getResult().getFoodAmount());
-            log.info(result);
+            XxlJobHelper.log(result);
         } else {
             result = String.format("#### 三餐领取失败, %s ####", resp.getErrorMsg());
-            log.error(result);
-            cloudFeignClient.pushErrorMsg(openId, result);
+            XxlJobUtil.showErrorLog(result);
         }
         reqLogService.addLog(PlatformEnum.JD_PETS.getCode(), openId, result, json);
     }
@@ -291,11 +286,10 @@ public class PetsApi {
         if (resp.isSuccess()) {
             result += String.format("#### 首次喂食奖励, 狗粮 +[%s]     \n", resp.getResult().getReward());
             result += String.format("     当前狗粮: [%s]           ####", resp.getResult().getFoodAmount());
-            log.info(result);
+            XxlJobHelper.log(result);
         } else {
             result = String.format("#### 首次喂食奖励领取失败, %s ####", resp.getErrorMsg());
-            log.error(result);
-            cloudFeignClient.pushErrorMsg(openId, result);
+            XxlJobUtil.showErrorLog(result);
         }
         reqLogService.addLog(PlatformEnum.JD_PETS.getCode(), openId, result, json);
     }
@@ -307,15 +301,15 @@ public class PetsApi {
         String result;
         if (index > 8) {
             result = "浏览任务数量已达" + index + "，停止继续浏览";
-            log.info(result);
+            XxlJobHelper.log(result);
             return result;
         }
         String url = browseUrl.replace("INDEX", index.toString()).replace("TYPE", "1");
         HttpRequest request = new HttpRequest(url);
         request.header("Cookie", cookie);
         HttpResponse httpResponse = request.execute();
-        //log.info(String.valueOf(request));
-        //log.info(String.valueOf(httpResponse));
+        //XxlJobHelper.log(String.valueOf(request));
+        //XxlJobHelper.log(String.valueOf(httpResponse));
         String resp = httpResponse.body();
         DogBrowseResp browseResp = JSONObject.parseObject(resp, DogBrowseResp.class);
         ResultBean respResult = browseResp.getResult();
@@ -324,18 +318,18 @@ public class PetsApi {
             DogBrowseResp browseGiftResp = browseGift(cookie, index);
             if ("0".equals(browseResp.getCode()) && browseGiftResp.getResult().getStatus() == 1) {
                 result = String.format("#### 浏览[%s]成功, 领取奖励: %s ####", index, browseGiftResp.getResult().getReward());
-                log.info(result);
+                XxlJobHelper.log(result);
                 TimeUnit.SECONDS.sleep(10);
                 if (browseGiftResp.getResult().getReward() > 0) {
                     browseExec(openId, cookie, ++index);
                 }
             } else {
                 result = String.format("#### 浏览[%s]成功, 领取失败, %s ####", index, browseGiftResp.getResult().getStatus());
-                log.error(result);
+                XxlJobUtil.showErrorLog(result);
             }
         } else {
             result = String.format("#### 浏览[%s]失败, code: %s ####", browseResp.getCode());
-            log.error(result);
+            XxlJobUtil.showErrorLog(result);
         }
         reqLogService.addLog(PlatformEnum.JD_FARM.getCode(), openId, result, resp);
         return result;
@@ -349,8 +343,8 @@ public class PetsApi {
         HttpRequest request = new HttpRequest(url);
         request.header("Cookie", cookie);
         HttpResponse httpResponse = request.execute();
-        //log.info(String.valueOf(request));
-        //log.info(String.valueOf(httpResponse));
+        //XxlJobHelper.log(String.valueOf(request));
+        //XxlJobHelper.log(String.valueOf(httpResponse));
         String resp = httpResponse.body();
         return JSONObject.parseObject(resp, DogBrowseResp.class);
     }

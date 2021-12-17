@@ -23,11 +23,6 @@ class FarmApiTest {
     }
 
     @Test
-    void getTreeInfo() {
-        System.out.println(api.getTreeInfo(openId, cookie));
-    }
-
-    @Test
     void getTreeInfoV13() {
         System.out.println(api.getTreeInfoV13(openId, cookie));
     }
