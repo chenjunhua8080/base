@@ -30,7 +30,7 @@ xxl:
     executor:
       ip: ''
       address: ''
-      appname: xxl-job-executor-sample
-      logpath: /home/logs/xxl-job/jobhandler
+      appname: xxl-job-executor-common
+      logpath: /home/logs/xxl-job/common
       logretentiondays: 30
       port: 7101
