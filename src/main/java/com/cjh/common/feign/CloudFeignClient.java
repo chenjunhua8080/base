@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "wechat-mp", fallbackFactory = FeignFallBackFactory.class)
+@FeignClient("wechat-mp")
 public interface CloudFeignClient {
 
     //########################## 微信公众号 #############################
@@ -29,4 +29,5 @@ public interface CloudFeignClient {
      */
     @PostMapping("/message/pushResumeMsg")
     String pushResumeMsg(@RequestBody Map<String, Object> map);
+
 }

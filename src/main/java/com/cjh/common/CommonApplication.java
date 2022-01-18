@@ -9,6 +9,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @SpringBootApplication
 //加了第一次无法注册进去?
 @EnableDiscoveryClient
+//使用推荐的resilience4j
+//@EnableHystrix
 @EnableFeignClients
 @MapperScan("com.cjh.common.dao")
 public class CommonApplication {

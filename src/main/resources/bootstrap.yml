@@ -1,6 +1,9 @@
 server:
   port: 8056
 spring:
+  #v2.4x-yml改版，设置下面这个则可以继续使用以前的配置
+  #  config:
+  #    use-legacy-processing: true
   application:
     name: common
   #默认环境location
@@ -22,30 +25,60 @@ spring:
       #服务发现
       discovery:
         #还是最要加个[/]
-        server-addr: http://nacos.springeasy.cn/
+        server-addr: http://nacos.springeasy.cn
         namespace: 32d93268-bdb6-40a0-8740-a211f74b9a9f
+    #v2.4x-负载均衡
+    loadbalancer:
+      #缓存，生成不建议开启
+      cache:
+        enabled: false
+      #重试
+      retry:
+        enabled: false
+        max-retries-on-same-service-instance: 0
+        max-retries-on-next-service-instance: 1
+        avoid-previous-instance: false
+#    circuitbreaker:
+#      hystrix:
+#        enabled: true
 #openFeign
 feign:
   client:
     config:
       #If you prefer using configuration properties to configured all @FeignClient, you can create configuration properties with default feign name.
       default:
-        connectTimeout: 10000
-        readTimeout: 10000
-        loggerLevel: full
-  hystrix:
+        connectTimeout: 3000
+        readTimeout: 30000
+        loggerLevel: FULL
+  circuitbreaker:
     enabled: true
 #hystrix配置
-hystrix:
-  command:
-    default:
-      execution:
-        isolation:
-          thread:
-            timeoutInMilliseconds: 10000
+#hystrix:
+#  command:
+#    default:
+#      execution:
+#        isolation:
+#          thread:
+#            timeoutInMilliseconds: 10000
 #feign client log
 #logging:
 #  level:
 #    com.cjh.wechatmp.feign: debug
-#    #上面自定义日志后，居然会影响nacos日志~
-#    com.alibaba.nacos.client.naming: warn
+#    上面自定义日志后，居然会影响nacos日志~
+#    org.springframework.cloud.openfeign.loadbalancer.FeignBlockingLoadBalancerClient: debug
+#resilience4j
+resilience4j.circuitbreaker:
+  configs:
+    default:
+      # 是否向 Actuator 的 HealthIndicator 注册
+      registerHealthIndicator: true
+      slidingWindowType: COUNT_BASED
+      slidingWindowSize: 10
+      minimumNumberOfCalls: 5
+      failureRateThreshold: 30
+      permittedNumberOfCallsInHalfOpenState: 5
+      automaticTransitionFromOpenToHalfOpenEnabled: true
+      waitDurationInOpenState: 10s
+      recordExceptions:
+        - java.lang.Exception
+#以上配置代表，默认情况下，所有Exception以及其子类都认为是失败。滑动窗口采用基于计数的请求。触发断路器判断必须在10个内至少有5个请求，在失败比例达到30%以上之后，断路器变为OPEN。断路器OPEN之后，在10秒后自动转化为HALF_OPEN。

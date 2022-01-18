@@ -1,12 +1,31 @@
+#2.3x-优雅关机
+server:
+  shutdown: graceful
 logging:
   config: classpath:logback-spring.xml
 spring:
+  #v2.4x-yml改版，设置下面这个则可以继续使用以前的配置
+  config:
+    use-legacy-processing: true
   #mysql
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://127.0.0.1:3306/wechat_mp?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
     username: root
     password: root
+  #2.3x-10内优雅关机
+  lifecycle:
+    timeout-per-shutdown-phase: 10s
+  #2.3x-时间格式化
+  mvc:
+    format:
+      date-time: yyyy-MM-dd HH:mm:ss
+      date: yyyy-MM-dd
+      time: HH:mm:ss
+  #2.4x-修改配置
+  web:
+    resources:
+      add-mappings: true
 #mybatis
 mybatis-plus:
   global-config:
