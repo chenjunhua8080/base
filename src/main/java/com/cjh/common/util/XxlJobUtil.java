@@ -30,6 +30,7 @@ public class XxlJobUtil {
     public static void showErrorLog(String msg) {
         log.error(msg);
         XxlJobHelper.log(msg);
+        XxlJobHelper.handleFail();
     }
 
     /**
@@ -41,6 +42,7 @@ public class XxlJobUtil {
     public static void showErrorLog(String msg, String openId) {
         log.error(msg);
         XxlJobHelper.log(msg);
+        XxlJobHelper.handleFail();
         CloudFeignClient feignClient = SpringUtil.getBean(CloudFeignClient.class);
         if (feignClient == null) {
             log.error("推送失败，获取CloudFeignClient为空");
