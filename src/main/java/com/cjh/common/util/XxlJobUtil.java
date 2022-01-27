@@ -1,6 +1,8 @@
 package com.cjh.common.util;
 
 import cn.hutool.extra.spring.SpringUtil;
+import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpResponse;
 import com.cjh.common.feign.CloudFeignClient;
 import com.xxl.job.core.context.XxlJobHelper;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +22,19 @@ public class XxlJobUtil {
     public static void showLog(String msg) {
         log.info(msg);
         XxlJobHelper.log(msg);
+    }
+
+    /**
+     * 本地输出log && xxl-job输出log
+     *
+     * @param msg msg
+     */
+    public static void showErrorLog(String msg, HttpRequest request, HttpResponse response) {
+        log.error(msg);
+        XxlJobHelper.log(msg);
+        XxlJobHelper.log(String.valueOf(request));
+        XxlJobHelper.log(String.valueOf(response));
+        XxlJobHelper.handleFail();
     }
 
     /**

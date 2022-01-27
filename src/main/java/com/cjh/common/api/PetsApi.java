@@ -2,6 +2,7 @@ package com.cjh.common.api;
 
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.cjh.common.enums.PlatformEnum;
 import com.cjh.common.resp.DogBrowseResp;
@@ -276,11 +277,10 @@ public class PetsApi {
      * @param cookie 用户绑定cookie
      */
     public void getFirstFeedReward(String openId, String cookie) {
-        HashMap<String, Object> headers = new HashMap<>();
-        headers.put("cookie", cookie);
-        headers.put("xxx-User-Agent",
-            "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36");
-        String json = HttpUtil.doGet(dog_url_getFirstFeedReward, headers);
+        HttpRequest request = HttpRequest.get(dog_url_getFirstFeedReward);
+        request.cookie(cookie);
+        HttpResponse response = request.execute();
+        String json = response.body();
         DogSingleShopResp resp = JsonUtil.json2java(json, DogSingleShopResp.class);
         String result = "";
         if (resp.isSuccess()) {
@@ -289,7 +289,7 @@ public class PetsApi {
             XxlJobHelper.log(result);
         } else {
             result = String.format("#### 首次喂食奖励领取失败, %s ####", resp.getErrorMsg());
-            XxlJobUtil.showErrorLog(result);
+            XxlJobUtil.showErrorLog(result, request, response);
         }
         reqLogService.addLog(PlatformEnum.JD_PETS.getCode(), openId, result, json);
     }
@@ -307,16 +307,14 @@ public class PetsApi {
         String url = browseUrl.replace("INDEX", index.toString()).replace("TYPE", "1");
         HttpRequest request = new HttpRequest(url);
         request.header("Cookie", cookie);
-        HttpResponse httpResponse = request.execute();
-        //XxlJobHelper.log(String.valueOf(request));
-        //XxlJobHelper.log(String.valueOf(httpResponse));
-        String resp = httpResponse.body();
+        HttpResponse response = request.execute();
+        String resp = response.body();
         DogBrowseResp browseResp = JSONObject.parseObject(resp, DogBrowseResp.class);
         ResultBean respResult = browseResp.getResult();
         if ("0".equals(browseResp.getCode()) && respResult.getStatus() == 1) {
             TimeUnit.SECONDS.sleep(10);
             DogBrowseResp browseGiftResp = browseGift(cookie, index);
-            if ("0".equals(browseResp.getCode()) && browseGiftResp.getResult().getStatus() == 1) {
+            if ("0".equals(browseResp.getCode()) && browseGiftResp.getResult().getStatus() == 2) {
                 result = String.format("#### 浏览[%s]成功, 领取奖励: %s ####", index, browseGiftResp.getResult().getReward());
                 XxlJobHelper.log(result);
                 TimeUnit.SECONDS.sleep(10);
@@ -328,8 +326,8 @@ public class PetsApi {
                 XxlJobUtil.showErrorLog(result);
             }
         } else {
-            result = String.format("#### 浏览[%s]失败, code: %s ####", browseResp.getCode());
-            XxlJobUtil.showErrorLog(result);
+            result = String.format("#### 浏览[%s]失败, code: %s ####", index, browseResp.getCode());
+            XxlJobUtil.showErrorLog(result, request, response);
         }
         reqLogService.addLog(PlatformEnum.JD_FARM.getCode(), openId, result, resp);
         return result;
@@ -346,6 +344,6 @@ public class PetsApi {
         //XxlJobHelper.log(String.valueOf(request));
         //XxlJobHelper.log(String.valueOf(httpResponse));
         String resp = httpResponse.body();
-        return JSONObject.parseObject(resp, DogBrowseResp.class);
+        return JSON.parseObject(resp, DogBrowseResp.class);
     }
 }
