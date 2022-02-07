@@ -13,6 +13,7 @@ import com.cjh.common.resp.coffee.FarmCultureResp.DataBean.LandBean.LevelBean;
 import com.cjh.common.resp.coffee.FarmCultureResp.DataBean.LandRewardBean;
 import com.cjh.common.resp.coffee.FarmCultureResp.DataBean.UserBean;
 import com.cjh.common.resp.coffee.FarmIndexResp;
+import com.cjh.common.resp.coffee.FarmSignResp;
 import com.cjh.common.resp.coffee.FarmTokenResp;
 import com.cjh.common.service.ReqLogService;
 import com.cjh.common.util.XxlJobUtil;
@@ -222,10 +223,10 @@ public class CoffeeApi {
         request.auth(token);
         HttpResponse response = request.execute();
         String respBody = response.body();
-        FarmTokenResp resp = JSON.parseObject(respBody, FarmTokenResp.class);
+        FarmSignResp resp = JSON.parseObject(respBody, FarmSignResp.class);
         String result;
         if (resp.getErrorCode() == 0) {
-            result = String.format("#### 爱豆庄园-签到 成功, %s ####", respBody);
+            result = String.format("#### 爱豆庄园-签到 成功, %s ####", resp.getData().getUser().getCredit());
             XxlJobHelper.log(result);
         } else {
             result = String.format("#### 爱豆庄园-签到 失败, %s ####", resp.getErrorMessage());
