@@ -112,7 +112,7 @@ public class BankChinaApi {
             XxlJobHelper.log(result);
         } else {
             result = String.format("#### 签到失败, code: %s, msg: %S ####", resp.getStatus(), resp.getMsg());
-            XxlJobUtil.showErrorLog(result);
+            XxlJobUtil.showErrorLog(result, openId);
         }
         reqLogService.addLog(PlatformEnum.BANK_CHINA.getCode(), openId, result, resp.toString());
     }
