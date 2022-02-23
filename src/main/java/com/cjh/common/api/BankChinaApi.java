@@ -6,15 +6,17 @@ import com.cjh.common.resp.BankChinaResp.MsgBean;
 import com.cjh.common.service.ReqLogService;
 import com.cjh.common.util.HttpUtil;
 import com.cjh.common.util.JsonUtil;
+import com.cjh.common.util.XxlJobUtil;
+import com.xxl.job.core.context.XxlJobHelper;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -23,7 +25,6 @@ import org.springframework.stereotype.Component;
  * @author cjh
  * @date 2020/4/3
  */
-@AllArgsConstructor
 @Component
 @Slf4j
 public class BankChinaApi {
@@ -38,6 +39,8 @@ public class BankChinaApi {
      * @result {"status":200,"msg":{"day":3,"msg":"签到成功!"},"url":"","data":[{"name":"paco","url":"snrunning.com"}],"render":true}
      */
     private final String url_sign = "https://gdwx.snrunning.com/yinyuehui_mobile/task/signin.html";
+
+    @Autowired
     private ReqLogService reqLogService;
 
     //#############################################################################
@@ -47,7 +50,8 @@ public class BankChinaApi {
      */
     private static String[] parseCookie(String cookie) {
         String[] strings = new String[3];
-        Pattern pattern = Pattern.compile("(.*?)\\[\\[");
+        Pattern pattern;
+        pattern = Pattern.compile("(.*?)\\[\\[");
         Matcher matcher = pattern.matcher(cookie);
         if (matcher.find()) {
             strings[0] = matcher.group(1);
@@ -65,13 +69,6 @@ public class BankChinaApi {
         return strings;
     }
 
-    public static void main(String[] args) {
-        String cookie = "cookie: acw_tc=7b39758815856454135256899e1a43c877e82bba292978fb2f1df3480ac466; hide_dialog=1[[token=5c9613b1b5d3c0b432b0315259b43e1d]][[userId=b556e5c5c5297a05]]";
-        log.info(parseCookie(cookie)[0]);
-        log.info(parseCookie(cookie)[1]);
-        log.info(parseCookie(cookie)[2]);
-    }
-
     /**
      * 首页
      */
@@ -85,10 +82,10 @@ public class BankChinaApi {
             Document document = Jsoup.parse(resp);
             Element element = document.getElementById("integral");
             result = String.format("#### 当前豆豆个数: %s ####", element.html());
-            log.info(result);
+            XxlJobHelper.log(result);
         } else {
             result = "#### 豆豆数获取失败 ####";
-            log.error(result);
+            XxlJobUtil.showErrorLog(result);
         }
         if (addLog) {
             reqLogService.addLog(PlatformEnum.BANK_CHINA.getCode(), openId, result, null);
@@ -112,10 +109,10 @@ public class BankChinaApi {
         if (resp.getStatus() == 200) {
             MsgBean msg = JsonUtil.json2java(resp.getMsg().toString(), MsgBean.class);
             result = String.format("#### 签到结果: %s, 签到天数: %s ####", msg.getMsg(), msg.getDay());
-            log.info(result);
+            XxlJobHelper.log(result);
         } else {
             result = String.format("#### 签到失败, code: %s, msg: %S ####", resp.getStatus(), resp.getMsg());
-            log.error(result);
+            XxlJobUtil.showErrorLog(result);
         }
         reqLogService.addLog(PlatformEnum.BANK_CHINA.getCode(), openId, result, resp.toString());
     }
