@@ -13,7 +13,7 @@ spring:
     nacos:
       #配置中心
       config:
-        server-addr: http://nacos.springeasy.cn
+        server-addr: http://nacos.yunibobo.cn
         namespace: 32d93268-bdb6-40a0-8740-a211f74b9a9f
         group: ${spring.application.name}
         file-extension: yml
@@ -25,7 +25,7 @@ spring:
       #服务发现
       discovery:
         #还是最要加个[/]
-        server-addr: http://nacos.springeasy.cn
+        server-addr: http://nacos.yunibobo.cn
         namespace: 32d93268-bdb6-40a0-8740-a211f74b9a9f
     #v2.4x-负载均衡
     loadbalancer:
