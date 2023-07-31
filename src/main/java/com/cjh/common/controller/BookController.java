@@ -1,5 +1,7 @@
 package com.cjh.common.controller;
 
+import com.baomidou.mybatisplus.extension.api.R;
+import com.cjh.common.dao.BookDto;
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -16,21 +18,21 @@ import org.springframework.web.bind.annotation.RestController;
 public class BookController {
 
     @GetMapping("/qq")
-    public String find(String url, Integer start, Integer end) {
+    public R<BookDto> find(String url, Integer start, Integer end) {
         start = start == null ? 1 : start;
         end = end == null ? 1 : end;
         if (url == null) {
-            return "url 不能为空";
+            return R.failed("url 不能为空");
         }
         if (!url.startsWith("https://book.qq.com/book-detail/")) {
-            return "url 格式不对，例：https://book.qq.com/book-detail/xxx";
+            return R.failed("url 格式不对，例：https://book.qq.com/book-detail/xxx");
         }
         String bookId = url.substring(url.lastIndexOf("/") + 1);
         List<String> list = Lists.newArrayList();
         int i = start;
         while (true) {
             if (i > end || !getDetail(bookId, i, list)) {
-                return String.join("\n", list);
+                break;
             }
             i++;
             try {
@@ -38,6 +40,24 @@ public class BookController {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
+        }
+        BookDto data = new BookDto();
+        data.setLink(url);
+        data.setTitle(getTitle(bookId));
+        data.setBody(String.join("\n", list));
+        return R.ok(data);
+    }
+
+    private static String getTitle(String bookId) {
+        String url = "https://book.qq.com/book-detail/" + bookId;
+        System.out.println(url);
+        try {
+            Document document = Jsoup.connect(url).get();
+            Elements elements = document.getElementsByClass("book-title");
+            Element e = elements.get(0);
+            return e.text();
+        } catch (Exception e) {
+            return "解析异常：" + e.getMessage();
         }
     }
 

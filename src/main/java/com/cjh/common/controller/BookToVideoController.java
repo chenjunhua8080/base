@@ -1,6 +1,8 @@
 package com.cjh.common.controller;
 
 import cn.hutool.core.io.IoUtil;
+import com.baomidou.mybatisplus.extension.api.R;
+import com.cjh.common.dao.BookDto;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -38,14 +40,14 @@ public class BookToVideoController {
 //        }
         String bookId = url.substring(url.lastIndexOf("/") + 1);
         BookController bookController = new BookController();
-        String text = bookController.find(url, index, index);
+        R<BookDto> r = bookController.find(url, index, index);
         String path = "/home/book/video/";
         String fileName = bookId + "_" + index + ".mp4";
         String outputVideoPath = path + fileName;
         mkdirs(path);
         try {
             // 读取小说文本内容
-            List<String> novelLines = readNovelText(text);
+            List<String> novelLines = readNovelText(r.getData().getBody());
             // 将小说文本转为图片
             List<BufferedImage> images = convertNovelToImages(novelLines);
             // 合成视频并保存
