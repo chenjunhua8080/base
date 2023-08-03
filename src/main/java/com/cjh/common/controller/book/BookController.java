@@ -1,4 +1,4 @@
-package com.cjh.common.controller;
+package com.cjh.common.controller.book;
 
 import com.baomidou.mybatisplus.extension.api.R;
 import com.cjh.common.dao.BookDto;

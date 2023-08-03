@@ -1,4 +1,4 @@
-package com.cjh.common.controller;
+package com.cjh.common.controller.book;
 
 import cn.hutool.core.io.IoUtil;
 import com.baomidou.mybatisplus.extension.api.R;
@@ -55,7 +55,12 @@ public class BookToVideoController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        response.setHeader("Content-Disposition", "attachment;fileName=" + fileName);
+        File file = new File(outputVideoPath);
+        response.setContentType("application/octet-stream");
+        response.setContentLengthLong(file.length());
+        response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
+        //设置这个才会给前端拿到文件名
+        response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
         IoUtil.copy(Files.newInputStream(Paths.get(outputVideoPath)), response.getOutputStream());
     }
 
