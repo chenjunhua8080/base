@@ -12,11 +12,13 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import javax.servlet.http.HttpServletResponse;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping("/xml/to/mp3")
 public class BookToMp3Controller {
@@ -33,11 +35,17 @@ public class BookToMp3Controller {
             response.getWriter().write("xml is null");
             return;
         }
-        if (countOccurrences(params.getXml(), "</voice>") > 50) {
+        int i = countOccurrences(params.getXml(), "</voice>");
+        if (i > 50) {
             response.setStatus(413);
-            response.getWriter().write("voice tag > 50");
+            response.getWriter().write("voice tag > 50, " + i);
             return;
         }
+
+        log.info(System.getProperty("java.library.path"));
+        log.info(System.getProperty("java.library.path"));
+        log.info(System.getProperty("java.library.path"));
+
         String path = "/home/book/mp3/";
         String fileName = DigestUtil.md5Hex(params.getXml()) + ".wav";
         String outputVideoPath = path + fileName;
