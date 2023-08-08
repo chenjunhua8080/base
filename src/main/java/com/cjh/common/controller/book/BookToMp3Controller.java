@@ -1,7 +1,7 @@
 package com.cjh.common.controller.book;
 
-import cn.hutool.core.io.IoUtil;
 import cn.hutool.crypto.digest.DigestUtil;
+import com.baomidou.mybatisplus.extension.api.R;
 import com.microsoft.cognitiveservices.speech.AudioDataStream;
 import com.microsoft.cognitiveservices.speech.CancellationReason;
 import com.microsoft.cognitiveservices.speech.ResultReason;
@@ -11,11 +11,10 @@ import com.microsoft.cognitiveservices.speech.SpeechSynthesisResult;
 import com.microsoft.cognitiveservices.speech.SpeechSynthesizer;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import javax.servlet.http.HttpServletResponse;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,19 +29,18 @@ public class BookToMp3Controller {
     private static String speechKey = System.getenv("SPEECH_KEY");
     private static String speechRegion = System.getenv("SPEECH_REGION");
 
+    @Value("${domain}")
+    private String domain;
+
     @PostMapping
-    public void convert(@RequestBody Params params, HttpServletResponse response)
+    public R<String> convert(@RequestBody Params params, HttpServletResponse response)
         throws IOException {
         if (params.getXml() == null) {
-            response.setStatus(413);
-            response.getWriter().write("xml is null");
-            return;
+            return R.failed("xml is null");
         }
         int i = countOccurrences(params.getXml(), "</voice>");
         if (i > 50) {
-            response.setStatus(413);
-            response.getWriter().write("voice tag > 50, " + i);
-            return;
+            return R.failed("voice tag > 50, " + i);
         }
 
         log.info(System.getProperty("java.library.path"));
@@ -71,19 +69,16 @@ public class BookToMp3Controller {
                     log.error("CANCELED: ErrorCode=" + details.getErrorCode());
                     log.error("CANCELED: ErrorDetails=" + details.getErrorDetails());
                 }
+                return R.failed("语音合成失败: " + result.getReason());
             } else {
                 log.warn("语音合成异常: {}", result.getReason());
+                return R.failed("语音合成异常: " + result.getReason());
             }
             AudioDataStream stream = AudioDataStream.fromResult(result);
             stream.saveToWavFile(outputVideoPath);
         }
 
-        response.setContentType("application/octet-stream");
-        response.setContentLengthLong(file.length());
-        response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
-        //设置这个才会给前端拿到文件名
-        response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
-        IoUtil.copy(Files.newInputStream(Paths.get(outputVideoPath)), response.getOutputStream());
+        return R.ok(domain + "/file/mp3/" + fileName);
     }
 
     private static void mkdirs(String path) {

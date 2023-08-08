@@ -55,3 +55,4 @@ xxl:
       logpath: /home/logs/xxl-job/common
       logretentiondays: 30
       port: 7101
+domain: http://base.yunibobo.cn
