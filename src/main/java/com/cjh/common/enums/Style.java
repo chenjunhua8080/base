@@ -10,16 +10,17 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum Style {
 
-    zhengchang("正常", ""),
-    kaixin("开心", "cheerful"),
-    shengqi("生气", "angry"),
-    nanguo("难过", "sad"),
-    haipa("害怕", "terrified"),
+    s1("s1", "", "正常"),
+    s2("s2", "cheerful", "开心"),
+    s3("s3", "angry", "生气"),
+    s4("s4", "sad", "难过"),
+    s5("s5", "terrified", "害怕"),
 
     ;
 
     private String code;
     private String name;
+    private String desc;
 
     public static Style from(String code) {
         if (code == null) {

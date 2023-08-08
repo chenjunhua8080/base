@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/book/to/xml")
 public class BookToXmlController {
 
-    private final static String DEFAULT_VOICE = "g1";
+    private final static String DEFAULT_VOICE = "p21";
 
     /**
      * 常见的文本转语音配额和限制
@@ -34,9 +34,12 @@ public class BookToXmlController {
      * WebSocket 每轮的最大 SSML 消息大小	64 KB	64 KB
      */
     @PostMapping
-    public R<String> convert(@RequestBody @RequestParam("text") String text) {
+    public R<String> convert(@RequestBody @RequestParam("text") String text, @RequestParam("speed") String speed) {
         if (text == null) {
             return R.failed("text 不能为空");
+        }
+        if (speed == null) {
+            return R.failed("speed 不能为空");
         }
         StringBuilder xml = new StringBuilder();
 
@@ -59,25 +62,25 @@ public class BookToXmlController {
                     //voice end
                     xml.append("</prosody>" + (inStyle ? "</mstts:express-as>" : "") + "</voice>");
                     //voice start
-                    xml.append("<voice name=\"" + Voice.from(s).getName() + "\">" + "<prosody rate=\"20%\">");
+                    xml.append("<voice name=\"" + Voice.from(s).getName() + "\">" + "<prosody rate=\"" + speed + "\">");
                     inStyle = false;
                     continue;
                 }
                 //判断是否新角色，带语气和角色
-                if (codeAndStyleList.contains(s)) {
+                if (isContains(s, codeAndStyleList)) {
                     String[] split = s.split(":");
                     //voice end
                     xml.append("</prosody>" + (inStyle ? "</mstts:express-as>" : "") + "</voice>");
                     //voice start
                     if (split.length == 2) {
                         xml.append("<voice name=\"" + Voice.from(split[0]).getName() + "\">"
-                            + "<mstts:express-as style=\"" + Style.from(split[1]).getName() + "\">"
-                            + "<prosody rate=\"20%\">");
+                            + "<mstts:express-as styledegree=\"1.5\" style=\"" + Style.from(split[1]).getName() + "\">"
+                            + "<prosody rate=\"" + speed + "\">");
                     } else {
                         xml.append("<voice name=\"" + Voice.from(split[0]).getName() + "\">"
-                            + "<mstts:express-as style=\"" + Style.from(split[1]).getName()
+                            + "<mstts:express-as styledegree=\"1.5\" style=\"" + Style.from(split[1]).getName()
                             + "\" role=\"" + Role.from(split[2]).getName() + "\">"
-                            + "<prosody rate=\"20%\">");
+                            + "<prosody rate=\"" + speed + "\">");
                     }
                     inStyle = true;
                     continue;
@@ -87,22 +90,22 @@ public class BookToXmlController {
                 //判断是否设置角色
                 if (codeList.contains(s)) {
                     //voice start
-                    xml.append("<voice name=\"" + Voice.from(s).getName() + "\">" + "<prosody rate=\"20%\">");
+                    xml.append("<voice name=\"" + Voice.from(s).getName() + "\">" + "<prosody rate=\"" + speed + "\">");
                     inVoice = true;
                     continue;
-                } else if (codeAndStyleList.contains(s)) {
+                } else if (isContains(s, codeAndStyleList)) {
                     //判断是否新角色，带语气和角色
                     String[] split = s.split(":");
                     //voice start
                     if (split.length == 2) {
                         xml.append("<voice name=\"" + Voice.from(split[0]).getName() + "\">"
-                            + "<mstts:express-as style=\"" + Style.from(split[1]).getName() + "\">"
-                            + "<prosody rate=\"20%\">");
+                            + "<mstts:express-as styledegree=\"1.5\" style=\"" + Style.from(split[1]).getName() + "\">"
+                            + "<prosody rate=\"" + speed + "\">");
                     } else {
                         xml.append("<voice name=\"" + Voice.from(split[0]).getName() + "\">"
-                            + "<mstts:express-as style=\"" + Style.from(split[1]).getName()
+                            + "<mstts:express-as styledegree=\"1.5\" style=\"" + Style.from(split[1]).getName()
                             + "\" role=\"" + Role.from(split[2]).getName() + "\">"
-                            + "<prosody rate=\"20%\">");
+                            + "<prosody rate=\"" + speed + "\">");
                     }
                     inStyle = true;
                     inVoice = true;
@@ -111,7 +114,7 @@ public class BookToXmlController {
                     //设置默认角色
                     //voice start
                     xml.append(
-                        "<voice name=\"" + Voice.from(DEFAULT_VOICE).getName() + "\">" + "<prosody rate=\"20%\">");
+                        "<voice name=\"" + Voice.from(DEFAULT_VOICE).getName() + "\">" + "<prosody rate=\"" + speed + "\">");
                 }
                 xml.append(s + "，");
                 inVoice = true;
@@ -125,13 +128,23 @@ public class BookToXmlController {
         return R.ok(xml.toString());
     }
 
+    private static boolean isContains(String s, List<String> codeAndStyleList) {
+        for (String item : codeAndStyleList) {
+            if (s.startsWith(item)){
+                return true;
+            }
+        }
+        return false;
+    }
+
     @GetMapping("/getConfig")
     public R<BookToXmlConfigDto> getConfig() {
         BookToXmlConfigDto dto = new BookToXmlConfigDto();
         dto.setVoiceList(Arrays.stream(Voice.values()).map(item -> item.getCode() + ":" + item.getDesc())
             .collect(Collectors.toList()));
-        dto.setStyleList(Arrays.stream(Style.values()).map(Style::getCode).collect(Collectors.toList()));
-        dto.setVoiceList(Arrays.stream(Role.values()).map(item -> item.getCode() + ":" + item.getDesc())
+        dto.setStyleList(Arrays.stream(Style.values()).map(item -> item.getCode() + ":" + item.getDesc())
+            .collect(Collectors.toList()));
+        dto.setRoleList(Arrays.stream(Role.values()).map(item -> item.getCode() + ":" + item.getDesc())
             .collect(Collectors.toList()));
         return R.ok(dto);
     }

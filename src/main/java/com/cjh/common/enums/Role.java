@@ -10,14 +10,15 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum Role {
 
-    nan1("nan1","Boy", "男孩"),
-    nan12("nan2","YoungAdultMale", "年轻的成年男性"),
-    nan13("nan3","OlderAdultMale", "年长的成年男性"),
-    nan14("nan4","SeniorMale", "年老男性"),
-    nv1("nv1","Girl", "女孩"),
-    nv2("nv2","YoungAdultFemale", "年轻的成年女性"),
-    nv3("nv3","OlderAdultFemale", "年长的成年女性"),
-    nv4("nv4","SeniorFemale", "年老女性"),
+    r11("r11", "Boy", "男孩"),
+    r12("r12", "YoungAdultMale", "年轻的成年男性"),
+    r13("r13", "OlderAdultMale", "年长的成年男性"),
+    r14("r14", "SeniorMale", "年老男性"),
+
+    r21("r21", "Girl", "女孩"),
+    r22("r22", "YoungAdultFemale", "年轻的成年女性"),
+    r23("r23", "OlderAdultFemale", "年长的成年女性"),
+    r24("r24", "SeniorFemale", "年老女性"),
 
     ;
 
