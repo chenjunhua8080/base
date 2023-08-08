@@ -2,6 +2,7 @@ package com.cjh.common.controller.book;
 
 import com.baomidou.mybatisplus.extension.api.R;
 import com.cjh.common.dao.BookToXmlConfigDto;
+import com.cjh.common.enums.Role;
 import com.cjh.common.enums.Style;
 import com.cjh.common.enums.Voice;
 import java.util.Arrays;
@@ -62,14 +63,22 @@ public class BookToXmlController {
                     inStyle = false;
                     continue;
                 }
-                //判断是否新角色，带情绪
+                //判断是否新角色，带语气和角色
                 if (codeAndStyleList.contains(s)) {
                     String[] split = s.split(":");
                     //voice end
                     xml.append("</prosody>" + (inStyle ? "</mstts:express-as>" : "") + "</voice>");
                     //voice start
-                    xml.append("<voice name=\"" + Voice.from(split[0]).getName() + "\">" + "<mstts:express-as style=\""
-                        + Style.from(split[1]).getName() + "\">" + "<prosody rate=\"20%\">");
+                    if (split.length == 2) {
+                        xml.append("<voice name=\"" + Voice.from(split[0]).getName() + "\">"
+                            + "<mstts:express-as style=\"" + Style.from(split[1]).getName() + "\">"
+                            + "<prosody rate=\"20%\">");
+                    } else {
+                        xml.append("<voice name=\"" + Voice.from(split[0]).getName() + "\">"
+                            + "<mstts:express-as style=\"" + Style.from(split[1]).getName()
+                            + "\" role=\"" + Role.from(split[2]).getName() + "\">"
+                            + "<prosody rate=\"20%\">");
+                    }
                     inStyle = true;
                     continue;
                 }
@@ -82,11 +91,19 @@ public class BookToXmlController {
                     inVoice = true;
                     continue;
                 } else if (codeAndStyleList.contains(s)) {
-                    //判断是否新角色，带情绪
+                    //判断是否新角色，带语气和角色
                     String[] split = s.split(":");
                     //voice start
-                    xml.append("<voice name=\"" + Voice.from(split[0]).getName() + "\">" + "<mstts:express-as style=\""
-                        + Style.from(split[1]).getName() + "\">" + "<prosody rate=\"20%\">");
+                    if (split.length == 2) {
+                        xml.append("<voice name=\"" + Voice.from(split[0]).getName() + "\">"
+                            + "<mstts:express-as style=\"" + Style.from(split[1]).getName() + "\">"
+                            + "<prosody rate=\"20%\">");
+                    } else {
+                        xml.append("<voice name=\"" + Voice.from(split[0]).getName() + "\">"
+                            + "<mstts:express-as style=\"" + Style.from(split[1]).getName()
+                            + "\" role=\"" + Role.from(split[2]).getName() + "\">"
+                            + "<prosody rate=\"20%\">");
+                    }
                     inStyle = true;
                     inVoice = true;
                     continue;
@@ -114,6 +131,8 @@ public class BookToXmlController {
         dto.setVoiceList(Arrays.stream(Voice.values()).map(item -> item.getCode() + ":" + item.getDesc())
             .collect(Collectors.toList()));
         dto.setStyleList(Arrays.stream(Style.values()).map(Style::getCode).collect(Collectors.toList()));
+        dto.setVoiceList(Arrays.stream(Role.values()).map(item -> item.getCode() + ":" + item.getDesc())
+            .collect(Collectors.toList()));
         return R.ok(dto);
     }
 

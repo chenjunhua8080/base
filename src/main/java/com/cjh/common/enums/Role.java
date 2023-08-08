@@ -8,24 +8,28 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum Style {
+public enum Role {
 
-    zhengchang("正常", ""),
-    kaixin("开心", "cheerful"),
-    shengqi("生气", "angry"),
-    nanguo("难过", "sad"),
-    haipa("害怕", "terrified"),
+    nan1("nan1","Boy", "男孩"),
+    nan12("nan2","YoungAdultMale", "年轻的成年男性"),
+    nan13("nan3","OlderAdultMale", "年长的成年男性"),
+    nan14("nan4","SeniorMale", "年老男性"),
+    nv1("nv1","Girl", "女孩"),
+    nv2("nv2","YoungAdultFemale", "年轻的成年女性"),
+    nv3("nv3","OlderAdultFemale", "年长的成年女性"),
+    nv4("nv4","SeniorFemale", "年老女性"),
 
     ;
 
     private String code;
     private String name;
+    private String desc;
 
-    public static Style from(String code) {
+    public static Role from(String code) {
         if (code == null) {
             return null;
         }
-        for (Style e : Style.values()) {
+        for (Role e : Role.values()) {
             if (e.getCode().equals(code)) {
                 return e;
             }
@@ -34,12 +38,12 @@ public enum Style {
     }
 
     public static String getNameByCode(String code) {
-        Style e = from(code);
+        Role e = from(code);
         return e == null ? "" : e.getName();
     }
 
     public static List<String> getCodeList() {
-        return Arrays.stream(Style.values()).map(Style::getCode).collect(Collectors.toList());
+        return Arrays.stream(Role.values()).map(Role::getCode).collect(Collectors.toList());
     }
 
     public static void main(String[] args) {

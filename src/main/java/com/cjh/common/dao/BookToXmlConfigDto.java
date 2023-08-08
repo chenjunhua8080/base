@@ -8,5 +8,6 @@ public class BookToXmlConfigDto {
 
     private List<String> voiceList;
     private List<String> styleList;
+    private List<String> roleList;
 
 }
