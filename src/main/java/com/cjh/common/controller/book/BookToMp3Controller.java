@@ -3,7 +3,10 @@ package com.cjh.common.controller.book;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import com.microsoft.cognitiveservices.speech.AudioDataStream;
+import com.microsoft.cognitiveservices.speech.CancellationReason;
+import com.microsoft.cognitiveservices.speech.ResultReason;
 import com.microsoft.cognitiveservices.speech.SpeechConfig;
+import com.microsoft.cognitiveservices.speech.SpeechSynthesisCancellationDetails;
 import com.microsoft.cognitiveservices.speech.SpeechSynthesisResult;
 import com.microsoft.cognitiveservices.speech.SpeechSynthesizer;
 import java.io.File;
@@ -26,7 +29,7 @@ public class BookToMp3Controller {
     // This example requires environment variables named "SPEECH_KEY" and "SPEECH_REGION"
     private static String speechKey = System.getenv("SPEECH_KEY");
     private static String speechRegion = System.getenv("SPEECH_REGION");
-    
+
     @PostMapping
     public void convert(@RequestBody Params params, HttpServletResponse response)
         throws IOException {
@@ -56,6 +59,20 @@ public class BookToMp3Controller {
             SpeechConfig speechConfig = SpeechConfig.fromSubscription(speechKey, speechRegion);
             SpeechSynthesizer speechSynthesizer = new SpeechSynthesizer(speechConfig, null);
             SpeechSynthesisResult result = speechSynthesizer.SpeakSsml(params.getXml());
+            if (result.getReason() == ResultReason.SynthesizingAudioCompleted) {
+                log.info("语音合成成功: {}", result.getReason());
+            } else if (result.getReason() == ResultReason.Canceled) {
+                log.error("语音合成失败: {}", result.getReason());
+                SpeechSynthesisCancellationDetails details = SpeechSynthesisCancellationDetails.fromResult(result);
+                log.error("CANCELED: Reason=" + details.getReason());
+
+                if (details.getReason() == CancellationReason.Error) {
+                    log.error("CANCELED: ErrorCode=" + details.getErrorCode());
+                    log.error("CANCELED: ErrorDetails=" + details.getErrorDetails());
+                }
+            } else {
+                log.warn("语音合成异常: {}", result.getReason());
+            }
             AudioDataStream stream = AudioDataStream.fromResult(result);
             stream.saveToWavFile(outputVideoPath);
         }
