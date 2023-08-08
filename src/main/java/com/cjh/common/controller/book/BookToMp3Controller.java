@@ -56,6 +56,7 @@ public class BookToMp3Controller {
         File file = new File(outputVideoPath);
 
         if (!file.exists()) {
+            log.info("speechRegion: {}", speechRegion);
             SpeechConfig speechConfig = SpeechConfig.fromSubscription(speechKey, speechRegion);
             SpeechSynthesizer speechSynthesizer = new SpeechSynthesizer(speechConfig, null);
             SpeechSynthesisResult result = speechSynthesizer.SpeakSsml(params.getXml());
