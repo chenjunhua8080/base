@@ -10,8 +10,6 @@ import com.microsoft.cognitiveservices.speech.SpeechSynthesisCancellationDetails
 import com.microsoft.cognitiveservices.speech.SpeechSynthesisResult;
 import com.microsoft.cognitiveservices.speech.SpeechSynthesizer;
 import java.io.File;
-import java.io.IOException;
-import javax.servlet.http.HttpServletResponse;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,8 +31,7 @@ public class BookToMp3Controller {
     private String domain;
 
     @PostMapping
-    public R<String> convert(@RequestBody Params params, HttpServletResponse response)
-        throws IOException {
+    public R<String> convert(@RequestBody Params params) {
         if (params.getXml() == null) {
             return R.failed("xml is null");
         }

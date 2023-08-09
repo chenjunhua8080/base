@@ -56,6 +56,7 @@ public class BookToXmlController {
             if (s.isEmpty()) {
                 continue;
             }
+            s = s.trim();
             if (inVoice) {
                 //判断是否新角色
                 if (codeList.contains(s)) {
@@ -114,7 +115,8 @@ public class BookToXmlController {
                     //设置默认角色
                     //voice start
                     xml.append(
-                        "<voice name=\"" + Voice.from(DEFAULT_VOICE).getName() + "\">" + "<prosody rate=\"" + speed + "\">");
+                        "<voice name=\"" + Voice.from(DEFAULT_VOICE).getName() + "\">" + "<prosody rate=\"" + speed
+                            + "\">");
                 }
                 xml.append(s + "，");
                 inVoice = true;
@@ -130,7 +132,7 @@ public class BookToXmlController {
 
     private static boolean isContains(String s, List<String> codeAndStyleList) {
         for (String item : codeAndStyleList) {
-            if (s.startsWith(item)){
+            if (s.startsWith(item)) {
                 return true;
             }
         }
