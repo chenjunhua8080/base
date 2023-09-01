@@ -3,7 +3,7 @@ package com.cjh.common.dao;
 import lombok.Data;
 
 @Data
-public class BookDto {
+public class BookContentDto {
 
     private String title;
 

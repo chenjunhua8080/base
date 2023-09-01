@@ -2,7 +2,7 @@ package com.cjh.common.controller.book;
 
 import cn.hutool.core.io.IoUtil;
 import com.baomidou.mybatisplus.extension.api.R;
-import com.cjh.common.dao.BookDto;
+import com.cjh.common.dao.BookContentDto;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -39,8 +39,8 @@ public class BookToVideoController {
 //            return "url 格式不对，例：https://book.qq.com/book-detail/xxx";
 //        }
         String bookId = url.substring(url.lastIndexOf("/") + 1);
-        BookController bookController = new BookController();
-        R<BookDto> r = bookController.find(url, index, index);
+        BookQQController bookQQController = new BookQQController();
+        R<BookContentDto> r = bookQQController.content(url, index, index, null);
         String path = "/home/book/video/";
         String fileName = bookId + "_" + index + ".mp4";
         String outputVideoPath = path + fileName;
