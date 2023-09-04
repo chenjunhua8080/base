@@ -63,6 +63,7 @@ public class BookBXWXController {
             }
         }
         BookContentDto data = new BookContentDto();
+        data.setBookId(bookId);
         data.setLink(url);
         data.setTitle(bookInfo.getBookName());
         data.setBody(String.join("\n", list));

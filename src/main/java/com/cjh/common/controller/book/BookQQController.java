@@ -59,6 +59,7 @@ public class BookQQController {
             }
         }
         BookContentDto data = new BookContentDto();
+        data.setBookId(bookId);
         data.setLink(url);
         data.setTitle(getTitle(bookId));
         data.setBody(String.join("\n", list));

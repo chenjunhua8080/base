@@ -1,7 +1,7 @@
 package com.cjh.common.controller.book;
 
-import cn.hutool.core.io.IoUtil;
 import com.baomidou.mybatisplus.extension.api.R;
+import com.baomidou.mybatisplus.extension.enums.ApiErrorCode;
 import com.cjh.common.dao.BookContentDto;
 import java.awt.Color;
 import java.awt.Font;
@@ -10,17 +10,16 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
 import java.io.StringReader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.http.HttpServletResponse;
+import javax.imageio.ImageIO;
 import org.bytedeco.ffmpeg.global.avcodec;
 import org.bytedeco.javacv.FFmpegFrameRecorder;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.Java2DFrameConverter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,39 +28,46 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/book/to/video")
 public class BookToVideoController {
 
-    @GetMapping("/qq")
-    public void qq(String url, Integer index, HttpServletResponse response) throws IOException {
+    @Value("${domain}")
+    private String domain;
+
+    @Autowired
+    private BookController bookController;
+
+    @GetMapping("")
+    public R<?> toVideo(String url, Integer index, String book_id, String bid, String mst) {
         index = index == null ? 1 : index;
-//        if (url == null) {
-//            return "url 不能为空";
-//        }
-//        if (!url.startsWith("https://book.qq.com/book-detail/")) {
-//            return "url 格式不对，例：https://book.qq.com/book-detail/xxx";
-//        }
-        String bookId = url.substring(url.lastIndexOf("/") + 1);
-        BookQQController bookQQController = new BookQQController();
-        R<BookContentDto> r = bookQQController.content(url, index, index, null);
+        R<BookContentDto> r = bookController.content(url, index, index, book_id, bid, mst);
+
+        if (r.getCode() == ApiErrorCode.FAILED.getCode()) {
+            return r;
+        }
+
         String path = "/home/book/video/";
-        String fileName = bookId + "_" + index + ".mp4";
+        String fileName = r.getData().getBookId() + "_" + index + ".mp4";
         String outputVideoPath = path + fileName;
         mkdirs(path);
-        try {
-            // 读取小说文本内容
-            List<String> novelLines = readNovelText(r.getData().getBody());
-            // 将小说文本转为图片
-            List<BufferedImage> images = convertNovelToImages(novelLines);
-            // 合成视频并保存
-            createVideoFromImages(images, outputVideoPath);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         File file = new File(outputVideoPath);
-        response.setContentType("application/octet-stream");
-        response.setContentLengthLong(file.length());
-        response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
-        //设置这个才会给前端拿到文件名
-        response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
-        IoUtil.copy(Files.newInputStream(Paths.get(outputVideoPath)), response.getOutputStream());
+        System.out.println(file.getAbsolutePath());
+
+        if (!file.exists() || true) {
+            try {
+                // 读取小说文本内容
+                List<String> novelLines = readNovelText(r.getData().getBody());
+                // 将小说文本转为图片
+                List<BufferedImage> images = convertNovelToImages(novelLines);
+                for (int i = 0; i < images.size(); i++) {
+                    BufferedImage image = images.get(i);
+                    ImageIO.write(image, "png", new File(outputVideoPath + "-" + i + ".png"));
+                }
+                // 合成视频并保存
+                createVideoFromImages(images, outputVideoPath);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return R.ok(domain + "/file/mp3/" + fileName);
     }
 
     private static void mkdirs(String path) {
@@ -86,7 +92,7 @@ public class BookToVideoController {
         List<BufferedImage> images = new ArrayList<>();
 
         // 加载中文字体
-        Font chineseFont = new Font("Microsoft YaHei", Font.PLAIN, 36);
+        Font chineseFont = new Font("宋体", Font.PLAIN, 36);
 
         BufferedImage image = new BufferedImage(1920, 1080, BufferedImage.TYPE_INT_RGB);
         Graphics2D graphics = image.createGraphics();
@@ -111,8 +117,9 @@ public class BookToVideoController {
                 String str2 = line.substring(index + 1);
 
                 graphics.drawString(str1.trim(), margin, y);
-                y += lineHeight;
+                outline(graphics, str1, margin, y);
 
+                y += lineHeight;
                 if (y + lineHeight > 1080 - 100) {
                     images.add(image);
                     image = new BufferedImage(1920, 1080, BufferedImage.TYPE_INT_RGB);
@@ -125,8 +132,9 @@ public class BookToVideoController {
                 }
 
                 graphics.drawString(str2.trim(), margin, y);
-                y += lineHeight;
+                outline(graphics, str1, margin, y);
 
+                y += lineHeight;
                 if (y + lineHeight > 1080 - 100) {
                     images.add(image);
                     image = new BufferedImage(1920, 1080, BufferedImage.TYPE_INT_RGB);
@@ -157,6 +165,13 @@ public class BookToVideoController {
         images.add(image);
 
         return images;
+    }
+
+    private static void outline(Graphics2D graphics, String str1, int margin, int y) {
+        // 绘制描边效果
+//        graphics.setStroke(new java.awt.BasicStroke(2));
+//        graphics.setColor(Color.ORANGE);
+//        graphics.drawString(str1.trim(), margin, y);
     }
 
 

@@ -5,6 +5,8 @@ import lombok.Data;
 @Data
 public class BookContentDto {
 
+    private String bookId;
+
     private String title;
 
     private String link;
