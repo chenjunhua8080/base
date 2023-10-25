@@ -18,6 +18,13 @@
     <properties>
         <java.version>1.8</java.version>
         <spring.cloud-version>2020.0.5</spring.cloud-version>
+
+        <!-- javacv -->
+        <!-- todo: 以下版本号需要根据实际情况修改,最后上线生产的时候只留linux版本减少打包体积 -->
+        <javacv.version>1.5.7</javacv.version>
+        <javacv.ffmpeg.version>5.0-1.5.7</javacv.ffmpeg.version>
+        <javacpp.platform.linux-x86_64>linux-x86_64</javacpp.platform.linux-x86_64>
+        <javacpp.platform.windows-x86_64>windows-x86_64</javacpp.platform.windows-x86_64>
     </properties>
 
     <dependencies>
@@ -196,10 +203,44 @@
         </dependency>
 
 
+        <!-- 全量引入jar包会非常之大，https://blog.csdn.net/weixin_44684272/article/details/131784237 -->
+<!--        <dependency>-->
+<!--            <groupId>org.bytedeco</groupId>-->
+<!--            <artifactId>javacv-platform</artifactId>-->
+<!--            <version>1.5.7</version>-->
+<!--        </dependency>-->
+
+        <!-- javacv -->
         <dependency>
             <groupId>org.bytedeco</groupId>
-            <artifactId>javacv-platform</artifactId>
-            <version>1.5.7</version>
+            <artifactId>javacv</artifactId>
+            <version>${javacv.version}</version>
+        </dependency>
+        <!-- Linux平台 -->
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>javacpp</artifactId>
+            <version>${javacv.version}</version>
+            <classifier>${javacpp.platform.linux-x86_64}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>ffmpeg</artifactId>
+            <version>${javacv.ffmpeg.version}</version>
+            <classifier>${javacpp.platform.linux-x86_64}</classifier>
+        </dependency>
+        <!-- Windows平台 -->
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>javacpp</artifactId>
+            <version>${javacv.version}</version>
+            <classifier>${javacpp.platform.windows-x86_64}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>ffmpeg</artifactId>
+            <version>${javacv.ffmpeg.version}</version>
+            <classifier>${javacpp.platform.windows-x86_64}</classifier>
         </dependency>
 
         <!-- 语音 -->
