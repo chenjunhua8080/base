@@ -62,7 +62,7 @@ public class EmailService {
         Map<String, Object> map = Maps.newHashMap();
         ApiConfig apiConfig = SpringUtil.getBean(ApiConfig.class);
 
-        Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
+//        Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
         final String SSL_FACTORY = "javax.net.ssl.SSLSocketFactory";//ssl加密,jdk1.8无法使用
 
         // 定义连接imap服务器的属性信息
