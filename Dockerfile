@@ -1,4 +1,4 @@
-FROM amazoncorretto:8-alpine-jre
+FROM amazoncorretto:11-alpine3.18-jdk
 
 EXPOSE 8080
 
