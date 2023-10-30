@@ -10,7 +10,7 @@ spring:
     database: 2
     host: yunibobo.cn
     port: 16379
-    password:
+    password: myredis
   #mysql
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
