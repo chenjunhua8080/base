@@ -24,6 +24,8 @@ public class BookController {
     @Autowired
     private BookBXWXController bookBXWXController;
     @Autowired
+    private BookNFXSController bookNFXSController;
+    @Autowired
     private BookZhihuController bookZhihuController;
 
     @GetMapping("")
@@ -45,12 +47,14 @@ public class BookController {
             return r;
         } else if (url.contains("http://www.xfuedu.org")) {
             r = bookBXWXController.content(url, start, end);
+        }  else if (url.contains("https://www.nfxs.com")) {
+            r = bookNFXSController.content(url, start, end);
         } else if (url.contains("https://ih5.reader.qq.com") || url.contains("https://book.qq.com")) {
             r = bookQQController.content(url, start, end, bid);
         } else if (url.contains("zhihu")) {
             r = bookZhihuController.content(url, mst);
         } else {
-            return R.failed("仅支持QQ/番茄/笔下文学/知乎");
+            return R.failed("仅支持QQ/番茄/笔下文学/农夫小说/知乎");
         }
 
         // cache
