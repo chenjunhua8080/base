@@ -10,6 +10,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum Style {
 
+    s6("s6", "depressed", "沮丧emo *"),
     s1("s1", "", "正常"),
     s2("s2", "cheerful", "开心"),
     s3("s3", "angry", "生气"),

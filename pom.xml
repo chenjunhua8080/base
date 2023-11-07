@@ -243,13 +243,31 @@
             <classifier>${javacpp.platform.windows-x86_64}</classifier>
         </dependency>
 
-        <!-- 语音 -->
+        <!-- 语音SDK -->
         <dependency>
             <groupId>com.microsoft.cognitiveservices.speech</groupId>
             <artifactId>client-sdk</artifactId>
-            <version>1.30.0</version>
+            <version>1.32.1</version>
         </dependency>
 
+        <!-- 语音合并 -->
+<!--        <dependency>-->
+<!--            <groupId>net.jthink</groupId>-->
+<!--            <artifactId>jaudiotagger</artifactId>-->
+<!--            <version>3.0.1</version>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>ws.schild</groupId>-->
+<!--            <artifactId>jave-all-deps</artifactId>-->
+<!--            <version>3.3.1</version>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>com.mpatric</groupId>-->
+<!--            <artifactId>mp3agic</artifactId>-->
+<!--            <version>0.9.1</version>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>org.hibernate.validator</groupId>

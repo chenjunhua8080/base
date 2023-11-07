@@ -10,6 +10,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum Role {
 
+    r0("r0", "Narrator", "旁白"),
+
     r11("r11", "Boy", "男孩"),
     r12("r12", "YoungAdultMale", "年轻的成年男性"),
     r13("r13", "OlderAdultMale", "年长的成年男性"),

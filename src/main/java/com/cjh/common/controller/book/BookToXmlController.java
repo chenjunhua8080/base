@@ -2,9 +2,12 @@ package com.cjh.common.controller.book;
 
 import com.baomidou.mybatisplus.extension.api.R;
 import com.cjh.common.dao.BookToXmlConfigDto;
+import com.cjh.common.dao.BookToXmlConfigV2Dto;
+import com.cjh.common.dao.BookToXmlConfigV2Dto.BookToXmlConfigV2Item;
 import com.cjh.common.enums.Role;
 import com.cjh.common.enums.Style;
 import com.cjh.common.enums.Voice;
+import com.google.common.collect.Lists;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -148,6 +151,27 @@ public class BookToXmlController {
             .collect(Collectors.toList()));
         dto.setRoleList(Arrays.stream(Role.values()).map(item -> item.getCode() + ":" + item.getDesc())
             .collect(Collectors.toList()));
+        return R.ok(dto);
+    }
+
+    @GetMapping("/getConfig/v2")
+    public R<BookToXmlConfigV2Dto> getConfigV2() {
+        BookToXmlConfigV2Dto dto = new BookToXmlConfigV2Dto();
+        List<BookToXmlConfigV2Item> voiceList = Lists.newArrayList();
+        List<BookToXmlConfigV2Item> styleList = Lists.newArrayList();
+        List<BookToXmlConfigV2Item> roleList = Lists.newArrayList();
+        for (Voice item : Voice.values()) {
+            voiceList.add(new BookToXmlConfigV2Item(item.getName(), item.getDesc()));
+        }
+        for (Style item : Style.values()) {
+            styleList.add(new BookToXmlConfigV2Item(item.getName(), item.getDesc()));
+        }
+        for (Role item : Role.values()) {
+            roleList.add(new BookToXmlConfigV2Item(item.getName(), item.getDesc()));
+        }
+        dto.setVoiceList(voiceList);
+        dto.setStyleList(styleList);
+        dto.setRoleList(roleList);
         return R.ok(dto);
     }
 
