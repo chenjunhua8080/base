@@ -47,7 +47,7 @@ xxl:
   job:
     accessToken: ''
     admin:
-      addresses: http://127.0.0.1:7001/xxl-job-admin
+      addresses: http://xxl-job.yunibobo.cn/xxl-job-admin
     executor:
       ip: ''
       address: ''
