@@ -1,4 +1,4 @@
-FROM amazoncorretto:11-alpine3.18-jdk
+FROM registry.cn-hangzhou.aliyuncs.com/yunibobo-dev/common:yuyin
 
 EXPOSE 8080
 
