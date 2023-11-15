@@ -100,7 +100,7 @@ public class BookFanqieController {
                 }
                 BookContentDto bookContentDto = new BookContentDto();
                 bookContentDto.setTitle(item.getString("title"));
-                bookContentDto.setLink("https://fanqienovel.com/api/reader/full?itemId=" + item.getString("itemId"));
+                bookContentDto.setLink("https://fanqienovel.com/api/reader/full?&a_bogus=mvBmfOhQMsR1UDf-DXkz9SvmGC60YW4WgZEz2pNjQ0qp&itemId=" + item.getString("itemId"));
                 chapterList.add(bookContentDto);
             }
             bookInfoDto.setChapterList(chapterList);
@@ -116,6 +116,11 @@ public class BookFanqieController {
         String indexStr = "<<< 第 " + index + " 章 >>>";
         list.add(indexStr);
 
+        if (index - 1 >= bookInfoDto.getChapterList().size()){
+            list.add("没有章节内容/需要付费阅读");
+            return false;
+        }
+
         BookContentDto bookContentDto = bookInfoDto.getChapterList().get(index - 1);
         if (bookContentDto == null) {
             list.add("没有章节内容/需要付费阅读");
@@ -123,7 +128,11 @@ public class BookFanqieController {
         }
 
         try {
-            String body = HttpRequest.get(bookContentDto.getLink()).execute().body();
+            String body = HttpRequest.get(bookContentDto.getLink())
+                .cookie("csrf_session_id=ed967d6630fd61d029cfef3417267613; _ga=GA1.1.800235604.1698378145; _ga_S37NWVC3ZR=GS1.1.1698378144.1.0.1698378150.0.0.0; Hm_lvt_2667d29c8e792e6fa9182c20a3013175=1700018104; s_v_web_id=verify_loz6vwo5_olOdaQ7C_BeQD_4sts_BOZd_9o3xiUUgfkro; novel_web_id=7262533133668681272; Hm_lpvt_2667d29c8e792e6fa9182c20a3013175=1700041771; ttwid=1%7Cu4a01WjeiXvBXm0fXUjtXCvA7t-jhCvdxvEdrTx7jBM%7C1700041771%7C0b8327426392db389aa4d511f28dda5ab8da9b189eb370b5ca036570e60d8b46; msToken=X0EsB_pxi5PMB57PLZQUxMRW0pG1380LNhAhPccdHY3aj6SqYopfaJ2IK1qn5wo6a6hD1DFId5pc__ZX4JcKnRFiRuvHoXR_dAPVMAh7i0qcDgHuBR2j")
+                .execute().body();
+            // 太狗了还做了编码
+//            body = StringEscapeUtils.unescapeJava(body);
             JSONObject jsonObject = JSON.parseObject(body);
             JSONObject data = jsonObject.getJSONObject("data");
             JSONObject chapterData = data.getJSONObject("chapterData");
