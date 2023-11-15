@@ -45,7 +45,7 @@ public class BookController {
         if (url.contains("https://changdunovel.com")) {
             r = bookFanqieController.content(url, start, end, book_id);
             return r;
-        } else if (url.contains("http://www.xfuedu.org")) {
+        } else if (url.contains("/bxwx/")) {
             r = bookBXWXController.content(url, start, end);
         }  else if (url.contains("https://www.nfxs.com")) {
             r = bookNFXSController.content(url, start, end);

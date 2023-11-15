@@ -26,6 +26,8 @@ public class BookBXWXController {
     private static final Pattern PATTERN_NEXT_PAGE = Pattern.compile("<a href=\"(.*?)\">下一页</a>");
     private static final Pattern PATTERN_NEXT_CHAPTER = Pattern.compile("<a href=\"(.*?)\">下一章</a>");
 
+    private static String domain;
+
     @GetMapping("")
     public R<BookContentDto> content(String url, Integer start, Integer end) {
         start = start == null ? 1 : start;
@@ -43,9 +45,11 @@ public class BookBXWXController {
         }
 
         if (bookId == null) {
-            return R.failed("url 格式不对，例：http://www.xfuedu.org/bxwx/27555/...");
+            return R.failed("url 格式不对，例：http://xxx/bxwx/27555/...");
         }
         System.out.println(bookId);
+
+        domain = url.substring(0, url.indexOf("bxwx/") + 5);
 
         BookInfoDto bookInfo = getBookInfo(bookId);
 
@@ -71,7 +75,7 @@ public class BookBXWXController {
     }
 
     private static BookInfoDto getBookInfo(String bookId) {
-        String url = "http://www.xfuedu.org/bxwx/" + bookId + "/";
+        String url = domain + "/" + bookId + "/";
         System.out.println(url);
         try {
             Document document = Jsoup.connect(url).get();
@@ -141,7 +145,7 @@ public class BookBXWXController {
         if (matcher.find()) {
             String nextUrl = matcher.group(1);
             if (nextUrl.contains("_")) {
-                getContent("http://www.xfuedu.org" + nextUrl, list);
+                getContent(domain + nextUrl, list);
             }
         }
     }
