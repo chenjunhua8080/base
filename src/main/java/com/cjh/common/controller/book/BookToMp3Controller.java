@@ -1,5 +1,6 @@
 package com.cjh.common.controller.book;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.google.common.collect.Lists;
@@ -18,7 +19,6 @@ import java.io.SequenceInputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -136,20 +136,30 @@ public class BookToMp3Controller {
 
         if (!file.exists()) {
             if (xmlList.size() == 1) {
-                String msg = createAudio(xmlList.get(0), outputAudioPath);
+                String msg = createAudio(xmlList.get(0), outputAudioPath, 3);
                 if (msg != null) {
                     return R.failed(msg);
                 }
             } else {
                 List<File> files = Lists.newArrayList();
                 for (int i = 0; i < xmlList.size(); i++) {
-                    String newFile = outputAudioPath.replace(".wav", "_" + i + ".wav");
-                    String xml = xmlList.get(i);
-                    String msg = createAudio(xml, newFile);
-                    if (msg != null) {
-                        return R.failed(msg);
+                    String newFilePath = outputAudioPath.replace(".wav", "_" + i + ".wav");
+                    File newFile = new File(newFilePath);
+                    if (!newFile.exists()) {
+                        String xml = xmlList.get(i);
+                        String msg;
+                        try {
+                            msg = createAudio(xml, newFilePath, 3);
+                        } catch (Exception e) {
+                            msg = String.format("合成音频失败: %s %s", e.getClass().getSimpleName(), e.getMessage());
+                            log.error("{}", msg, e);
+                        }
+                        if (msg != null) {
+                            FileUtil.del(newFilePath);
+                            return R.failed(msg);
+                        }
                     }
-                    files.add(new File(newFile));
+                    files.add(new File(newFilePath));
                 }
                 mergeAudioFiles(files, file);
             }
@@ -163,10 +173,10 @@ public class BookToMp3Controller {
      *
      * @param xml             xml
      * @param outputVideoPath file path
+     * @param maxRetry        max retry
      * @return error msg
      */
-    private static String createAudio(String xml, String outputVideoPath)
-        throws ExecutionException, InterruptedException {
+    private static String createAudio(String xml, String outputVideoPath, int maxRetry) {
         log.info("speechRegion: {}", speechRegion);
         log.info("xml: \n{}", xml);
         SpeechConfig speechConfig = SpeechConfig.fromSubscription(speechKey, speechRegion);
@@ -176,28 +186,35 @@ public class BookToMp3Controller {
         // 输出流
         AudioConfig audioConfig = AudioConfig.fromWavFileOutput(outputVideoPath);
         SpeechSynthesizer speechSynthesizer = new SpeechSynthesizer(speechConfig, audioConfig);
-        SpeechSynthesisResult result = speechSynthesizer.SpeakSsmlAsync(xml).get();
-        if (result.getReason() == ResultReason.SynthesizingAudioCompleted) {
-            log.info("语音合成成功: {}", result.getReason());
-        } else if (result.getReason() == ResultReason.Canceled) {
-            log.error("语音合成失败: {}", result.getReason());
-            SpeechSynthesisCancellationDetails details = SpeechSynthesisCancellationDetails.fromResult(result);
-            log.error("CANCELED: Reason=" + details.getReason());
+        try {
+            SpeechSynthesisResult result = speechSynthesizer.SpeakSsmlAsync(xml).get();
+            if (result.getReason() == ResultReason.SynthesizingAudioCompleted) {
+                log.info("语音合成成功: {}", result.getReason());
+            } else if (result.getReason() == ResultReason.Canceled) {
+                log.error("语音合成失败: {}", result.getReason());
+                SpeechSynthesisCancellationDetails details = SpeechSynthesisCancellationDetails.fromResult(result);
+                log.error("CANCELED: Reason=" + details.getReason());
 
-            if (details.getReason() == CancellationReason.Error) {
-                log.error("CANCELED: ErrorCode=" + details.getErrorCode());
-                log.error("CANCELED: ErrorDetails=" + details.getErrorDetails());
+                if (details.getReason() == CancellationReason.Error) {
+                    log.error("CANCELED: ErrorCode=" + details.getErrorCode());
+                    log.error("CANCELED: ErrorDetails=" + details.getErrorDetails());
+                }
+                return "语音合成失败: " + result.getReason();
+            } else {
+                log.error("语音合成异常: {}", result.getReason());
+                return "语音合成异常: " + result.getReason();
             }
-            return "语音合成失败: " + result.getReason();
-        } else {
-            log.error("语音合成异常: {}", result.getReason());
-            return "语音合成异常: " + result.getReason();
-        }
 //        AudioDataStream stream = AudioDataStream.fromResult(result);
 //        stream.saveToWavFile(outputVideoPath);
-        result.close();
-        speechSynthesizer.close();
-        audioConfig.close();
+            result.close();
+            speechSynthesizer.close();
+            audioConfig.close();
+        } catch (Exception e) {
+            if (--maxRetry >= 0) {
+                createAudio(xml, outputVideoPath, maxRetry);
+            }
+            throw new RuntimeException(e);
+        }
 
         return null;
     }
@@ -218,7 +235,7 @@ public class BookToMp3Controller {
         String volume, String text) {
         // test
 //        int pageSize = 50;
-        int pageSize = 3000;
+        int pageSize = 1000;
         List<String> list = Lists.newArrayList();
         int length = text.length();
         if (length > pageSize) {
