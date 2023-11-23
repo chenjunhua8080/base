@@ -245,14 +245,17 @@ public class BookToMp3Controller {
                             File newFile = new File(newFilePath);
                             if (!newFile.exists()) {
                                 String xml = xmlList.get(finalI);
-                                String msg = createAudio(xml, newFilePath, 3);
+                                String msg = createAudio(xml, newFilePath, 5);
                                 if (msg != null) {
                                     FileUtil.del(newFilePath);
+                                    getSend(emitter, "progress", "第" + finalI + "个音频创建失败：" + msg);
+                                    return null;
                                 }
                             }
                             files.add(new File(newFilePath));
                             String end = timer.intervalPretty();
                             getSend(emitter, "progress", "成功创建第" + finalI + "个音频，耗时：" + end);
+                            getSend(emitter, "progress", "剩余：" + (xmlList.size() - files.size()) + "个");
                             return null;
                         });
                     }
