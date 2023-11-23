@@ -251,10 +251,12 @@ public class BookToMp3Controller {
                                     getSend(emitter, "progress", "第" + finalI + "个音频创建失败：" + msg);
                                     return null;
                                 }
+                                String end = timer.intervalPretty();
+                                getSend(emitter, "progress", "成功创建第" + finalI + "个音频，耗时：" + end);
+                            } else {
+                                getSend(emitter, "progress", "成功创建第" + finalI + "个音频，已缓存");
                             }
                             files.add(new File(newFilePath));
-                            String end = timer.intervalPretty();
-                            getSend(emitter, "progress", "成功创建第" + finalI + "个音频，耗时：" + end);
                             getSend(emitter, "progress", "剩余：" + (xmlList.size() - files.size()) + "个");
                             return null;
                         });
@@ -293,6 +295,7 @@ public class BookToMp3Controller {
     }
 
     private static void getSend(SseEmitter emitter, String state, Object data) {
+        log.info("{} --- {}", state, data);
         try {
             emitter.send(SseEmitter.event().name(state).data(data));
         } catch (IOException e) {
