@@ -272,8 +272,12 @@ public class BookToMp3Controller {
 
                     try {
                         getSend(emitter, "progress", "正在合并语音，共" + files.size() + "个...");
-                        // 排序
-                        files.sort(Comparator.comparing(File::getName));
+                        // 排序 dfc649f4e88135377eb7984ab7862ca9_0.wav
+                        files.sort(Comparator.comparing(item -> {
+                            String name = item.getName();
+                            String index = name.substring(name.indexOf("_") + 1, name.indexOf("."));
+                            return Integer.parseInt(index);
+                        }));
                         mergeAudioFiles(files, file);
                     } catch (Exception e) {
                         String m = String.format("合并语音失败: %s: %s", e.getClass().getSimpleName(), e.getMessage());
