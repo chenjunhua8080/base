@@ -196,11 +196,9 @@ public class BookToMp3Controller {
             return emitter;
         }
 
-        ExecutorService executorService = ThreadUtil.newExecutor(2);
-        ExecutorService executorService2 = ThreadUtil.newExecutor(8, 8);
-        List<Callable<Void>> tasks = new ArrayList<>();
-
-        executorService.execute(() -> {
+        Thread thread = ThreadUtil.newThread(() -> {
+            ExecutorService executorService = ThreadUtil.newExecutor(8, 8);
+            List<Callable<Void>> tasks = new ArrayList<>();
 
             String text = params.getText();
             if (!StringUtils.hasText(text)) {
@@ -260,7 +258,7 @@ public class BookToMp3Controller {
                     }
 
                     try {
-                        executorService2.invokeAll(tasks);
+                        executorService.invokeAll(tasks);
                     } catch (InterruptedException e) {
                         String msg = "线程任务执行失败: " + e.getClass().getSimpleName() + " " + e.getMessage();
                         log.error("{}", msg, e);
@@ -284,8 +282,9 @@ public class BookToMp3Controller {
             getSend(emitter, "result", domain + "/file/mp3/" + fileName);
 
             executorService.shutdown();
-            executorService2.shutdown();
-        });
+        }, "MP3V3");
+        thread.start();
+        log.info("线程启动！");
 
         return emitter;
     }
