@@ -1,9 +1,14 @@
 package com.cjh.common.controller.book;
 
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.date.TimeInterval;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.microsoft.cognitiveservices.speech.AudioDataStream;
 import com.microsoft.cognitiveservices.speech.CancellationReason;
 import com.microsoft.cognitiveservices.speech.OutputFormat;
@@ -15,10 +20,15 @@ import com.microsoft.cognitiveservices.speech.SpeechSynthesisResult;
 import com.microsoft.cognitiveservices.speech.SpeechSynthesizer;
 import com.microsoft.cognitiveservices.speech.audio.AudioConfig;
 import java.io.File;
+import java.io.IOException;
 import java.io.SequenceInputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -26,11 +36,15 @@ import javax.sound.sampled.AudioSystem;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @Slf4j
 @RestController
@@ -60,6 +74,8 @@ public class BookToMp3Controller {
 
     @Value("${domain}")
     private String domain;
+
+    private Map<String, V2Params> v3ParamMap = Maps.newConcurrentMap();
 
     @PostMapping
     public R<String> convert(@RequestBody XmlParams params) {
@@ -147,13 +163,7 @@ public class BookToMp3Controller {
                     File newFile = new File(newFilePath);
                     if (!newFile.exists()) {
                         String xml = xmlList.get(i);
-                        String msg;
-                        try {
-                            msg = createAudio(xml, newFilePath, 3);
-                        } catch (Exception e) {
-                            msg = String.format("合成音频失败: %s %s", e.getClass().getSimpleName(), e.getMessage());
-                            log.error("{}", msg, e);
-                        }
+                        String msg = createAudio(xml, newFilePath, 3);
                         if (msg != null) {
                             FileUtil.del(newFilePath);
                             return R.failed(msg);
@@ -166,6 +176,126 @@ public class BookToMp3Controller {
         }
 
         return R.ok(domain + "/file/mp3/" + fileName);
+    }
+
+    @PostMapping("/v3")
+    public R<String> convertV3(@RequestBody V2Params params) {
+        String id = IdUtil.objectId();
+        v3ParamMap.put(id, params);
+        return R.ok(id);
+    }
+
+    @GetMapping(value = "/v3/detail", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @ResponseBody
+    public SseEmitter v3Detail(String id) {
+        SseEmitter emitter = new SseEmitter((long) (60 * 1000 * 10));
+
+        V2Params params = v3ParamMap.get(id);
+        if (params == null) {
+            getSend(emitter, "result", "id is not found: " + id);
+            return emitter;
+        }
+
+        ExecutorService executorService = ThreadUtil.newExecutor(2);
+        ExecutorService executorService2 = ThreadUtil.newExecutor(8, 8);
+        List<Callable<Void>> tasks = new ArrayList<>();
+
+        executorService.execute(() -> {
+
+            String text = params.getText();
+            if (!StringUtils.hasText(text)) {
+                getSend(emitter, "result", "test is null");
+            }
+
+            log.info(System.getProperty("java.library.path"));
+            log.info(System.getProperty("java.library.path"));
+            log.info(System.getProperty("java.library.path"));
+
+            List<String> xmlList = getXML(params.getVoice(),
+                params.getStyle(),
+                params.getStyledegree(),
+                params.getRole(),
+                params.getRate(),
+                params.getVolume(),
+                text.trim());
+
+            getSend(emitter, "progress", "全文：" + text.trim().length() + "字，拆分为" + xmlList.size() + "个音频");
+
+            String path = "/home/book/mp3/";
+            String fileName = DigestUtil.md5Hex(xmlList.toString()) + ".wav";
+            String outputAudioPath = path + fileName;
+            mkdirs(path);
+            File file = new File(outputAudioPath);
+
+            if (file.exists()) {
+                getSend(emitter, "progress", "已缓存文件");
+            } else {
+                if (xmlList.size() == 1) {
+                    String msg = createAudio(xmlList.get(0), outputAudioPath, 3);
+                    if (msg != null) {
+                        getSend(emitter, "result", msg);
+                    }
+                } else {
+                    List<File> files = Lists.newArrayList();
+                    for (int i = 0; i < xmlList.size(); i++) {
+                        int finalI = i;
+                        tasks.add(() -> {
+                            TimeInterval timer = DateUtil.timer();
+                            timer.start();
+                            getSend(emitter, "progress", "正在创建第" + finalI + "个音频");
+                            String newFilePath = outputAudioPath.replace(".wav", "_" + finalI + ".wav");
+                            File newFile = new File(newFilePath);
+                            if (!newFile.exists()) {
+                                String xml = xmlList.get(finalI);
+                                String msg = createAudio(xml, newFilePath, 3);
+                                if (msg != null) {
+                                    FileUtil.del(newFilePath);
+                                }
+                            }
+                            files.add(new File(newFilePath));
+                            String end = timer.intervalPretty();
+                            getSend(emitter, "progress", "成功创建第" + finalI + "个音频，耗时：" + end);
+                            return null;
+                        });
+                    }
+
+                    try {
+                        executorService2.invokeAll(tasks);
+                    } catch (InterruptedException e) {
+                        String msg = "线程任务执行失败: " + e.getClass().getSimpleName() + " " + e.getMessage();
+                        log.error("{}", msg, e);
+                        getSend(emitter, "result", msg);
+                    }
+
+                    try {
+                        getSend(emitter, "progress", "正在合并语音，共" + files.size() + "个...");
+                        // 排序
+                        files.sort(Comparator.comparing(File::getName));
+                        mergeAudioFiles(files, file);
+                    } catch (Exception e) {
+                        String m = String.format("合并语音失败: %s: %s", e.getClass().getSimpleName(), e.getMessage());
+                        log.error("{}", m, e);
+                        getSend(emitter, "result", m);
+                    }
+                }
+            }
+
+            getSend(emitter, "complete", "complete");
+            getSend(emitter, "result", domain + "/file/mp3/" + fileName);
+
+            executorService.shutdown();
+            executorService2.shutdown();
+        });
+
+        return emitter;
+    }
+
+    private static void getSend(SseEmitter emitter, String state, Object data) {
+        try {
+            emitter.send(SseEmitter.event().name(state).data(data));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -198,11 +328,14 @@ public class BookToMp3Controller {
                 if (details.getReason() == CancellationReason.Error) {
                     log.error("CANCELED: ErrorCode=" + details.getErrorCode());
                     log.error("CANCELED: ErrorDetails=" + details.getErrorDetails());
+                    throw new RuntimeException("语音合成失败: " + details.getErrorDetails());
                 }
-                return "语音合成失败: " + result.getReason();
+                throw new RuntimeException("语音合成失败: " + result.getReason());
+//                return "语音合成失败: " + result.getReason();
             } else {
                 log.error("语音合成异常: {}", result.getReason());
-                return "语音合成异常: " + result.getReason();
+//                return "语音合成异常: " + result.getReason();
+                throw new RuntimeException("语音合成失败: " + result.getReason());
             }
 //        AudioDataStream stream = AudioDataStream.fromResult(result);
 //        stream.saveToWavFile(outputVideoPath);
@@ -211,9 +344,10 @@ public class BookToMp3Controller {
             audioConfig.close();
         } catch (Exception e) {
             if (--maxRetry >= 0) {
+                log.info("语音合成失败: {}, 重试...{}", e.getMessage(), maxRetry);
                 createAudio(xml, outputVideoPath, maxRetry);
             }
-            throw new RuntimeException(e);
+            return e.getClass().getSimpleName() + ": " + e.getMessage();
         }
 
         return null;
@@ -235,7 +369,7 @@ public class BookToMp3Controller {
         String volume, String text) {
         // test
 //        int pageSize = 50;
-        int pageSize = 1000;
+        int pageSize = 200;
         List<String> list = Lists.newArrayList();
         int length = text.length();
         if (length > pageSize) {
@@ -249,11 +383,6 @@ public class BookToMp3Controller {
         }
         return list;
     }
-
-    public static void mergeAudio(List<File> audioFiles, File outputFile) throws Exception {
-
-    }
-
 
     private static void mergeAudioFiles(List<File> audioFiles, File outputFile) throws Exception {
         // 总时长
@@ -322,7 +451,7 @@ public class BookToMp3Controller {
     }
 
     @Data
-    private static class V2Params {
+    public static class V2Params {
 
         private String text;
         private String voice;

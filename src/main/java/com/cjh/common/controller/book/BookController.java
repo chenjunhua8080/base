@@ -27,6 +27,9 @@ public class BookController {
     private BookNFXSController bookNFXSController;
     @Autowired
     private BookZhihuController bookZhihuController;
+    @Autowired
+    private Book5200Controller book5200Controller;
+
 
     @GetMapping("")
     public R<BookContentDto> content(String url, Integer start, Integer end, String book_id, String bid, String mst) {
@@ -47,14 +50,16 @@ public class BookController {
             return r;
         } else if (url.contains("/bxwx/")) {
             r = bookBXWXController.content(url, start, end);
-        }  else if (url.contains("https://www.nfxs.com")) {
+        } else if (url.contains("nfxs.com")) {
             r = bookNFXSController.content(url, start, end);
-        } else if (url.contains("https://ih5.reader.qq.com") || url.contains("https://book.qq.com")) {
+        } else if (url.contains("qq.com")) {
             r = bookQQController.content(url, start, end, bid);
         } else if (url.contains("zhihu")) {
             r = bookZhihuController.content(url, mst);
+        } else if (url.contains("5200.info")) {
+            r = book5200Controller.content(url, start, end);
         } else {
-            return R.failed("仅支持QQ/番茄/笔下文学/农夫小说/知乎");
+            return R.failed("仅支持QQ/番茄/笔下文学/农夫小说/知乎/5200");
         }
 
         // cache
