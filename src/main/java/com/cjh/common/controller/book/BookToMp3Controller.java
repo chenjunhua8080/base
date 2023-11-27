@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -225,6 +226,8 @@ public class BookToMp3Controller {
             mkdirs(path);
             File file = new File(outputAudioPath);
 
+            List<Integer> list = Lists.newArrayList();
+
             if (file.exists()) {
                 getSend(emitter, "progress", "已缓存文件");
             } else {
@@ -245,8 +248,11 @@ public class BookToMp3Controller {
                             File newFile = new File(newFilePath);
                             if (!newFile.exists()) {
                                 String xml = xmlList.get(finalI);
-                                String msg = createAudio(xml, newFilePath, 5);
+                                String msg = createAudio(xml, newFilePath, 10);
                                 if (msg != null) {
+                                    // 标记合成失败
+                                    list.add(finalI);
+
                                     FileUtil.del(newFilePath);
                                     getSend(emitter, "progress", "第" + finalI + "个音频创建失败：" + msg);
                                     return null;
@@ -268,6 +274,13 @@ public class BookToMp3Controller {
                         String msg = "线程任务执行失败: " + e.getClass().getSimpleName() + " " + e.getMessage();
                         log.error("{}", msg, e);
                         getSend(emitter, "result", msg);
+                    }
+
+                    if (list.isEmpty()) {
+                        getSend(emitter, "complete", "complete");
+                        getSend(emitter, "result", "语音: " + list + "，创建失败");
+                        FileUtil.del(file);
+                        return;
                     }
 
                     try {
@@ -354,6 +367,10 @@ public class BookToMp3Controller {
         } catch (Exception e) {
             if (--maxRetry >= 0) {
                 log.info("语音合成失败: {}, 重试...{}", e.getMessage(), maxRetry);
+                try {
+                    TimeUnit.SECONDS.sleep(2);
+                } catch (InterruptedException ignore) {
+                }
                 createAudio(xml, outputVideoPath, maxRetry);
             }
             return e.getClass().getSimpleName() + ": " + e.getMessage();
