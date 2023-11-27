@@ -397,12 +397,25 @@ public class BookToMp3Controller {
 //        int pageSize = 50;
         int pageSize = 200;
         List<String> list = Lists.newArrayList();
-        int length = text.length();
-        if (length > pageSize) {
-            int pageTotal = length / pageSize + (length % pageSize == 0 ? 0 : 1);
-            for (int i = 0; i < pageTotal; i++) {
-                String newText = text.substring(i * pageSize, Math.min((i + 1) * pageSize, text.length()));
+        int maxLength = text.length();
+        if (maxLength > pageSize) {
+            int startIndex = 0; // 从0开始
+            int endIndex = pageSize;
+            while (true) {
+                int newEndIndex = TextSubUtil.findEndIndex(text, endIndex);
+                log.info("新的结束索引：" + newEndIndex);
+
+                String newText = text.substring(startIndex, newEndIndex);
+//                System.out.println(newText);
                 list.add(String.format(XML, voice, style, styledegree, role, rate, volume, newText));
+
+                if (endIndex == maxLength || newEndIndex == maxLength) {
+                    log.info("索引已到文本末：" + newEndIndex);
+                    break;
+                }
+
+                startIndex = newEndIndex;
+                endIndex = Math.min(newEndIndex + pageSize, maxLength);
             }
         } else {
             list.add(String.format(XML, voice, style, styledegree, role, rate, volume, text));
