@@ -276,7 +276,7 @@ public class BookToMp3Controller {
                         getSend(emitter, "result", msg);
                     }
 
-                    if (list.isEmpty()) {
+                    if (!list.isEmpty()) {
                         getSend(emitter, "complete", "complete");
                         getSend(emitter, "result", "语音: " + list + "，创建失败");
                         FileUtil.del(file);
