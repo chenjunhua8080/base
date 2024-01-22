@@ -29,7 +29,8 @@ public class BookController {
     private BookZhihuController bookZhihuController;
     @Autowired
     private Book5200Controller book5200Controller;
-
+    @Autowired
+    private BookShyosunController bookShyosunController;
 
     @GetMapping("")
     public R<BookContentDto> content(String url, Integer start, Integer end, String book_id, String bid, String mst) {
@@ -58,8 +59,10 @@ public class BookController {
             r = bookZhihuController.content(url, mst);
         } else if (url.contains("5200.info")) {
             r = book5200Controller.content(url, start, end);
+        }else if (url.contains("shyosun.com")) {
+            r = bookShyosunController.content(url, start, end);
         } else {
-            return R.failed("仅支持QQ/番茄/笔下文学/农夫小说/知乎/5200");
+            return R.failed("仅支持QQ/番茄/笔下文学/农夫小说/知乎/5200/shyosun");
         }
 
         // cache
