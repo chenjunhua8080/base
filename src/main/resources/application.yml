@@ -4,6 +4,11 @@ server:
 logging:
   config: classpath:logback-spring.xml
 spring:
+  # 设置最大文件上传大小为100MB
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
   #v2.4x-yml改版，设置下面这个则可以继续使用以前的配置
   config:
     use-legacy-processing: true

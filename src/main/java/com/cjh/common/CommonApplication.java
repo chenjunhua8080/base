@@ -12,7 +12,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 //使用推荐的resilience4j
 //@EnableHystrix
 @EnableFeignClients
-@MapperScan("com.cjh.common.dao")
+@MapperScan("com.cjh.common.**.dao")
 public class CommonApplication {
 
     public static void main(String[] args) {

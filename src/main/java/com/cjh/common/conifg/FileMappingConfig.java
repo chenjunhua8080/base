@@ -9,7 +9,11 @@ public class FileMappingConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // download mp3
         registry.addResourceHandler("/file/mp3/**")
             .addResourceLocations("file:/home/book/mp3/");
+        // download excel
+        registry.addResourceHandler("/home/excel/out/**")
+            .addResourceLocations("file:/home/excel/out/");
     }
 }
