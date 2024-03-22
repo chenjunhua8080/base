@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
@@ -26,12 +25,8 @@ import org.springframework.web.servlet.NoHandlerFoundException;
  * @author 芋道源码
  */
 @RestControllerAdvice
-@AllArgsConstructor
 @Slf4j
 public class GlobalExceptionHandler {
-
-    private final String applicationName;
-
 
     /**
      * 处理 SpringMVC 请求参数缺失
