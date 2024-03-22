@@ -77,7 +77,7 @@ public class ExcelController {
         Comparator<EmployeeEntity> customComparator = Comparator.comparing((EmployeeEntity emp) -> {
             Integer order = departmentOrder.get(emp.getDepartment());
             return (order != null) ? order : 9999; // 如果部门不在列表中，默认值为 9999（可以根据需求调整）
-        }).thenComparing(EmployeeEntity::getDepartment); // 按照字母顺序排序
+        }).thenComparing(EmployeeEntity::getName); // 按照字母顺序排序
 
         // 对员工列表进行排序
         entityList.sort(customComparator);

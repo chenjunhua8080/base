@@ -15,6 +15,8 @@ import com.alibaba.excel.enums.WriteDirectionEnum;
 import com.alibaba.excel.write.metadata.WriteSheet;
 import com.alibaba.excel.write.metadata.fill.FillConfig;
 import com.alibaba.excel.write.metadata.fill.FillWrapper;
+import com.cjh.common.conifg.GlobalErrorCodeConstants;
+import com.cjh.common.conifg.ServiceException;
 import com.cjh.common.controller.excel.core.EmployeeClock.ClockByDay;
 import com.cjh.common.controller.excel.po.EmployeeEntity;
 import com.google.common.collect.Lists;
@@ -186,6 +188,9 @@ public class MyExcelUtil {
     private static DateTime getExcelDate(ExcelReader reader) {
         // Read head info
         List<String> infoList = readHeadInfo(reader);
+        if (infoList.isEmpty()){
+            throw new ServiceException(GlobalErrorCodeConstants.FILE_INVALID);
+        }
         print(infoList);
 
         // Get the Excel dateTime
