@@ -16,6 +16,7 @@ import com.cjh.common.service.ReqLogService;
 import com.cjh.common.util.HttpUtil;
 import com.cjh.common.util.XxlJobUtil;
 import com.xxl.job.core.context.XxlJobHelper;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -38,6 +39,7 @@ public class FarmApi {
      */
     private final String url_tree_info = "https://api.m.jd.com/client.action?functionId=initForFarm&body=%7B%22PATH%22%3A%221%22%2C%22ptag%22%3A%22138567.7.59%22%2C%22navStart%22%3A%222021-05-19T06%3A49%3A20.103Z%22%2C%22referer%22%3A%22http%3A%2F%2Fwq.jd.com%2Fwxapp%2Fpages%2Findex%2Findex%22%2C%22originUrl%22%3A%22%2Fpages%2Fgarden_new%2Fpages%2Findex%2Findex%3FPATH%3D1%22%2C%22originParams%22%3A%7B%22ptag%22%3A%22138567.7.59%22%7D%2C%22originOpts%22%3A%7B%7D%2C%22imageUrl%22%3A%22%22%2C%22nickName%22%3A%22%22%2C%22version%22%3A12%2C%22channel%22%3A2%7D&appid=wh5&loginType=1&loginWQBiz=ddnc";
     private final String url_tree_info_v13 = "https://api.m.jd.com/client.action?functionId=initForFarm&body=%7B%22ad_od%22%3A%22share%22%2C%22inviteCode%22%3A%226048af3e3a72494d917371864fc72354%22%2C%22mpin%22%3A%22RnExwWFQaTOPyNRP--tyWFsI_iKnjFRTHrB-%22%2C%22utm_campaign%22%3A%22t_335139774%22%2C%22utm_medium%22%3A%22appshare%22%2C%22utm_source%22%3A%22androidapp%22%2C%22utm_term%22%3A%22Wxfriends%22%2C%22imageUrl%22%3A%22https%3A%2F%2Fthirdwx.qlogo.cn%2Fmmopen%2Fvi_32%2FrhwWwianRPt4GFiaSiabOpWdbtTIygNkzohRpt5IjbrSsfxxSWv7QOicar4xKdhpnL7vR3xQicuoDuZGZpC2WI2ZIlA%2F132%22%2C%22nickName%22%3A%22%E6%81%AD%E2%83%B0%E5%96%9C%E2%83%B0%E5%8F%91%E2%83%B0%E8%B4%A2%E2%83%B0%E7%87%95%E2%83%B0%E7%87%95%E2%83%B0%22%2C%22version%22%3A14%2C%22channel%22%3A2%2C%22babelChannel%22%3A0%7D&appid=wh5&client=&clientVersion=&loginType=1&loginWQBiz=ddnc";
+    private final String url_tree_info_v14 = "https://api.m.jd.com/client.action?functionId=initForFarm&body=%7B%22PATH%22%3A%222%22%2C%22ptag%22%3A%2237068.8.2%22%2C%22referer%22%3A%22http%3A%2F%2Fwq.jd.com%2Fwxapp%2Fpages%2Fmy%2Findex%2Findex%22%2C%22originUrl%22%3A%22%2Fpages%2Ffarm%2Fpages%2Findex%2Findex%3FPATH%3D2%26ptag%3D37068.8.2%22%2C%22version%22%3A26%2C%22channel%22%3A2%2C%22babelChannel%22%3A0%2C%22lat%22%3A%2223.083309173583984%22%2C%22lng%22%3A%22113.31719970703125%22%7D&appid=signed_mp&area=19_1601_3634_63211&osVersion=Windows%2011%20x64&screen=414*736&networkType=wifi&timestamp=1718870283237&d_brand=microsoft&d_model=microsoft&wqDefault=true&client=windows&clientVersion=3.9.11&openudid=&uuid=26469591836651681784355815&x-api-eid-token=jdd01w4A2TBDRMWFPP6B6QACAV3LOK5YRUJGQKBDGI2CFZQVZBHZ3FVMATYGA3YUZZ47VLERVN4YEZHKRWHLNI5Z25DDPJAFV7D2ZXS7HCBDIG2X7G3XOENBUTIKKPUVBWAV7PLM&loginType=1&loginWQBiz=ddnc&h5st=20240620155803238%3B566ygtimz9y56n56%3B235ec%3Btk03aab0e1c7d18pMSsxeDN6b3g5esMAmFGJrcQ79d0BnWboMaSaqGuXc46qkhxIypU25fkOuBtWzNGBTmzfigZ3Y55Y%3Be5df2b66a6c76981a9d46ebd52bc19a85dc8c503954b59dc3c3de09b803379c0%3B4.7%3B1718870283238%3BVi4XfojATAFHt4eENC_c1sHbI626tteNyOy-CG6QMiwFdlTIZdiLOEzHQ0Z9pcf52152Nd4aU2CWQCRxJtPzdhz_HO6FqA1u3PistPeN5-6c";
 
     /**
      * @name 签到
@@ -87,7 +89,29 @@ public class FarmApi {
      * 果树信息v13
      */
     public TreeInfo getTreeInfoV13(String openId, String cookie) {
-        String resp = HttpUtil.doGet(url_tree_info_v13, cookie);
+        HashMap<String, Object> headers = new HashMap<>();
+        headers.put("cookie", cookie);
+//        Referer: https://servicewechat.com/wx91d27dbf599dff74/753/page-frame.html
+        headers.put("xweb_xhr", "1");
+        headers.put("X-Rp-Client", "mini_2.0.0");
+        headers.put("X-Referer-Page", "/pages/farm/pages/index/index");
+        headers.put("X-Referer-Package", "wx91d27dbf599dff74");
+        headers.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090b0f) XWEB/9129");
+        headers.put("Sec-Fetch-Site", "cross-site");
+        headers.put("Sec-Fetch-Mode", "cors");
+        headers.put("Sec-Fetch-Dest", "empty");
+        headers.put("Host", "api.m.jd.com");
+        headers.put("Referer", "https://servicewechat.com/wx91d27dbf599dff74/753/page-frame.html");
+
+        // 弃用
+        // {
+        //   "code": "402",
+        //   "message": "运行环境异常，请您从正规渠道参与活动，稍后再试"
+        // }
+
+
+        String resp = HttpUtil.doGet(url_tree_info_v14, headers);
+
         TreeInfo treeInfo = JSONObject.parseObject(resp, TreeInfo.class);
         String result;
         if (treeInfo.getCode() == 0) {
@@ -134,10 +158,10 @@ public class FarmApi {
         FarmResp farmResp = JSONObject.parseObject(resp, FarmResp.class);
         String result;
         if (farmResp.getCode() == 0) {
-            TreeInfo treeInfo = getTreeInfoV13(openId, cookie);
-            FarmUserProBean farmUserPro = treeInfo.getFarmUserPro();
-            result = String.format("#### 浇水成功, 还需%s, 可用水滴: %s ####",
-                farmResp.getTotalEnergy(), farmUserPro.getTreeTotalEnergy() - farmUserPro.getTreeEnergy());
+//            TreeInfo treeInfo = getTreeInfoV13(openId, cookie);
+//            FarmUserProBean farmUserPro = treeInfo.getFarmUserPro();
+            result = String.format("#### 浇水成功, 共计：%s, 可用水滴: %s ####",
+                farmResp.getTreeEnergy(), farmResp.getTotalEnergy());
             XxlJobHelper.log(result);
         } else {
             result = String.format("#### 浇水失败, code: %s ####", farmResp.getCode());
@@ -153,23 +177,30 @@ public class FarmApi {
      */
     @SneakyThrows
     public String continuousWater(Integer count, String openId, String cookie) {
-        TreeInfo treeInfo = getTreeInfoV13(openId, cookie);
-        FarmUserProBean farmUserPro = treeInfo.getFarmUserPro();
-        String result = String.format("#### 连续浇水开始, 可用水滴: %s ####%n", farmUserPro.getTotalEnergy());
+//        TreeInfo treeInfo = getTreeInfoV13(openId, cookie);
+//        FarmUserProBean farmUserPro = treeInfo.getFarmUserPro();
+//        String result = String.format("#### 连续浇水开始, 可用水滴: %s ####%n", farmUserPro.getTotalEnergy());
+        String result = String.format("#### 连续浇水开始, count: %s ####%n", count);
         int success = 0;
+        int totalEnergy = 0;
+        int treeEnergy = 0;
         while (count > 0) {
             Thread.sleep(1000);
             String resp = HttpUtil.doGet(url_waterGoodForFarm, cookie);
             FarmResp farmResp = JSON.parseObject(resp, FarmResp.class);
             if (farmResp.getCode() == 0) {
                 success++;
+                totalEnergy = farmResp.getTotalEnergy();
+                treeEnergy = farmResp.getTreeEnergy();
             }
             count--;
         }
-        treeInfo = getTreeInfoV13(openId, cookie);
-        farmUserPro = treeInfo.getFarmUserPro();
-        result += String.format("#### 连续浇水结束, 成功%s次, 还需%s, 可用水滴: %s ####",
-            success, farmUserPro.getTreeTotalEnergy() - farmUserPro.getTreeEnergy(), farmUserPro.getTotalEnergy());
+//        treeInfo = getTreeInfoV13(openId, cookie);
+//        farmUserPro = treeInfo.getFarmUserPro();
+//        result += String.format("#### 连续浇水结束, 成功%s次, 还需%s, 可用水滴: %s ####",
+//            success, farmUserPro.getTreeTotalEnergy() - farmUserPro.getTreeEnergy(), farmUserPro.getTotalEnergy());
+        result += String.format("#### 连续浇水结束, 成功%s次, 当前%s, 可用水滴: %s ####",
+            success, treeEnergy, totalEnergy);
 
         reqLogService.addLog(PlatformEnum.JD_FARM.getCode(), openId, result, null);
         return result;
